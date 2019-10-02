@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
-
   <ItemGroup>
+    <ProjectReference Include="..\SUP_Library\SUP_Library.csproj" />
   </ItemGroup>
 
 </Project>
