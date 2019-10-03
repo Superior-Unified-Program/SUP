@@ -42,7 +42,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseConnection.cs" />
+    <Compile Include="DBConnection\Address.cs" />
+    <Compile Include="DBConnection\Client.cs" />
+    <Compile Include="DBConnection\ContactInformation.cs" />
+    <Compile Include="DBConnection\Organization.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
