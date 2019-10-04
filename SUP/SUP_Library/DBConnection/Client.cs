@@ -8,55 +8,103 @@ namespace SUP_Library.DBConnection
 {
     public class Client
     {
-        private int    ID;
-        private string Prefix;
-        private string Company;
-        private string Permit;
-        private string PhoneNumber;
-        private string EmailAddress;
-        private string FirstName;
-        private string LastName;
-        private string MiddleInitial; // Shouldn't this be a char? Following the design documet
-        private bool   Active;
-        private int    Assistant;
-        private string Notes;
+        public int ID { get; private set; }
+        public string Prefix { get; set; }
+        public string Company { get; set; }
+        public string Permit { get; set; }
+        public string PhoneNumber { get; set; }
+        public string EmailAddress { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        private string middleInitial;
+        public string MiddleInitial {
+            get
+            {
+                return middleInitial;
+            }
+            set
+            {
+                if (MiddleInitial.Length > 1) // Since MiddleInitial is a string, we are making sure that we aren't putting anything more than an initial in it
+                    throw new Exception("Middle initial must be one letter.");
+
+                this.middleInitial = value;
+            }
+        }
+            // Shouldn't this be a char? Following the design documet
+        public bool   Active { get; set; }
+        public int    Assistant { get; set; }
+        public string Notes { get; set; }
 
         public Client(int ID)
         {
-            setID(ID);
+            this.ID = ID;
+            //setID(ID);
         }
         public Client(int ID, string FirstName, string LastName)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
+            */
         }
         public Client(int ID, string Prefix, string FirstName, string LastName)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Prefix = Prefix;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
+            */
         }
         public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Prefix = Prefix;
+            this.MiddleInitial = MiddleInitial;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
-            setMiddleInitial(MiddleInitial);
+            setMiddleInitial(MiddleInitial);*/
         }
         public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Prefix = Prefix;
+            this.MiddleInitial = MiddleInitial;
+            this.Company = Company;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
             setMiddleInitial(MiddleInitial);
             setCompany(Company);
+            */
         }
         public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company, string PhoneNumber)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Prefix = Prefix;
+            this.MiddleInitial = MiddleInitial;
+            this.Company = Company;
+            this.PhoneNumber = PhoneNumber;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
@@ -64,9 +112,19 @@ namespace SUP_Library.DBConnection
             setMiddleInitial(MiddleInitial);
             setCompany(Company);
             setPhoneNumber(PhoneNumber);
+            */
         }
         public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company, string PhoneNumber, string EmailAddress)
         {
+            this.ID = ID;
+            this.FirstName = FirstName;
+            this.LastName = LastName;
+            this.Prefix = Prefix;
+            this.MiddleInitial = MiddleInitial;
+            this.Company = Company;
+            this.PhoneNumber = PhoneNumber;
+            this.EmailAddress = EmailAddress;
+            /*
             setID(ID);
             setFirstName(FirstName);
             setLastName(LastName);
@@ -75,8 +133,9 @@ namespace SUP_Library.DBConnection
             setCompany(Company);
             setPhoneNumber(PhoneNumber);
             setEmailAddress(EmailAddress);
+            */
         }
-
+        /*
         public string getFirstName()
         {
             return FirstName;
@@ -185,5 +244,6 @@ namespace SUP_Library.DBConnection
         {
             this.Active = Active;
         }
+        */
     }
 }
