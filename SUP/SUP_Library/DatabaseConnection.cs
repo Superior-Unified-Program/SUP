@@ -33,7 +33,7 @@ namespace SUP_Library
         }
         #endregion
 
-        #region Account
+        #region Account Connection
 
         /// <summary>
         /// Check the username and harshed password with the database
@@ -64,6 +64,30 @@ namespace SUP_Library
                 throw exc;
             }
         }
+
+        #endregion
+
+        #region Address Connection
+
+        // all connections related to Address table go here
+
+        #endregion
+
+        #region Client Connection
+
+        // all connections related to Client table go here
+
+        #endregion
+
+        #region ContactInformation Connection
+
+        // all connections related to ContactInformation table go here
+
+        #endregion
+
+        #region Organization Connection
+
+        // all connections related to Organization table go here
 
         #endregion
     }
