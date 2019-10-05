@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUP_Library.DBConnection
+namespace SUP_Library.DBComponent
 {
     public class Organization
     {
