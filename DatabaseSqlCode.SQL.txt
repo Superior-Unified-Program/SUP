@@ -1,0 +1,34 @@
+CREATE DATABASE SUP_Server --this is a changable name but make sure you change it everywhere here and in the singalton pattern in the C# code.
+
+GO
+
+USE SUP_Server
+
+CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(50), User_Type char, Failed_Login int, Office varchar(50), CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
+
+CREATE TABLE Client ( [ID] NUMERIC(4,0), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active boolean, Notes varchar(30), CONSTRAINT PK_Client PRIMARY KEY (ID) )
+
+CREATE TABLE Address ( Client_ID NUMERIC(4,0), Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), CONSTRAINT PK_Address PRIMARY KEY ( Line1, Line2, City, State, Zip ), CONSTRAINT FK_Address_Client FOREIGN KEY Client_ID REFERENCES Client ( [ID] ) )
+
+CREATE TABLE Phone ( Client_ID NUMERIC(4,0), [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ) CONSTRAINT FK_Phone_Client FOREIGN KEY Client_ID REFERENCES Client ( [ID] ) )
+
+CREATE TABLE Email ( Client_ID NUMERIC(4,0), [Email] varchar(30), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Email ) CONSTRAINT FK_Phone_Client FOREIGN KEY Client_ID REFERENCES Client ( [ID] ) )
+
+CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(10), CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
+
+CREATE TABLE Works_For ( Client_ID NUMERIC(4,0), Org_Name varchar(30), Org_Type varchar(10), Title varchar(20) CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ) CONSTRAINT FK_Works_For_Client FOREIGN KEY Client_ID REFERENCES Client ( [ID] ) 
+CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
+
+CREATE TABLE Assists ( Boss_ID NUMERIC(4,0), Assistant_ID NUMERIC(4,0), Notes varchar(30), CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ) CONSTRAINT FK_Assists_Client FOREIGN KEY Boss_ID REFERENCES Client ( [ID] ) CONSTRAINT FK_Assists_Client FOREIGN KEY Assistant_ID REFERENCES Client ( [ID] )
+
+GO
+
+CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+
+GO
+
+CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
+
+GO
+
+CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
