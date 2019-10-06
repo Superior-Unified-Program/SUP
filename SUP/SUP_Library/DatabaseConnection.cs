@@ -28,7 +28,7 @@ namespace SUP_Library
 
         private static string getConnectionString()
         {
-            /// This retern the connection string in App.config file as the name same with connectionName.
+            // This retern the connection string in App.config file as the name same with connectionName.
             return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString; 
         }
         #endregion
@@ -46,6 +46,7 @@ namespace SUP_Library
         /// </returns>
         public static bool verifiedLogIn(string theUsername, string thePassword)
         {
+            thePassword = Harsh.HashPassword(thePassword);
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
@@ -63,6 +64,16 @@ namespace SUP_Library
             {
                 throw exc;
             }
+        }
+
+        public static bool verifiedLogInAdmin(string theUsername, string thePassword)
+        {
+            if(theUsername == "admin" || theUsername == "Admin")
+            {
+                if (thePassword == "password") return true;
+                return false;
+            }
+            return false;
         }
 
         #endregion
