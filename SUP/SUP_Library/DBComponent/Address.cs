@@ -11,12 +11,12 @@ namespace SUP_Library.DBComponent
         private string LineOne;
         private string LineTwo;
         private string City;
-        private string State;
+        private string State; 
         private string Zipcode;
 
         public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,null,City,State,Zipcode)
         {
-            // For now if we call constructor without Address LineTwo, we just pass on to the constructor with an empty LineTwo
+            // For now if we call constructor without Address LineTwo, we just pass on to the constructor with an empty LineTwo 
         }
 
         public Address(string LineOne, string LineTwo, string City, string State, string Zipcode)
