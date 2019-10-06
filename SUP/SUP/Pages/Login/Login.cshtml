@@ -3,46 +3,25 @@
 @{
     Layout = null;
 }
-<head>
-    <title>Login</title>
-    <meta http-equive="Content-Type" charset="utf-8">
-    <script language="javascript">
-        function Login() {
-            /*if (model.Login("TEST", "test")) {
-                alert("Oh Yayyy! You got it!");
+    <head>
+        <title>Login</title>
+        <meta http-equive="Content-Type" charset="utf-8">
+        <script language="javascript">
+            function Login() {
+                /*if (model.Login("TEST", "test")) {
+                    alert("Oh Yayyy! You got it!");
+                }
+                else {
+                    alert("Sorry, this username/password combination is not valid！");
+                }*/
+
+                document.getElementById("error").innerHTML = "Your account has been locked！";
             }
-            else {
-                alert("Sorry, this username/password combination is not valid！");
-            }*/
-
-            document.getElementById("error").innerHTML = "Your account has been locked！";
-        }
-    </script>
-    <style type="text/css">
-        .yellow {
-            width: 100%;
-            height: 100%;
-            text-align: center;
-            padding-top: 15%;
-            background-image: linear-gradient(to top,white,#FFD700);
-        }
-
-        td {
-            text-align: center;
-        }
-
-        p {
-            margin-bottom: .25em;
-            margin-top: .25em;
-        }
-
-        #error {
-            color: red;
-        }
-    </style>
+        </script>
+        <link href="~/css/site.css" rel="stylesheet" type="text/css">
 
 
-</head>
+    </head>
 
 <body>
 
