@@ -1,6 +1,6 @@
 CREATE DATABASE SUP_Server --this is a changable name but make sure you change it everywhere here and in the singalton pattern in the C# code.
 
-GO
+GO     
 
 USE SUP_Server
 
