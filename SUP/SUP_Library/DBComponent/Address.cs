@@ -8,11 +8,11 @@ namespace SUP_Library.DBComponent
 {
     public class Address
     {
-        private string LineOne;
-        private string LineTwo;
-        private string City;
-        private string State;
-        private string Zipcode;
+        private string LineOne { get; set; }
+        private string LineTwo { get; set; }
+        private string City { get; set; }
+        private string State { get; set; }
+        private string Zipcode { get; set; }
 
         public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,null,City,State,Zipcode)
         {
@@ -21,15 +21,20 @@ namespace SUP_Library.DBComponent
 
         public Address(string LineOne, string LineTwo, string City, string State, string Zipcode)
         {
-
-            setLineOne(LineOne);
+            this.LineOne = LineOne;
+            this.LineTwo = LineTwo;
+            this.City = City;
+            this.State = State;
+            this.Zipcode = Zipcode;
+            /* setLineOne(LineOne);
             setLineTwo(LineTwo);
             setCity(City);
             setState(State);
             setZipcode(Zipcode);
+            */
 
         }
-
+        /*
         public void setLineOne(string LineOne)
         {
             this.LineOne = LineOne;
@@ -95,5 +100,6 @@ namespace SUP_Library.DBComponent
             return validZipcode;
 
         }
+        */
     }
 }
