@@ -8,7 +8,7 @@ namespace SUP_Library.DBComponent
 {
     public class Client
     {
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public string Prefix { get; set; }
         public string Company { get; set; }
         public string Permit { get; set; }
