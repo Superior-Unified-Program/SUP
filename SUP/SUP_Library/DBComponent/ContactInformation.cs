@@ -8,16 +8,18 @@ namespace SUP_Library.DBComponent
 {
     public class ContactInformation
     {
-        private string Type;
-        private string Value;
+        public string Type { get; set; }
+        public string Value { get; set; }
 
         public ContactInformation(string Type, string Value)
         {
-            // this.Type = Type;
-            // this.Value = Value;
-            setType(Type);
-            setValue(Value);
+             this.Type = Type;
+             this.Value = Value;
+            /* setType(Type);
+            setValue(Value); */
         }
+
+        /*
         public string getType()
         {
             return Type;
@@ -34,5 +36,6 @@ namespace SUP_Library.DBComponent
         {
             this.Value = Value;
         }
+        */
     }
 }
