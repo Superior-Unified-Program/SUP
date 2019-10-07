@@ -1,76 +1,57 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Login</title>
-	<meta http-equive= "Content-Type"charset="utf-8">
-		<script language="javascript">
-			function MsgBox() 
-			{
-				alert("Sorry, this username/password combination is not valid！"); 
-				document.getElementById("error").innerHTML="Your account has been locked！";
-				
-			}
-			
-		
-			
-			
-		</script>
-	<style type="text/css">
-	div
-	{
-		width:100%;
-		height：100%;
-		text-align: center;
-		padding-top: 15%;
-	background-image: linear-gradient(to top,white,#FFD700);
-		
-	}
-	
+    <title>Login</title>
+    <meta http-equive="Content-Type" charset="utf-8">
+    <script language="javascript">
+        function MsgBox() {
+            alert("Sorry, this username/password combination is not valid！");
+            document.getElementById("error").innerHTML = "Your account has been locked！";
 
-	td
-	{
-		
-    	text-align:center;
-	}
-		#error{
-			color:red;
-		}
-	</style>
-	
+        }
+
+
+
+
+    </script>
+    <style type="text/css">
+        div {
+            width: 100%;
+            height：100 %;
+            text-align: center;
+            padding-top: 15%;
+            background-image: linear-gradient(to top,white,#FFD700);
+        }
+
+
+        td {
+            text-align: center;
+        }
+
+        p {
+            margin-top: .25em;
+            margin-bottom: .25em;
+        }
+
+        #error {
+            color: red;
+        }
+    </style>
+
 
 </head>
 
 <body>
-	
-<div  class="body">
-	<table width="100%" border="0" >
-  <tbody>
-    <tr>
-      <td ><img src="logo.jpg" /></td>
-    </tr>
-	   <tr>
-      <td></td>
-    </tr>
-    <tr >
-      <td ><h7>Username:</h7><input type="name" style="height:30px;width:200px;"/></td> 		
-    </tr>
-    <tr>
-      <td ><h7>Password:&ensp;</h7><input type ="password" style="height:30px;width:200px;"/></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
-    </tr>
-	  <tr>
-		<td><a id="error"></a></td>
-		</tr>
-  </tbody>
-</table>
-	
-	<button type ="login" style="display:inline" onclick="MsgBox()" ><h7>Login</h7></button>
-	
 
-</div>
+    <div class="body">
+        <img src="logo.jpg" />
+        <br />
+        <p><h7>Username:&nbsp;</h7><input type="name" style="height:30px;width:200px;" /></p>
+        <p><h7>Password:&nbsp;&nbsp;</h7><input type="password" style="height:30px;width:200px;" /></p>
+        <p></p><a id="error"></a></p>
+        <br />
+        <button type="login" style="display:inline" onclick="MsgBox()"><h7>Login</h7></button>
+    </div>
 </body>
-	
+
 </html>

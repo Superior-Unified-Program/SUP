@@ -4,20 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUP_Library.DBConnection
+namespace SUP_Library.DBComponent
 {
     public class Organization
     {
-        private string Type;
-        private string Name;
+        public string Type { get; set; }
+        public string Name { get; set; }
 
         public Organization(string Type, string Name)
         {
-           // this.Type = Type;
-           // this.Name = Name;
+            this.Type = Type;
+            this.Name = Name;
+            /*
             setType(Type);
             setName(Name);
+            */
         }
+        /*
         public string getType()
         {
             return Type;
@@ -34,5 +37,6 @@ namespace SUP_Library.DBConnection
         {
             this.Name = Name;
         }
+        */
     }
 }

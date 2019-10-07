@@ -12,12 +12,17 @@ namespace SUP.Pages.Login
     {
         public void OnGet()
         {
+
         }
 
-        public static Boolean Login(string Username, string Password)
+        public bool Login(string Username, string Password)
         {
-            SUP_Library.DatabaseConnection conn = SUP_Library.DatabaseConnection.GetConnection();
-            return conn.Login(Username, Password);
+            return DatabaseConnection.verifiedLogIn(Username, Password);
         }
+
+		public static string Test()
+		{
+			return "return string";
+		}
     }
 }

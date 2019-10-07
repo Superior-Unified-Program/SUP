@@ -1,0 +1,60 @@
+﻿@page
+@model SUP.Pages.About.AboutModel
+@{
+	Layout = null;
+}
+
+<head>
+	<meta charset="utf-8">
+	<title>Search</title>
+	<style>
+		.organize {
+			text-align: center;
+			width: 100%;
+			height: 100%;
+		}
+
+		.logo {
+			height: 95%;
+			float: right;
+			top: 1px;
+			margin-top: 2px;
+			margin-right: 2px;
+		}
+
+		.universitylogo {
+			height: 95%;
+			float: right;
+			top: 1px;
+			margin-top: 2px;
+			margin-right: 2px;
+		}
+
+		#button {
+			text-align: inherit;
+		}
+	</style>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
+
+<body class="organize">
+	<div id="banner" style="height: 10%; width:100%; position: absolute; top: 0; left: 0; background: #000000;">
+		<img class="universitylogo" src="../../superior_logo.jpg" />
+		<img class="logo" src="../../logo.jpg" />
+	</div>
+	<div id="ribbonDiv" style="height: 100%; width:15%; position: absolute; top: 0; left: 0"></div>
+	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+		<table width="100%" height=700px border="0" bordercolor="#000000">
+			<tr>
+				<th scope="row" id="column_width"> <a href="AboutSUP.html">About SUP</a></th>
+				<td>
+					<img src="/images/logo.jpg" align="center" width="auto" height="300px">
+					<p align="center" style="font-size:30px;"><b>Welcome to the Superior Unified Program(SUP).</b> &copy; <sub>2019</sub></p>
+					<p align="center" style="font-size:18px;">With this System you will be able to search for Clients and add them to the central database and perform various output tasks.</p>
+					<p>Developers:</p>
+					<p align="center" style="font-size:18px;">Justin Heino, Matthew Holcomb, Jacob Leonard, Qingyuan Liu, Duy Nguyen, Marcus Parmeter, Louis Pearson, Chao Wang</p>
+				</td>
+			</tr>
+		</table>
+		<script>$('#ribbonDiv').load('..\\ribbon');</script>
+</body>

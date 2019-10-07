@@ -5,6 +5,20 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\logo.jpg" />
+    <Content Remove="wwwroot\superior_logo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\logo.jpg" />
+    <None Include="wwwroot\superior_logo.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.30" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SUP_Library\SUP_Library.csproj" />
   </ItemGroup>
 
