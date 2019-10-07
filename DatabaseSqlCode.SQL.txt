@@ -1,31 +1,76 @@
-CREATE DATABASE SUP_Server --this is a changable name but make sure you change it everywhere here and in the singalton pattern in the C# code.
-
+USE [master]
 GO
 
-USE SUP_Server
+/*Create database*/
+IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdb' OR name = 'SUPdb')
+   exec('CREATE DATABASE [SUPdb] CONTAINMENT = NONE')
+GO
 
+/* create User If possible */
+USE [master];
+
+--CREATE LOGIN teamRADGSHAUser
+IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
+   exec('CREATE LOGIN SUPuser WITH PASSWORD    = ''123'';')
+GO
+
+USE [SUPdb]
+
+--create user
+IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
+GO
+
+--update roles
+EXEC sys.sp_addrolemember
+	@rolename = 'db_datareader',
+	@membername = 'SUPuser'
+EXEC sys.sp_addrolemember
+	@rolename = 'db_datawriter',
+	@membername = 'SUPuser'
+EXEC sys.sp_addrolemember
+	@rolename = 'db_owner',
+	@membername = 'SUPuser'
+GO
+
+--create tables
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Account')
 CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(50), User_Type char, Failed_Login int, Office varchar(50), CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Client')
 CREATE TABLE Client ( [ID] NUMERIC(4,0), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30), CONSTRAINT PK_Client PRIMARY KEY (ID) )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID NUMERIC(4,0), Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
 CONSTRAINT PK_Address PRIMARY KEY ( Line1, Line2, City, State, Zip ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Phone')
 CREATE TABLE Phone ( Client_ID NUMERIC(4,0), [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
 CONSTRAINT FK_Phone_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Email')
 CREATE TABLE Email ( Client_ID NUMERIC(4,0), [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
 CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Organization')
 CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(10), 
 CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Works_For')
 CREATE TABLE Works_For ( Client_ID NUMERIC(4,0), Org_Name varchar(30), Org_Type varchar(10), Title varchar(20), 
 CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ), 
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES
+           WHERE TABLE_NAME = 'Assists')
 CREATE TABLE Assists ( Boss_ID NUMERIC(4,0), Assistant_ID NUMERIC(4,0), Notes varchar(30), 
 CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
 CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
