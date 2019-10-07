@@ -8,7 +8,7 @@ namespace SUP_Library.DBConnection
 {
     public class Address
     {
-        private string LineOne;
+        protected string LineOne { get; set; }
         private string LineTwo;
         private string City;
         private string State;

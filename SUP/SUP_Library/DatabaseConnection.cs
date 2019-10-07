@@ -8,21 +8,29 @@ namespace SUP_Library
 {
     public class DatabaseConnection
     {
-        private static DatabaseConnection Instance;
-        private DatabaseConnection() { }
-        public static DatabaseConnection GetConnection()
-        {
-            if (Instance == null)
-                Instance = new DatabaseConnection();
+        #region Private Connection
 
+        private static DatabaseConnection Instance;
+        private DatabaseConnection()
+        {
+
+        }
+        public static DatabaseConnection getConnection()
+        {
+            if (Instance == null) Instance = new DatabaseConnection();
             return Instance;
         }
 
-        public Boolean Login(string Username, string Password)
-        {
-            return (Username == "TEST");
-        }
+        #endregion
+        
+        #region 
+        #endregion
     }
 
 
 }
+
+/*      List of procedure:
+ *      
+ * 
+ */
