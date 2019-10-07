@@ -78,15 +78,90 @@ CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Cli
 
 GO
 
-CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+/*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
 
+GO*/
+
+-- =============================================
+-- Author:		Matt
+-- Create date: 10/7/2019
+-- Description:	verifies login
+-- =============================================
+
+CREATE OR ALTER PROCEDURE validateLogin
+
+	-- Add the parameters for the stored procedure here
+	@userName nvarchar(50), @givenPW varchar(64)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+
+	DECLARE @isValid BIT
+	IF EXISTS(SELECT * FROM Account WHERE @userName = [User_Name] AND @givenPW = [Password]) SET @isValid = 1
+	ELSE SET @isValid = 0
+	SELECT @isValid
+
+END
 GO
 
-CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
+-- =============================================
+-- Author:		Matt
+-- Create date: 10/7/2019
+-- Description:	verifies login
+-- =============================================
 
+CREATE OR ALTER PROCEDURE validateLogin
+
+	-- Add the parameters for the stored procedure here
+	@userName nvarchar(50), @givenPW varchar(64)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+
+	DECLARE @isValid BIT
+	IF EXISTS(SELECT * FROM Account WHERE @userName = [User_Name] AND @givenPW = [Password])	SET @isValid = 1
+	ELSE SET @isValid = 0
+	SELECT @isValid
+
+END
 GO
 
-CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
+-- =============================================
+-- Author:		Matt
+-- Create date: 10/7/2019
+-- Description:	Takes x variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
+-- =============================================
+CREATE OR ALTER PROCEDURE queryClient
+	-- Add the parameters for the stored procedure here
+	@lastName nvarchar(50) = null, @firstName nvarchar(50) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	BEGIN
+		SELECT * FROM Client WHERE @firstName LIKE (First_Name + '%') AND @lastName = (Last_Name + '%')
+	END
+	
+
+END
+GO
+
+/*CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
+
+GO*/
+
+/*CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
 
 GO
 
@@ -104,3 +179,4 @@ USE [HRAS_iTas] GRANT EXECUTE ON OBJECT::Import_Item TO HRAS_MW_iTas;
 GO
 
 USE [HRAS_iTas] INSERT INTO Account ([User_Name], [Password], [User_Type], [Failed_Login]) VALUES('admin', 'W6ph5Mm5Pz8GgiULbPgzG37mj9g=', 'A', 0)
+*/
