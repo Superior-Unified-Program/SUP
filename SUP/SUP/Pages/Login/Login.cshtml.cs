@@ -15,9 +15,14 @@ namespace SUP.Pages.Login
 
         }
 
-        public static bool Login(string Username, string Password)
+        public bool Login(string Username, string Password)
         {
             return DatabaseConnection.verifiedLogIn(Username, Password);
         }
+
+		public static string Test()
+		{
+			return "return string";
+		}
     }
 }

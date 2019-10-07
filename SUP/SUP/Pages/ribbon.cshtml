@@ -1,0 +1,70 @@
+﻿@page
+@model IndexModel
+@{
+    //ViewData["Title"] = "Home page";
+    Layout = null;
+}
+
+
+<style>
+	.welcome {
+		height: 10%;
+		text-align: left;
+		border: 0px solid #000000;
+		font-size: 20px;
+		color: black;
+		font-family: Calibri;
+		font-weight: bold;
+	}
+
+	.tab {
+        column-width: auto;
+        width: 20%;
+        background: #FFD700;
+        text-align: left;
+		border: 3px solid #000000;
+		height: 5%;
+	}
+
+	.tab a {
+		font-size: 20px;
+		color: black;
+		font-family: Calibri;
+		font-weight: bold;
+		text-decoration: none;
+	}
+
+	.ribbon {
+		background: #FFD700;
+		border-collapse: collapse;
+		height: 100%;
+		border: 3px solid #000000;
+	}
+</style>
+
+<table class="ribbon">
+	<tr>
+		<th class="welcome" scope="row">Welcome<br />_________</th>
+	</tr>
+	<tr>
+		<th class="tab" scope="row"><a asp-area="" asp-page="Search/Search">Search</a></th>
+	</tr>
+	<tr>
+		<th class="tab" scope="row"> <a asp-area="" asp-page="AddClient/AddClient">Add/Edit Client</a></th>
+
+	</tr>
+	<tr>
+		<th class="tab" scope="row"> <a asp-area="" asp-page="About/About">About Sup</a></th>
+
+	</tr>
+	<tr>
+		<th scope="row" rowspan="2" height="50%">&nbsp;</th>
+
+	</tr>
+	<tr>
+	</tr>
+	<tr>
+		<th class="tab" scope="row"> <a asp-area="" asp-page="Login/Login">Logout</a></th>
+
+	</tr>
+</table>

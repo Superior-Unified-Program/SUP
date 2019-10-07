@@ -1,13 +1,15 @@
 ﻿@page
 @model SUP.Pages.Login.LoginModel
 @{
-    Layout = null;
+	Layout = null;
 }
 	<head>
 		<title>Login</title>
 		<meta http-equive="Content-Type" charset="utf-8">
+		<script src="~/lib/jquery/dist/jquery.min.js"></script>
 		<script language="javascript">
 			function Login() {
+				alert(@{LoginModel.Test();})
 				/*if (model.Login("TEST", "test")) {
 					alert("Oh Yayyy! You got it!");
 				}
@@ -15,7 +17,7 @@
 					alert("Sorry, this username/password combination is not valid！");
 				}*/
 
-				document.getElementById("error").innerHTML = "Your account has been locked！";
+				//document.getElementById("error").innerHTML = "Your account has been locked！";
 			}
 		</script>
 		<style type="text/css">
@@ -40,7 +42,6 @@
 	</head>
 
 <body>
-
     <div class="body yellow">
         <table width="100%" border="0">
             <tbody>
