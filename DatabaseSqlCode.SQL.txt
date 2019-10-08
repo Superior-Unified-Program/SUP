@@ -11,7 +11,7 @@ USE [master];
 
 --CREATE LOGIN teamRADGSHAUser
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
-   exec('CREATE LOGIN SUPuser WITH PASSWORD    = ''123'';')
+   exec('CREATE LOGIN SUPuser WITH PASSWORD    = ''abc123'';')
 GO
 
 USE [SUPdb]
