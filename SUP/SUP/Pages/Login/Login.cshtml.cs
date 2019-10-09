@@ -15,7 +15,7 @@ namespace SUP.Pages.Login
 
 		}
 
-		[HttpPOST]
+		//[HttpPOST]
         public string Login(string Username)
         {
 			// return DatabaseConnection.verifiedLogIn(Username, Password);
