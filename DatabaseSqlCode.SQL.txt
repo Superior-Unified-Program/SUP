@@ -179,20 +179,5 @@ GO*/
 
 /*CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
 
-GO
 
-USE [HRAS_iTas] CREATE LOGIN HRAS_MW_iTas
-WITH PASSWORD = 'ZMNv01X';
-GO
-
-USE [HRAS_iTas] CREATE USER HRAS_MW_iTas FOR LOGIN HRAS_MW_iTas;
-GO
-
-ALTER LOGIN HRAS_MW_iTas ENABLE;
-GO
-
-USE [HRAS_iTas] GRANT EXECUTE ON OBJECT::Import_Item TO HRAS_MW_iTas;
-GO
-
-USE [HRAS_iTas] INSERT INTO Account ([User_Name], [Password], [User_Type], [Failed_Login]) VALUES('admin', 'W6ph5Mm5Pz8GgiULbPgzG37mj9g=', 'A', 0)
 */
