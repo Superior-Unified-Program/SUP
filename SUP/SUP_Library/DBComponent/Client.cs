@@ -9,15 +9,17 @@ namespace SUP_Library.DBComponent
     public class Client
     {
         public int ID { get; set; }
-        public string Prefix { get; set; }
+        //public string Prefix { get; set; }
         public string Company { get; set; }
-        public string Permit { get; set; }
+        public string Permit_Num { get; set; }
         public string PhoneNumber { get; set; }
         public string EmailAddress { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        private string middleInitial;
-        public string MiddleInitial {
+        public string First_Name { get; set; }
+        public string Last_Name { get; set; }
+        public char Middle_initial { get; set; }
+
+        public Organization Org { get; set; }
+        /*public string MiddleInitial {
             get
             {
                 return middleInitial;
@@ -29,94 +31,98 @@ namespace SUP_Library.DBComponent
 
                 this.middleInitial = value;
             }
-        }
+        }*/
             // Shouldn't this be a char? Following the design documet
         public bool   Active { get; set; }
         public int    Assistant { get; set; }
         public string Notes { get; set; }
 
-        public Client(int ID)
+        public Client()
         {
-            this.ID = ID;
-            //setID(ID);
+
         }
-        public Client(int ID, string FirstName, string LastName)
+        public Client(int Id)
         {
-            this.ID = ID;
-            this.FirstName = FirstName;
-            this.LastName = LastName;
+         //   this.Id = Id;
+            //setId(Id);
+        }
+        public Client(int Id, string FirstName, string LastName)
+        {
+           // this.Id = Id;
+           // this.FirstName = FirstName;
+           // this.LastName = LastName;
             /*
-            setID(ID);
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             */
         }
-        public Client(int ID, string Prefix, string FirstName, string LastName)
+       /* public Client(int Id, string Prefix, string FirstName, string LastName)
         {
-            this.ID = ID;
+            this.Id = Id;
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Prefix = Prefix;
-            /*
-            setID(ID);
+            
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
-            */
-        }
-        public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName)
+            
+        }*/
+        /*public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName)
         {
-            this.ID = ID;
+            this.Id = Id;
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Prefix = Prefix;
             this.MiddleInitial = MiddleInitial;
-            /*
-            setID(ID);
+            
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
-            setMiddleInitial(MiddleInitial);*/
-        }
-        public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company)
+            setMiddleInitial(MiddleInitial);
+        }*/
+       /* public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company)
         {
-            this.ID = ID;
+            this.Id = Id;
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Prefix = Prefix;
             this.MiddleInitial = MiddleInitial;
             this.Company = Company;
-            /*
-            setID(ID);
+            
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
             setMiddleInitial(MiddleInitial);
             setCompany(Company);
-            */
+            
         }
-        public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company, string PhoneNumber)
+        public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company, string PhoneNumber)
         {
-            this.ID = ID;
+            this.Id = Id;
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Prefix = Prefix;
             this.MiddleInitial = MiddleInitial;
             this.Company = Company;
             this.PhoneNumber = PhoneNumber;
-            /*
-            setID(ID);
+            
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
             setMiddleInitial(MiddleInitial);
             setCompany(Company);
             setPhoneNumber(PhoneNumber);
-            */
+            
         }
-        public Client(int ID, string Prefix, string FirstName, string MiddleInitial, string LastName, string Company, string PhoneNumber, string EmailAddress)
+        public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company, string PhoneNumber, string EmailAddress)
         {
-            this.ID = ID;
+            this.Id = Id;
             this.FirstName = FirstName;
             this.LastName = LastName;
             this.Prefix = Prefix;
@@ -124,8 +130,8 @@ namespace SUP_Library.DBComponent
             this.Company = Company;
             this.PhoneNumber = PhoneNumber;
             this.EmailAddress = EmailAddress;
-            /*
-            setID(ID);
+            
+            setId(Id);
             setFirstName(FirstName);
             setLastName(LastName);
             setPrefix(Prefix);
@@ -133,8 +139,8 @@ namespace SUP_Library.DBComponent
             setCompany(Company);
             setPhoneNumber(PhoneNumber);
             setEmailAddress(EmailAddress);
-            */
-        }
+            
+        }*/
         /*
         public string getFirstName()
         {
@@ -219,14 +225,14 @@ namespace SUP_Library.DBComponent
         {
             this.Notes = Notes;
         }
-        public int getID()
+        public int getId()
         {
-            return ID;
+            return Id;
         }
-        private void setID(int ID)
+        private void setId(int Id)
         {
-            // This method is private, since ID is the key, you shouldn't be able to change a clients's ID once it has been set.
-            this.ID = ID;
+            // This method is private, since Id is the key, you shouldn't be able to change a clients's Id once it has been set.
+            this.Id = Id;
         }
         public int getAssistant()
         {

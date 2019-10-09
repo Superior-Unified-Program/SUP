@@ -29,7 +29,7 @@ namespace SUP_Library
         private static string getConnectionString()
         {
             // This retern the connection string in App.config file as the name same with connectionName.
-            return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString; 
+            return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
         }
         #endregion
 
@@ -87,6 +87,75 @@ namespace SUP_Library
         #region Client Connection
 
         // all connections related to Client table go here
+
+        public static void addClient(Client newClient)
+        {
+            string conString = getConnectionString();
+
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+
+                    Console.WriteLine(connection.State);
+                    
+                    string sql = "addClient";
+                    var affected = connection.Execute(sql,
+                       new
+                       {
+                           firstName = newClient.First_Name,
+                           lastName = newClient.Last_Name,
+                           middleInitial = newClient.Middle_initial,
+                           permitNum = newClient.Permit_Num,
+                           active = newClient.Active,
+                           notes = newClient.Notes
+                       },
+                        commandType: CommandType.StoredProcedure);
+           
+                }
+            }
+            catch (Exception exc)
+            {
+             
+                throw exc;
+            }
+        }
+        public static List<Client> queryClient(string qLastName, string qFirstName, string qOrganization)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    // SELECT * FROM Client WHERE Last_Name LIKE 'bo%' and First_Name LIKE 'bi%'
+                    //  var results = connection.Query<Client>("queryClient", new { lastName = qLastName, firstName = qFirstName, org=qOrganization }).ToList();
+                    var sql = "queryClient";
+                    
+                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, org = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                    //var client = data.First();
+
+
+                    //var results = connection.Query<Client>("SELECT * FROM Client WHERE Last_Name LIKE '" + qLastName + "%' and First_Name LIKE'" + qFirstName +"%'").ToList();
+                    /* if (results.Count != 0)
+                     {
+                         if (thePassword != currentAccount[0].password) return false;
+                         return true;
+                     }
+                     return false;
+                     */
+                    //var toReturn = data;
+
+                    
+
+                    return data ; //results;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+
+
+        }
 
         #endregion
 
