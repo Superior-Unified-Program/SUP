@@ -8,16 +8,18 @@ using SUP_Library;
 
 namespace SUP.Pages.Login
 {
-    public class LoginModel : PageModel
-    {
-        public void OnGet()
-        {
+	public class LoginModel : PageModel
+	{
+		public void OnGet()
+		{
 
-        }
+		}
 
-        public bool Login(string Username, string Password)
+		[HttpPOST]
+        public string Login(string Username)
         {
-            return DatabaseConnection.verifiedLogIn(Username, Password);
+			// return DatabaseConnection.verifiedLogIn(Username, Password);
+			return "this";
         }
 
 		public static string Test()
