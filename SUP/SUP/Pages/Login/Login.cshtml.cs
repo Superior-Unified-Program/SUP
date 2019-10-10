@@ -15,7 +15,11 @@ namespace SUP.Pages.Login
 
 		}
 
-		//[HttpPOST]
+		public string RequestId { get; set; }
+
+		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+		[HttpPost]
         public string Login(string Username)
         {
 			// return DatabaseConnection.verifiedLogIn(Username, Password);

@@ -6,52 +6,45 @@
     <head>
         <title>Login</title>
         <meta http-equive="Content-Type" charset="utf-8">
-        <script language="javascript">
-               var username = document.getElementsByClassName('bt_input')[0];
-               var password = document.getElementsByClassName('bt_input')[1];
-               var button = document.getElementsByClassName('login_but')[2];
-            function Login() {
-                /*if (model.Login("TEST", "test")) {
-                    alert("Oh Yayyy! You got it!");
-                }
-                else {
-                    alert("Sorry, this username/password combination is not valid！");
-                }*/
-                /*if (username.value == "abc123" && password.value=="123")
-                {
-                    alert("Login succeed!");
-                    location.href = "menu.html";
-
-                }
-                else
-                {
-                    alert("Sorry, this username/password combination is not valid！");
-                    window.opener = null;
-                    window.open("", "_self");
-                    window.close();
-                }
-             
-                 
-                document.getElementById("error").innerHTML = "Your account has been locked！";
-                */
-            }
-        </script>
+		<script src="~/lib/jquery/dist/jquery.min.js"></script>
         <link href="~/css/site.css" rel="stylesheet" type="text/css">
 
+		<style>
+			.yellow {
+				width: 100%;
+				height: 100%;
+				text-align: center;
+				padding-top: 15%;
+				background-image: linear-gradient(to top,white,#FFD700);
+			}
 
+			td {
+				text-align: center;
+			}
+
+			p {
+				margin-bottom: .25em;
+				margin-top: .25em;
+			}
+
+			#error {
+				color: red;
+			}
+		</style>
     </head>
 
 <body>
     <div class="body yellow">
-        <form>
-            <img src="/images/logo.jpg" />
-            <br />
-            <p><h7>Username:&nbsp;</h7><input type="name" class="bt_input" style="height:30px;width:200px;" /></p>
-            <p><h7>Password:&nbsp;&nbsp;</h7><input type="password"  class="bt_input"style="height:30px;width:200px;" /></p>
-            <p></p><a id="error"></a></p>
-            <br />
-            <button type="login" style="display:inline" class="login_but" onclick="Login()"><h7>Login</h7></button>
-        </form>
+		<form>
+			<img src="/images/logo.jpg" />
+			<br />
+			<p><h7>Username:&nbsp;</h7><input type="name" class="bt_username" style="height:30px;width:200px;" /></p>
+			<p><h7>Password:&nbsp;&nbsp;</h7><input type="password" class="bt_password" style="height:30px;width:200px;" /></p>
+			<p></p><a id="error"></a></p>
+			<br />
+			<button type="login" style="display:inline" class="login_but" onclick="Login()"><h7>Login</h7></button>
+			<button class="btnLogin" onclick="location.href='@Url.Action("AttemptLogin", "Login")'">Butt-on test</button>
+		</form>
     </div>
 
 </body>
