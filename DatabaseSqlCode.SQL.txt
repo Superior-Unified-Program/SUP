@@ -34,7 +34,8 @@ GO
 
 --create tables
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Account')
-CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Type char, Failed_Login int, Office varchar(50), CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
+CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Type char, Failed_Login int, Office varchar(50), 
+CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
 CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
@@ -106,8 +107,8 @@ GO
 -- =============================================
 CREATE OR ALTER PROCEDURE queryClient
 	-- Add the parameters for the stored procedure here
-	@lastName varchar(50) = null, @firstName nvarchar(30) = null,
-	@org varchar(30) = null
+	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
+	@orgType varchar(30) = ''
 
 AS
 BEGIN
@@ -117,7 +118,10 @@ BEGIN
 
     -- Insert statements for procedure here
 	BEGIN
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') OR Last_Name LIKE (@lastName + '%') OR Org_Name LIKE (@org + '%')
+	IF @orgType = ''
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%')
+	else
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%')
 	END
 
 END
@@ -172,27 +176,34 @@ BEGIN
 	SELECT * FROM CLient WHERE ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1)
 
 END
+GO
 
+-- =============================================
+-- Create date: 10/9/2019
+-- Description:	adds a Organization
+-- =============================================
+
+CREATE OR ALTER PROCEDURE addOrganization
+
+	-- Add the parameters for the stored procedure here
+	@name varchar(30) = null, 
+	@type varchar(10) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+	INSERT INTO Organization (Name,Type) VALUES (@name, @type)
+	
+
+END
 /*CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
 
 GO*/
 
 /*CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
 
-GO
 
-USE [HRAS_iTas] CREATE LOGIN HRAS_MW_iTas
-WITH PASSWORD = 'ZMNv01X';
-GO
-
-USE [HRAS_iTas] CREATE USER HRAS_MW_iTas FOR LOGIN HRAS_MW_iTas;
-GO
-
-ALTER LOGIN HRAS_MW_iTas ENABLE;
-GO
-
-USE [HRAS_iTas] GRANT EXECUTE ON OBJECT::Import_Item TO HRAS_MW_iTas;
-GO
-
-USE [HRAS_iTas] INSERT INTO Account ([User_Name], [Password], [User_Type], [Failed_Login]) VALUES('admin', 'W6ph5Mm5Pz8GgiULbPgzG37mj9g=', 'A', 0)
 */
