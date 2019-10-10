@@ -107,7 +107,7 @@ GO
 CREATE OR ALTER PROCEDURE queryClient
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = null, @firstName nvarchar(30) = null,
-	@org varchar(30) = null
+	@orgType varchar(30) = null
 
 AS
 BEGIN
@@ -117,7 +117,7 @@ BEGIN
 
     -- Insert statements for procedure here
 	BEGIN
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') OR Last_Name LIKE (@lastName + '%') OR Org_Name LIKE (@org + '%')
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') OR Last_Name LIKE (@lastName + '%') OR Org_type LIKE (@orgType + '%')
 	END
 
 END
