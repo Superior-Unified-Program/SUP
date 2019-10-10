@@ -180,7 +180,7 @@ GO
 
 -- =============================================
 -- Create date: 10/9/2019
--- Description:	adds a Organization
+-- Description:	adds an Organization
 -- =============================================
 
 CREATE OR ALTER PROCEDURE addOrganization
@@ -199,11 +199,23 @@ BEGIN
 	
 
 END
-/*CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
+GO
 
-GO*/
+-- =============================================
+-- Create date: 10/10/2019
+-- Description:	Adds a user to the Account table
+-- =============================================
+CREATE OR ALTER PROCEDURE addAccount 
+	-- Add the parameters for the stored procedure here
+	@userName varchar(25), @password varchar(64) null,
+	@userType char(1) = null, @office varchar(50) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
 
-/*CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
-
-
-*/
+    	-- Insert statements for procedure here
+	INSERT INTO Account(User_Name, Password, User_Type, Office) VALUES (@userName, @password, @userType, @office)
+END
+GO
