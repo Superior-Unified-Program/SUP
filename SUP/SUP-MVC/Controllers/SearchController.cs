@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using SUP_Library;
 
 namespace SUP_MVC.Controllers
 {
@@ -58,7 +59,6 @@ namespace SUP_MVC.Controllers
             try
             {
                 // TODO: Add update logic here
-
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -90,9 +90,26 @@ namespace SUP_MVC.Controllers
             }
         }
 
-		public ActionResult Search()
+        // POST: Search/SearchClients
+        [HttpPost]
+        public bool SearchClients(int id)
+        {
+            try
+            {
+                // TODO: Add delete logic here
+
+                var Clients = DatabaseConnection.QueryClient("", "", null);
+
+                return true;
+            }
+            catch(Exception e)
+            {
+                return false;
+            }
+        }
+        public ActionResult Search()
 		{
 			return View();
 		}
-	}
+    }
 }

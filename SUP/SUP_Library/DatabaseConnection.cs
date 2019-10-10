@@ -16,7 +16,7 @@ namespace SUP_Library
         #region Private Properties
         private static DatabaseConnection Instance;
 
-        private static string connectionStringName = "SUPDatabase";
+        private static readonly string connectionStringName = "SUPDatabase";
 
         private DatabaseConnection() { }
 
@@ -29,6 +29,7 @@ namespace SUP_Library
         private static string getConnectionString()
         {
             // This retern the connection string in App.config file as the name same with connectionName.
+            return "Initial Catalog=SUPdb; Data Source=68.112.175.122; Integrated Security=False; User Id=SUPuser; Password=abc123;";
             return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
         }
         #endregion
@@ -120,7 +121,7 @@ namespace SUP_Library
                 throw exc;
             }
         }
-        public static List<Client> queryClient(string qLastName, string qFirstName, string qOrganization)
+        public static List<Client> QueryClient(string qLastName, string qFirstName, string qOrganization)
         {
             try
             {

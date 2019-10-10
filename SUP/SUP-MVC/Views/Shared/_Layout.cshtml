@@ -84,18 +84,6 @@
 		}
 	</style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<script>
-		$('#contentDiv').click( function() {
-			$.ajax({
-				type: 'POST',
-				url: '@Url.Content("~/ControllerName/ActionName")',
-				data: objectToPass,
-				success: function (data) {
-					$('#divid').innerHTML = data;
-				}
-			});
-		}
-	</script>
 
 
 
