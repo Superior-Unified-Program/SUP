@@ -9,7 +9,6 @@
 	<title>Search</title>
 	<style>
 		.organize {
-			text-align: center;
 			width: 100%;
 			height: 1000px;
 		}
@@ -126,56 +125,47 @@ function reserveCheck(name){
 
 <body class="organize">
     <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-        <table style="margin-left: auto; width: 100%; height: 500px; top: 0px; border-collapse: collapse;">
+        <table style="position:relative; margin-left: 30%;">
             <tr>
                 <td>
-                    <table align="center">
-                        <tr>
-                            <td>
-                                <p align="center">First Name</p>
-                            </td>
-                            <td>
-                                <p align="center">Last Name</p>
-                            </td>
-                            <td>
-                                <p align="center">Category</p>
-                            </td>
-                        </tr>
-                        <form action="">
-                            <tr>
-                                <td>
-                                    <input class="searchFirstName" type="text" onKeyUp="Search()" placeholder="First Name">
-                                </td>
-                                <td>
-                                    <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
-                                </td>
-                                <td>
-                                    <select class="searchOrganization" onKeyUp="Search()" name="category">
-                                        <!--We need to keep an empty option to allow searches that do not include organization-->
-                                        <option value=""> </option>
-                                        <option value="business">Business</option>
-                                        <option value="electedOfficial">Elected Official</option>
-                                        <option value="school">School</option>
-                                        <option value="elementary">Elementary</option>
-                                        <option value="middle">Middle</option>
-                                        <option value="highSchool">High School</option>
-                                        <option value="higherEd">Higher Ed.</option>
-                                        <option value="nonProfit">Non-profit</option>
-                                        <option value="UWSystem">UW-System</option>
-                                        <option value="boardOfRegent">Board of Regent</option>
-                                        <option value="foundation">Foundation</option>
-                                        <option value="other">Other</option>
-                                    </select>
-                                </td>
-                            </tr>
-                            <tr><td height="10px"></td></tr>
-                        </form>
-                    </table>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <table align="center">
+                    <p align="center">First Name</p>
+                </td>
+                <td>
+                    <p align="center">Last Name</p>
+                </td>
+                <td>
+                    <p align="center">Category</p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input class="searchFirstName" type="text" onKeyUp="Search()" placeholder="First Name">
+                </td>
+                <td>
+                    <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
+                </td>
+                <td>
+                    <select class="searchOrganization" onKeyUp="Search()" name="category">
+                        <!--We need to keep an empty option to allow searches that do not include organization-->
+                        <option value=""> </option>
+                        <option value="business">Business</option>
+                        <option value="electedOfficial">Elected Official</option>
+                        <option value="school">School</option>
+                        <option value="elementary">Elementary</option>
+                        <option value="middle">Middle</option>
+                        <option value="highSchool">High School</option>
+                        <option value="higherEd">Higher Ed.</option>
+                        <option value="nonProfit">Non-profit</option>
+                        <option value="UWSystem">UW-System</option>
+                        <option value="boardOfRegent">Board of Regent</option>
+                        <option value="foundation">Foundation</option>
+                        <option value="other">Other</option>
+                    </select>
+                </td>
+            </tr>
+            <tr><td height="10px"></td></tr>
+        </table>
+        <table style="position:relative; margin-left: 25%">
                         <tbody>
                             <tr>
                                 <td>
