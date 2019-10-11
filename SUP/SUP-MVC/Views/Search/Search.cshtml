@@ -33,6 +33,18 @@
 		#button {
 			text-align: inherit;
 		}
+        .popupForm{
+			display: none;
+			background-color: #E0E0E0;
+			border: 1px solid black;
+			position: fixed;
+			bottom: 10%;
+			top: 10%;
+			left: 10%;
+			right: 10%;
+			
+
+		}
 	</style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
@@ -77,6 +89,37 @@
             processData: false
         });
     }
+    function popForm() {
+			document.getElementById("form").style.display = "block";
+		}
+
+		function closeForm() {
+			document.getElementById("form").style.display = "none";
+		}
+		function toggle(source) {
+  var checkboxes = document.getElementsByName('selectAll');
+  for(var checkbox in checkboxes)
+    checkbox.checked = source.checked;
+  }
+
+function allCheck(name,boolValue) {
+	var allvalue = document.getElementsByName(name); 
+	for (var i = 0; i < allvalue.length; i++) {      
+		if (allvalue[i].type == "checkbox")           
+			allvalue[i].checked = boolValue;           
+	}
+}
+
+function reserveCheck(name){
+	var revalue = document.getElementsByName(name); 
+	for(i=0;i<revalue.length;i++){
+   		if(revalue[i].checked == true) 
+			revalue[i].checked = false;
+  		else 
+			revalue[i].checked = true;
+	}
+}
+
 </script>
 
 <body class="organize">
@@ -199,7 +242,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <button class="template" onclick="popForm()">Select Template</button>
+                    <button class="template" onclick="popForm()" >Select Template</button>
                     <div class="popupForm" id="form">
                         <form action="middlewareHere" class="form-container">
                             <h1>Login</h1>
@@ -218,24 +261,7 @@
                 </td>
 
             </tr>
-            <tr>
-                <th scope="row" id="column_width"> <a href="Add_Client.html">Add Client</a></th>
-
-            </tr>
-            <tr>
-                <th scope="row" id="column_width"> <a href="AboutSUP.html">About SUP</a></th>
-
-            </tr>
-            <tr>
-                <th scope="row" rowspan="2" id="column_width" height="50%">&nbsp;</th>
-
-            </tr>
-            <tr>
-            </tr>
-            <tr>
-                <th scope="row" id="column_width"> <a href="Logout.html">Lougout</a></th>
-
-            </tr>
+       
             </tbody>
         </table>
     </div>
