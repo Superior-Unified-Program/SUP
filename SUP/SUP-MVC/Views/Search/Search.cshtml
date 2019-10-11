@@ -1,4 +1,4 @@
-﻿@model SUP_MVC.Models.Search.SearchViewModel
+﻿@model IEnumerable<SUP_MVC.Models.Search.SearchViewModel>
 
 @{
 	ViewData["Title"] = "Search";
@@ -33,7 +33,14 @@
 		#button {
 			text-align: inherit;
 		}
-        .popupForm{
+        .template {
+			cursor: pointer;
+			position: fixed;
+			bottom: 20px;
+			right: 30px;
+			width: 100px;
+		}
+		.setup{
 			display: none;
 			background-color: #E0E0E0;
 			border: 1px solid black;
@@ -41,8 +48,103 @@
 			bottom: 10%;
 			top: 10%;
 			left: 10%;
-			right: 10%;
-			
+			width: 80%;
+		}
+		.closeButton {
+			cursor: pointer;
+			position: absolute;
+			bottom: 20px;
+			right: 30px;
+			width: 100px;
+		}
+		.toprow{
+			background-color: black;
+			height: 5px;
+			width: 100%%;
+			position: absolute;
+			top: 0%;
+		}
+		.img1{
+			position: absolute;
+			top: 0px;
+			right: 0px;
+			height: 100%;
+			width: auto;
+		}
+		.img2{
+			position: absolute;
+			top: 0px;
+			right: 163px;
+			height: 100%;
+			width: auto;
+		}
+		.setup input[type=text]{
+			position: absolute;
+			top: 15%;
+			left: 5%;
+			height: 20px;
+			width: 75%;
+		}
+		.setup input[type=submit]{
+			position: absolute;
+			top: 16%;
+			right: 5%;
+			height: 20px;
+			width: 10%;
+		}
+		.addTemplate{
+			cursor: pointer;
+			position: absolute;
+			bottom: 20px;
+			left: 235px;
+			width: 100px;
+		}
+		.browse{
+			overflow-x: hidden;
+			cursor: pointer;
+			position: absolute;
+			bottom: 20px;
+			left: 30px;
+			width: 200px;
+		}
+		.continue{
+			cursor: pointer;
+			position: absolute;
+			bottom: 60px;
+			left: 45%;
+			width: 100px;
+		}
+		.confirmation{
+			display: none;
+			background-color: #E0E0E0;
+			border: 1px solid black;
+			position: fixed;
+			bottom: 10%;
+			top: 10%;
+			left: 10%;
+			width: 80%;
+		}
+		#poptable{
+			position: absolute;
+			left: 5%； 
+			top: 25%;
+			bottom: 80px
+			width: 100%;
+		}
+		#colSet{
+			overflow: auto;
+			text-align: left;
+			padding: 8px;
+		}
+		#radioSet{
+			text-align: right;
+		}
+		#poptable th {
+			padding-top: 12px;
+			padding-bottom: 12px;
+			text-align: left;
+			width: 250px;
+		}
 
 		}
 	</style>
@@ -53,22 +155,28 @@
     function Search() {
         var dataToPost = "TEST";
 
+        /*$.post("Search/SearchClients/", dataToPost)
+            .done(function (response, status, jqxhr) {
+                console.log("yeay");
+            })
+            .fail(function (jqxhr, status, error) {
+                console.log("nnnneay");
+            });*/
+
         var firstName = $('.searchFirstName').val();
         var lastName = $('.searchLastName').val();
-        var organization = $('.searchOrganization').val();
+        var organization = $('.organization').val();
 
-        $.post('Search/SearchClients', { "": $('.searchFirstName').val() });
-        var JSONObject = { // Create JSON object to pass through AJAX
-            FirstName: firstName, //Make sure these names match the properties in VM
-            LastName: lastName,
-            Organization: organization
-        };
-
-        var dataPost = firstName+','+lastName+','+organization;
+        var requestData = JSON.stringify({
+            'firstName': firstName,
+            'lastName': lastName,
+            'organization': organization
+               });
         $.ajax({
             url: '/Search/SearchClients',
             type: 'POST',
-            data: JSON.stringify(dataPost),
+            data: requestData,
+            dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             error: function (xhr) {
                 alert('Error: ' + xhr.statusText);
@@ -97,12 +205,18 @@
             processData: false
         });
     }
-    function popForm() {
-			document.getElementById("form").style.display = "block";
+    function popSetup() {
+			document.getElementById("setup").style.display = "block";
 		}
 
-		function closeForm() {
-			document.getElementById("form").style.display = "none";
+		function closeSetup() {
+			document.getElementById("setup").style.display = "none";
+		}
+		function popConfirm() {
+			document.getElementById("confirmation").style.display = "block";
+		}
+		function closeConfirm() {
+			document.getElementById("confirmation").style.display = "none";
 		}
 		function toggle(source) {
   var checkboxes = document.getElementsByName('selectAll');
@@ -230,22 +344,74 @@ function reserveCheck(name){
                             </tr>
                         </tbody>
                     </table>
-                    <button class="template" onclick="popForm()" >Select Template</button>
-                    <div class="popupForm" id="form">
-                        <form action="middlewareHere" class="form-container">
-                            <h1>Login</h1>
-
-                            <label for="email"><b>Email</b></label>
-                            <input type="text" placeholder="Enter Email" name="email" required>
-
-                            <label for="psw"><b>Password</b></label>
-                            <input type="password" placeholder="Enter Password" name="psw" required>
-
-                            <button type="submit" class="btn">Login</button>
-                            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-                        </form>
-
-                    </div>
+                    <button class="template" onclick="popSetup()">Select Template</button>
+                    <div class="setup" id="setup">
+		<div class="toprow">
+			<img class="img1" src="superior_logo.jpg"><img class="img2" src="logo.jpg">
+		</div>
+		<form action="middlewareHere">
+			<input type="text">
+			<input type="submit" value="search">
+		</form>
+		<div>
+			<table id="poptable">
+				<tr>
+					<th>&nbsp;</th>
+					<th>Name</th>
+					<th>Date modified</th>
+					<th>Uploaded by</th>
+				</tr>
+				<tr>
+					<td id="radioSet"><input type="radio" name="template"></td>
+					<td id="colSet">ParkingPassTemplate</td>
+					<td id="colSet">9/9/9999</td>
+					<td id="colSet">username1</td>
+				</tr>
+				<tr>
+					<td id="radioSet"><input type="radio" name="template"></td>
+					<td id="colSet">LetterTemplate</td>
+					<td id="colSet">8/8/8888</td>
+					<td id="colSet">thatOneGuy17</td>
+				</tr>
+				<tr>
+					<td id="radioSet"><input type="radio" name="template"></td>
+					<td id="colSet">HolidayCardTemplate</td>
+					<td id="colSet">1/19/2019</td>
+					<td id="colSet">buttercup2000</td>
+				</tr>
+			</table>
+		</div>
+		<form action="middlewareHere" method="POST" enctype="multipart/form-data">
+			<input type="file" class="browse" name="browse">
+			<button type="submit" class="addTemplate" value="Add Template">Add Template</button>
+		</form>
+		<button class="closeButton"  onclick="closeSetup()">Close</button>
+		<button class="continue" onclick="popConfirm()">Continue</button>
+	</div>
+	<div class="confirmation" id="confirmation">
+		<div class="toprow">
+			<img class="img1" src="superior_logo.jpg"><img class="img2" src="logo.jpg">
+		</div>
+		<div>
+			<table id="poptable">
+				<tr>
+					<th>Result</th>
+				</tr>
+				<tr>
+					<td id="colSet">Generated 17 parking permits.</td>
+				</tr>
+			</table>
+		</div>
+		<form action="middlewareHere">
+			<button type="submit" class="continue">Generate Output</button>
+		</form>
+		<a href="middlewareHere" download>
+			<button class="browse">Download Output</button>
+		</a>
+		<button class="addTemplate" onclick="closeConfirm()">Go Back</button>
+		
+		<button class="closeButton"  onclick="closeConfirm(), closeSetup()">Return to Search</button>
+	</div>
                 </td>
 
             </tr>
