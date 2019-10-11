@@ -1,61 +1,221 @@
-CREATE DATABASE SUP_Server --this is a changable name but make sure you change it everywhere here and in the singalton pattern in the C# code.
-
+USE [master]
 GO
 
-USE SUP_Server
+/*Create database*/
+IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdb' OR name = 'SUPdb')
+   exec('CREATE DATABASE [SUPdb] CONTAINMENT = NONE')
+GO
 
-CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(50), User_Type char, Failed_Login int, Office varchar(50), CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
+/* create User If possible */
+USE [master];
 
-CREATE TABLE Client ( [ID] NUMERIC(4,0), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30), CONSTRAINT PK_Client PRIMARY KEY (ID) )
+--CREATE LOGIN teamRADGSHAUser
+IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
+   exec('CREATE LOGIN SUPuser WITH PASSWORD    = ''abc123'';')
+GO
 
-CREATE TABLE Address ( Client_ID NUMERIC(4,0), Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Line1, Line2, City, State, Zip ), 
+USE [SUPdb]
+
+--create user
+IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
+GO
+
+--update roles
+EXEC sys.sp_addrolemember
+	@rolename = 'db_datareader',
+	@membername = 'SUPuser'
+EXEC sys.sp_addrolemember
+	@rolename = 'db_datawriter',
+	@membername = 'SUPuser'
+EXEC sys.sp_addrolemember
+	@rolename = 'db_owner',
+	@membername = 'SUPuser'
+GO
+
+--create tables
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Account')
+CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Type char, Failed_Login int, Office varchar(50), 
+CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
+CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
+CONSTRAINT PK_Address PRIMARY KEY ( Line1, City, State, Zip ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
-CREATE TABLE Phone ( Client_ID NUMERIC(4,0), [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
+CREATE TABLE Phone ( Client_ID int, [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
 CONSTRAINT FK_Phone_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
-CREATE TABLE Email ( Client_ID NUMERIC(4,0), [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Email')
+CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
 CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
 CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(10), 
 CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
 
-CREATE TABLE Works_For ( Client_ID NUMERIC(4,0), Org_Name varchar(30), Org_Type varchar(10), Title varchar(20), 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Works_For')
+CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(10), Title varchar(20), 
 CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ), 
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
-CREATE TABLE Assists ( Boss_ID NUMERIC(4,0), Assistant_ID NUMERIC(4,0), Notes varchar(30), 
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assists')
+CREATE TABLE Assists ( Boss_ID int, Assistant_ID int, Notes varchar(30), 
 CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
 CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
 
 GO
 
-CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+/*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
 
+GO*/
+
+-- =============================================
+-- Author:		Matt
+-- Create date: 10/7/2019
+-- Description:	verifies login
+-- =============================================
+
+CREATE OR ALTER PROCEDURE validateLogin
+
+	-- Add the parameters for the stored procedure here
+	@userName varchar(50), @givenPW varchar(64)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+
+	DECLARE @isValid BIT
+	IF EXISTS(SELECT * FROM Account WHERE @userName = [User_Name] AND @givenPW = [Password]) SET @isValid = 1
+	ELSE SET @isValid = 0
+	SELECT @isValid
+
+END
 GO
 
-CREATE PROCEDURE SearchAdvance_Clients @firstName varchar(50), @lastName varchar(50) AS BEGIN SELECT Client.First_Name, Client.Last_Name FROM Account INNER JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE '%' + @firstName + '%' OR Last_Name LIKE '%' + @lastName + '%' END
+-- =============================================
+-- Create date: 10/7/2019
+-- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
+-- =============================================
+CREATE OR ALTER PROCEDURE queryClient
+	-- Add the parameters for the stored procedure here
+	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
+	@orgType varchar(30) = ''
 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	BEGIN
+	IF @orgType = ''
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') ORDER BY Last_Name, First_Name, Middle_initial
+	else
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%') ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
+	END
+
+END
+
+-- =============================================
+-- Create date: 10/7/2019
+-- Description:	adds a client into the client table
+-- =============================================
+
+CREATE OR ALTER PROCEDURE addCLient
+
+	-- Add the parameters for the stored procedure here
+	@firstName varchar(50) = null, @lastName varchar(50) = null,
+	@middleInitial varchar(1) = null, @permitNum varchar(50) = null,
+	@active bit = 1, @notes varchar(30) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+	INSERT INTO Client (First_Name, Last_Name, Middle_initial, Permit_Num, Active, Notes) VALUES (@firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
+	
+
+END
 GO
 
-CREATE PROCEDURE Get_Failed_Attempts @userName varchar(25) AS BEGIN SELECT Failed_Login FROM Account WHERE [User_Name] = @userName END
+-- =============================================
+-- Create date: 10/7/2019
+-- Description:	checks for a near match and sends the match if difference is >=3. Also reports the client where the difference function is >=3
+-- =============================================
 
+CREATE OR ALTER PROCEDURE checkForNearMatch
+
+	-- Add the parameters for the stored procedure here
+	@firstName nvarchar(50), @lastName varchar(64)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+
+	DECLARE @isValid BIT
+	IF ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1) SET @isValid = 1
+	ELSE SET @isValid = 0
+
+	SELECT @isValid
+
+	SELECT * FROM CLient WHERE ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1)
+
+END
 GO
 
-USE [HRAS_iTas] CREATE LOGIN HRAS_MW_iTas
-WITH PASSWORD = 'ZMNv01X';
+-- =============================================
+-- Create date: 10/9/2019
+-- Description:	adds an Organization
+-- =============================================
+
+CREATE OR ALTER PROCEDURE addOrganization
+
+	-- Add the parameters for the stored procedure here
+	@name varchar(30) = null, 
+	@type varchar(10) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    	-- Insert statements for procedure here
+	INSERT INTO Organization (Name,Type) VALUES (@name, @type)
+	
+
+END
 GO
 
-USE [HRAS_iTas] CREATE USER HRAS_MW_iTas FOR LOGIN HRAS_MW_iTas;
-GO
+-- =============================================
+-- Create date: 10/10/2019
+-- Description:	Adds a user to the Account table
+-- =============================================
+CREATE OR ALTER PROCEDURE addAccount 
+	-- Add the parameters for the stored procedure here
+	@userName varchar(25), @password varchar(64) null,
+	@userType char(1) = null, @office varchar(50) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
 
-ALTER LOGIN HRAS_MW_iTas ENABLE;
+    	-- Insert statements for procedure here
+	INSERT INTO Account(User_Name, Password, User_Type, Office) VALUES (@userName, @password, @userType, @office)
+END
 GO
-
-USE [HRAS_iTas] GRANT EXECUTE ON OBJECT::Import_Item TO HRAS_MW_iTas;
-GO
-
-USE [HRAS_iTas] INSERT INTO Account ([User_Name], [Password], [User_Type], [Failed_Login]) VALUES('admin', 'W6ph5Mm5Pz8GgiULbPgzG37mj9g=', 'A', 0)

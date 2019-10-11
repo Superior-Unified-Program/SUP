@@ -1,0 +1,137 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="~/css/site.css" />
+
+
+
+	<title>@ViewData["Title"]</title>
+	<style>
+		.organize {
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+		.logo {
+			height: 95%;
+			float: right;
+			top: 1px;
+			margin-top: 2px;
+			margin-right: 2px;
+		}
+
+		.universitylogo {
+			height: 95%;
+			float: right;
+			top: 1px;
+			margin-top: 2px;
+			margin-right: 2px;
+		}
+
+		#button {
+			text-align: inherit;
+		}
+
+		.welcome {
+			height: 10%;
+			text-align: left;
+			border: 0px solid #000000;
+			font-size: 20px;
+			color: black;
+			font-family: Calibri;
+			font-weight: bold;
+		}
+
+		.tab {
+			column-width: auto;
+			width: 20%;
+			background: #FFD700;
+			text-align: left;
+			border: 3px solid #000000;
+			height: 5%;
+		}
+
+		.tab a {
+			font-size: 20px;
+			color: black;
+			font-family: Calibri;
+			font-weight: bold;
+			text-decoration: none;
+		}
+
+		.ribbon {
+			background: #FFD700;
+			border-collapse: collapse;
+			height: 100%;
+			border: 3px solid #000000;
+		}
+
+		#button {
+			text-align: inherit;
+		}
+
+		td {
+			text-align: left;
+		}
+
+		p {
+			margin-bottom: .25em;
+			margin-top: .25em;
+		}
+	</style>
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+
+
+</head>
+<body class="organize">
+	<div id="banner" style="height: 10%; width:100%; position: absolute; top: 0; left: 0; background: #000000;">
+		<img class="universitylogo" src="../../superior_logo.jpg" />
+		<img class="logo" src="../../logo.jpg" />
+	</div>
+	<div id="ribbonDiv" style="height: 100%; width:15%; position: absolute; top: 0; left: 0">
+		<table class="ribbon">
+			<tr>
+				<th class="welcome" scope="row">Welcome<br />_________</th>
+			</tr>
+			<tr>
+				<th class="tab" scope="row"> @Html.ActionLink("Search", "Search", new { controller = "Search" })</th>
+			</tr>
+			<tr>
+				<th class="tab" scope="row"> @Html.ActionLink("Add Client", "AddClient", new { controller = "AddClient" })</th>
+
+			</tr>
+			<tr>
+				<th class="tab" scope="row"> @Html.ActionLink("About", "About", new { controller = "About" })</th>
+			</tr>
+			<tr>
+				<th scope="row" rowspan="2" height="50%">&nbsp;</th>
+			</tr>
+			<tr>
+			</tr>
+			<tr>
+				<form>
+					<th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" })</th>
+				</form>
+			</tr>
+		</table>
+	</div>
+
+
+
+	<div class="container">
+		<main role="main" class="pb-3">
+			@RenderBody()
+		</main>
+	</div>
+
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+	<script src="~/js/site.js" asp-append-version="true"></script>
+	@RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -3,38 +3,46 @@
 @{
 	Layout = null;
 }
-<head>
-	<meta charset="utf-8">
-	<title>Search</title>
-	<style>
-		.organize {
-			text-align: center;
-			width: 100%;
-			height: 100%;
-		}
+    <head>
+        <meta charset="utf-8">
+        <title>Search</title>
+        <style>
+            .organize {
+                text-align: center;
+                width: 100%;
+                height: 100%;
+            }
 
-		.logo {
-			height: 95%;
-			float: right;
-			top: 1px;
-			margin-top: 2px;
-			margin-right: 2px;
-		}
+            .logo {
+                height: 95%;
+                float: right;
+                top: 1px;
+                margin-top: 2px;
+                margin-right: 2px;
+            }
 
-		.universitylogo {
-			height: 95%;
-			float: right;
-			top: 1px;
-			margin-top: 2px;
-			margin-right: 2px;
-		}
+            .universitylogo {
+                height: 95%;
+                float: right;
+                top: 1px;
+                margin-top: 2px;
+                margin-right: 2px;
+            }
 
-		#button {
-			text-align: inherit;
-		}
-	</style>
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-</head>
+            #button {
+                text-align: inherit;
+            }
+        </style>
+        <script language="javascript">
+            function check() {
+                var email = document.getElementbyid("email");
+                if (!email.checkValidity())
+                    email.setCustomvalidity("Please enter the right email format!");
+            }
+        </script>
+       
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    </head>
 
 <body class="organize">
 	<div id="banner" style="height: 10%; width:100%; position: absolute; top: 0; left: 0; background: #000000;">
@@ -48,7 +56,7 @@
 				<td rowspan="6" id="main_info" valign="bottom">
 					<b>Required fields(*)</b>
 					<br />
-					<form action="" method="get" id="client_info" onchange="submitForm();">
+					<form action="" method="get" id="client_info" onchange="submitForm();" onsubmit="return check()">
 						<p>Prefix<input type="text" placeholder="Mr."> First Name* <input type="text" placeholder="Sally" required>  Last Name*<input type="text" placeholder="Sue" required> </p>
 						<p>
 							Company*<select name="company" size="1" required>
@@ -114,9 +122,9 @@
 								<option value="WI">Wisconsin</option>
 								<option value="WY">Wyoming</option>
 							</select>
-							Zipcode *<input type="text" placeholder="54880" required pattern="[0-9 -]{}">
+							Zipcode *<input type="text" placeholder="54880" required pattern="[0-9 -]{5,10}" >
 						</p>
-						<p>Email address*<input type="email" placeholder="123@emailaddress.net" required> Phone Number<input type="text" placeholder="999-999-999" pattern="[0-9 -]{12}"></p>
+						<p>Email address*<input type="email" id ="email" placeholder="123@emailaddress.net" required> Phone Number<input type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}"></p>
 						<p>Actived<input type="checkbox" checked="checked"> Note<input type="text"></p></br>
 						<input type="submit" value="Save" id="button">
 					</form>

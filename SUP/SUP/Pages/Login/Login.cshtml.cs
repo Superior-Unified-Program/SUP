@@ -8,16 +8,22 @@ using SUP_Library;
 
 namespace SUP.Pages.Login
 {
-    public class LoginModel : PageModel
-    {
-        public void OnGet()
-        {
+	public class LoginModel : PageModel
+	{
+		public void OnGet()
+		{
 
-        }
+		}
 
-        public bool Login(string Username, string Password)
+		public string RequestId { get; set; }
+
+		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+		[HttpPost]
+        public string Login(string Username)
         {
-            return DatabaseConnection.verifiedLogIn(Username, Password);
+			// return DatabaseConnection.verifiedLogIn(Username, Password);
+			return "this";
         }
 
 		public static string Test()

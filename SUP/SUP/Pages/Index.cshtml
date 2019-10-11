@@ -39,11 +39,17 @@
 </head>
 
 <body class="organize">
-	<div id="banner" style="height: 10%; width:100%; position: absolute; top: 0; left: 0; background: #000000;">
-		<img class="universitylogo" src="../../superior_logo.jpg" />
-		<img class="logo" src="../../logo.jpg" />
-	</div>
-	<div id="ribbonDiv" style="height: 100%; width:15%; position: absolute; top: 0; left: 0"></div>
+    <div id="banner" style="height: 10%; width:100%; position: absolute; top: 0; left: 0; background: #000000;">
+        <img class="universitylogo" src="../../superior_logo.jpg" />
+        <img class="logo" src="../../logo.jpg" />
+    </div>
+    <div id="ribbonDiv" style="height: 100%; width:15%; position: absolute; top: 0; left: 0"></div>
 
-	<script>$('#ribbonDiv').load('..\\ribbon');</script>
+    <script>$('#ribbonDiv').load('..\\ribbon');</script>
+
+
+	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+		<button class="test" onclick="location.href='@Url.Action("GetThree", "Search")'">test</button>
+		<!-- Example round trip Number of Results: Model.NumResultsResult: Model.Result1  -->
+	</div>
 </body>
