@@ -106,6 +106,7 @@ namespace SUP_MVC.Controllers
 
                 var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
                 var json = JsonConvert.SerializeObject(Clients); ;
+                
 
                 return json;
             }

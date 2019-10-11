@@ -11,7 +11,7 @@
 		.organize {
 			text-align: center;
 			width: 100%;
-			height: 100%;
+			height: 1000px;
 		}
 
 		.logo {
@@ -78,6 +78,20 @@
             success: function (result) {
                 console.log("yey");
                 console.log(result);
+                var returnedData = JSON.parse(result);
+                $('.removableRow').remove();
+                $('.templateRow').hide();
+                for (var i = 0; i < returnedData.length; i++) {
+                    var currentRow=returnedData[i];
+                    console.log(currentRow['First_Name']);
+                    var Row = $('.templateRow').clone();
+                    Row.removeClass('templateRow').addClass('removableRow').show();
+                    Row.find('.rowFirstName').val(currentRow['First_Name']);
+                    
+                    
+                    console.log(Row);
+                    $('.templateRow').parent().append(Row);
+                }
             },
             async: true,
             processData: false
@@ -118,7 +132,7 @@ function reserveCheck(name){
 
 <body class="organize">
     <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-        <table style="margin-left: auto; width: 100%; height: 500px; top: 0; border-collapse: collapse;">
+        <table style="margin-left: auto; width: 100%; height: 500px; top: 0px; border-collapse: collapse;">
             <tr>
                 <td>
                     <table align="center">
@@ -136,13 +150,15 @@ function reserveCheck(name){
                         <form action="">
                             <tr>
                                 <td>
-                                    <input type="text" placeholder="Mar">
+                                    <input class="searchFirstName" type="text" onKeyUp="Search()" placeholder="First Name">
                                 </td>
                                 <td>
-                                    <input type="text" placeholder="Lar">
+                                    <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
                                 </td>
                                 <td>
-                                    <select name="category">
+                                    <select class="searchOrganization" onKeyUp="Search()" name="category">
+                                        <!--We need to keep an empty option to allow searches that do not include organization-->
+                                        <option value=""> </option>
                                         <option value="business">Business</option>
                                         <option value="electedOfficial">Elected Official</option>
                                         <option value="school">School</option>
@@ -159,11 +175,6 @@ function reserveCheck(name){
                                 </td>
                             </tr>
                             <tr><td height="10px"></td></tr>
-                            <tr>
-                                <td colspan="3">
-                                    <input type="submit" value="search" align="right">
-                                </td>
-                            </tr>
                         </form>
                     </table>
                     <br />
@@ -200,38 +211,21 @@ function reserveCheck(name){
                                     <input type="checkbox" name="choice" id="choice">
                                 </td>
                             </tr>
-                            <tr>
+                            <tr class="templateRow" style="">
                                 <td>
                                     <input type="submit" value="Edit" id="button">
                                 </td>
                                 <td>
-                                    <input type="text" value="Martha">
+                                    <input class="rowFirstName" type="text" value="">
                                 </td>
                                 <td>
-                                    <input type="text" value="Larson">
+                                    <input class="rowLastName" type="text" value="">
                                 </td>
                                 <td>
-                                    <input type="text" value="UW-Superior">
+                                    <input class="rowOrganization" type="text" value="">
                                 </td>
                                 <td>
-                                    <input type="checkbox" name="choice" id="choice" />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <input type="submit" value="Edit" id="button">
-                                </td>
-                                <td>
-                                    <input type="text" value="Maria">
-                                </td>
-                                <td>
-                                    <input type="text" value="Lariot">
-                                </td>
-                                <td>
-                                    <input type="text" value="UW-Superior">
-                                </td>
-                                <td>
-                                    <input type="checkbox" name="choice" id="choice" />
+                                    <input class="rowSelected" type="checkbox" name="choice" id="choice" />
                                 </td>
                             </tr>
                         </tbody>
