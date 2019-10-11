@@ -80,117 +80,165 @@
 </script>
 
 <body class="organize">
-	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-		<table style="margin-left: auto; width: 100%; height: 500px; top: 0; border-collapse: collapse;">
-			<td>
-				<table align="center">
-					<tr>
-						<td>
-							<p align="center">First Name</p>
-						</td>
-						<td>
-							<p align="center">Last Name</p>
-						</td>
-						<td>
-							<p align="center">Category</p>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input class="searchFirstName" type="text">
-						</td>
-						<td>
-							<input class="searchLastName" type="text">
-						</td>
-						<td>
-							<select name="category">
-								<option value="UW-Superior">UW-Superior</option>
-								<option> </option>
-							</select>
-						</td>
-					</tr>
-				</table>
-				<br />
-				<center><input class="searchButton" type="submit" value="search" id="button" onclick="Search()"></center>
-				<br />
-				<br />
-				<br />
-				<table align="center">
-					<tbody>
-						<tr>
-							<td>
-								<b style="font-size:18px;">Results</b>
-							</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td>
-								<p>Select All</p>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<p><b>First Name</b></p>
-							</td>
-							<td>
-								<p><b>Last Name</b></p>
-							</td>
-							<td>
-								<p><b>Category</b></p>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="1" checked />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="submit" value="Edit" id="button">
-							</td>
-							<td>
-								<input type="text" value="Martha">
-							</td>
-							<td>
-								<input type="text" value="Larson">
-							</td>
-							<td>
-								<select name="category">
-									<option value="UW-Superior">UW-Superior</option>
-									<option> </option>
-								</select>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="2" checked />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="submit" value="Edit" id="button">
-							</td>
-							<td>
-								<input type="text" value="Maria">
-							</td>
-							<td>
-								<input type="text" value="Lariot">
-							</td>
-							<td>
-								<select name="category">
-									<option value="UW-Superior">UW-Superior</option>
-									<option> </option>
-								</select>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="3" checked />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<br />
-				<br />
-				<br />
-				<br />
-				<center><input type="submit" value="template" id="button"></center>
-			</td>
-		</table>
-	</div>
+    <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+        <table style="margin-left: auto; width: 100%; height: 500px; top: 0; border-collapse: collapse;">
+            <tr>
+                <td>
+                    <table align="center">
+                        <tr>
+                            <td>
+                                <p align="center">First Name</p>
+                            </td>
+                            <td>
+                                <p align="center">Last Name</p>
+                            </td>
+                            <td>
+                                <p align="center">Category</p>
+                            </td>
+                        </tr>
+                        <form action="">
+                            <tr>
+                                <td>
+                                    <input type="text" placeholder="Mar">
+                                </td>
+                                <td>
+                                    <input type="text" placeholder="Lar">
+                                </td>
+                                <td>
+                                    <select name="category">
+                                        <option value="business">Business</option>
+                                        <option value="electedOfficial">Elected Official</option>
+                                        <option value="school">School</option>
+                                        <option value="elementary">Elementary</option>
+                                        <option value="middle">Middle</option>
+                                        <option value="highSchool">High School</option>
+                                        <option value="higherEd">Higher Ed.</option>
+                                        <option value="nonProfit">Non-profit</option>
+                                        <option value="UWSystem">UW-System</option>
+                                        <option value="boardOfRegent">Board of Regent</option>
+                                        <option value="foundation">Foundation</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr><td height="10px"></td></tr>
+                            <tr>
+                                <td colspan="3">
+                                    <input type="submit" value="search" align="right">
+                                </td>
+                            </tr>
+                        </form>
+                    </table>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <table align="center">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <b style="font-size:18px;">Results</b>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td>
+                                    <a href="javascript:allCheck('choice',true)">Select</a>
+                                    <a href="javascript:allCheck('choice',false)">No select</a>
+                                    <a href="javascript:reserveCheck('choice')"> Inverse</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <p><b>First Name</b></p>
+                                </td>
+                                <td>
+                                    <p><b>Last Name</b></p>
+                                </td>
+                                <td>
+                                    <p><b>Category</b></p>
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="choice" id="choice">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="submit" value="Edit" id="button">
+                                </td>
+                                <td>
+                                    <input type="text" value="Martha">
+                                </td>
+                                <td>
+                                    <input type="text" value="Larson">
+                                </td>
+                                <td>
+                                    <input type="text" value="UW-Superior">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="choice" id="choice" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input type="submit" value="Edit" id="button">
+                                </td>
+                                <td>
+                                    <input type="text" value="Maria">
+                                </td>
+                                <td>
+                                    <input type="text" value="Lariot">
+                                </td>
+                                <td>
+                                    <input type="text" value="UW-Superior">
+                                </td>
+                                <td>
+                                    <input type="checkbox" name="choice" id="choice" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button class="template" onclick="popForm()">Select Template</button>
+                    <div class="popupForm" id="form">
+                        <form action="middlewareHere" class="form-container">
+                            <h1>Login</h1>
+
+                            <label for="email"><b>Email</b></label>
+                            <input type="text" placeholder="Enter Email" name="email" required>
+
+                            <label for="psw"><b>Password</b></label>
+                            <input type="password" placeholder="Enter Password" name="psw" required>
+
+                            <button type="submit" class="btn">Login</button>
+                            <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+                        </form>
+
+                    </div>
+                </td>
+
+            </tr>
+            <tr>
+                <th scope="row" id="column_width"> <a href="Add_Client.html">Add Client</a></th>
+
+            </tr>
+            <tr>
+                <th scope="row" id="column_width"> <a href="AboutSUP.html">About SUP</a></th>
+
+            </tr>
+            <tr>
+                <th scope="row" rowspan="2" id="column_width" height="50%">&nbsp;</th>
+
+            </tr>
+            <tr>
+            </tr>
+            <tr>
+                <th scope="row" id="column_width"> <a href="Logout.html">Lougout</a></th>
+
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
 </body>
+</html>
