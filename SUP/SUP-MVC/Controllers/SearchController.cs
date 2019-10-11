@@ -92,13 +92,13 @@ namespace SUP_MVC.Controllers
 
         // POST: Search/SearchClients
         [HttpPost]
-        public bool SearchClients(int id)
+        public bool SearchClients(string firstName, string lastName, string organization)
         {
             try
             {
                 // TODO: Add delete logic here
 
-                var Clients = DatabaseConnection.QueryClient("", "", null);
+                var Clients = DatabaseConnection.QueryClient(firstName, lastName, organization);
 
                 return true;
             }

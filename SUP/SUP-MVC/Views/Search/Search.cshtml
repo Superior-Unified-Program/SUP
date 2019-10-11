@@ -48,11 +48,20 @@
             .fail(function (jqxhr, status, error) {
                 console.log("nnnneay");
             });*/
-        var requestData = "";
+
+        var firstName = $('.searchFirstName').val();
+        var lastName = $('.searchLastName').val();
+        var organization = $('.organization').val();
+
+        var requestData = JSON.stringify({
+            'firstName': firstName,
+            'lastName': lastName,
+            'organization': organization
+               });
         $.ajax({
-            url: '/Search/SearchClients/',
+            url: '/Search/SearchClients',
             type: 'POST',
-            data: JSON.stringify(requestData),
+            data: requestData,
             dataType: 'json',
             contentType: 'application/json; charset=utf-8',
             error: function (xhr) {
@@ -88,10 +97,10 @@
 					</tr>
 					<tr>
 						<td>
-							<input class="searchFirstName" type="text" value="Mar">
+							<input class="searchFirstName" type="text">
 						</td>
 						<td>
-							<input class="searchLastName" type="text" value="Lar">
+							<input class="searchLastName" type="text">
 						</td>
 						<td>
 							<select name="category">
