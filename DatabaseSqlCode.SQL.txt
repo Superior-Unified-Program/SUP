@@ -119,9 +119,9 @@ BEGIN
     -- Insert statements for procedure here
 	BEGIN
 	IF @orgType = ''
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%')
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') ORDER BY Last_Name, First_Name, Middle_initial
 	else
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%')
+		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%') ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
 	END
 
 END
