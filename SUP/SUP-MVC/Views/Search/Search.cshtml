@@ -49,6 +49,11 @@
 </head>
 
 <script>
+    $(document).ready(function () {
+        $('.searchOrganization').change(function () {
+            Search();
+        })
+    })
     function Search() {
         var firstName = $('.searchFirstName').val();
         var lastName = $('.searchLastName').val();
@@ -74,6 +79,9 @@
                 var returnedData = JSON.parse(result);
                 $('.removableRow').remove();
                 $('.templateRow').hide();
+                if (returnedData.length == 0) {
+                    $('.templateRow').show();
+                }
                 for (var i = 0; i < returnedData.length; i++) {
                     var currentRow = returnedData[i];
                     var Row = $('.templateRow').clone();
@@ -198,13 +206,13 @@ function reserveCheck(name){
                                     <input type="submit" value="Edit" id="button">
                                 </td>
                                 <td>
-                                    <input class="rowFirstName" type="text" value="">
+                                    <input class="rowFirstName" type="text" value="" disabled="true">
                                 </td>
                                 <td>
-                                    <input class="rowLastName" type="text" value="">
+                                    <input class="rowLastName" type="text" value="" disabled="true">
                                 </td>
                                 <td>
-                                    <input class="rowOrganization" type="text" value="">
+                                    <input class="rowOrganization" type="text" value="" disabled="true">
                                 </td>
                                 <td>
                                     <input class="rowSelected" type="checkbox" name="choice" id="choice" />
