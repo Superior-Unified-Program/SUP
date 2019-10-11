@@ -131,7 +131,7 @@ namespace SUP_Library
                     //  var results = connection.Query<Client>("queryClient", new { lastName = qLastName, firstName = qFirstName, org=qOrganization }).ToList();
                     var sql = "queryClient";
                     
-                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, org = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
                     //var client = data.First();
 
 
