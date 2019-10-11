@@ -4,8 +4,9 @@ namespace SUP_MVC.Models.Search
 {
 	public class SearchViewModel
 	{
-		public string RequestId { get; set; }
+		public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Organization { get; set; }
 
-		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-	}
+    }
 }

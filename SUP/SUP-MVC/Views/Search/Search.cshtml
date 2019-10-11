@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SUP_MVC.Models.Search.SearchViewModel>
+﻿@model SUP_MVC.Models.Search.SearchViewModel
 
 @{
 	ViewData["Title"] = "Search";
@@ -41,28 +41,22 @@
     function Search() {
         var dataToPost = "TEST";
 
-        /*$.post("Search/SearchClients/", dataToPost)
-            .done(function (response, status, jqxhr) {
-                console.log("yeay");
-            })
-            .fail(function (jqxhr, status, error) {
-                console.log("nnnneay");
-            });*/
-
         var firstName = $('.searchFirstName').val();
         var lastName = $('.searchLastName').val();
-        var organization = $('.organization').val();
+        var organization = $('.searchOrganization').val();
 
-        var requestData = JSON.stringify({
-            'firstName': firstName,
-            'lastName': lastName,
-            'organization': organization
-               });
+        $.post('Search/SearchClients', { "": $('.searchFirstName').val() });
+        var JSONObject = { // Create JSON object to pass through AJAX
+            FirstName: firstName, //Make sure these names match the properties in VM
+            LastName: lastName,
+            Organization: organization
+        };
+
+        var dataPost = firstName+','+lastName+','+organization;
         $.ajax({
             url: '/Search/SearchClients',
             type: 'POST',
-            data: requestData,
-            dataType: 'json',
+            data: JSON.stringify(dataPost),
             contentType: 'application/json; charset=utf-8',
             error: function (xhr) {
                 alert('Error: ' + xhr.statusText);
@@ -82,115 +76,116 @@
 <body class="organize">
 	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
 		<table style="margin-left: auto; width: 100%; height: 500px; top: 0; border-collapse: collapse;">
-			<td>
-				<table align="center">
-					<tr>
-						<td>
-							<p align="center">First Name</p>
-						</td>
-						<td>
-							<p align="center">Last Name</p>
-						</td>
-						<td>
-							<p align="center">Category</p>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<input class="searchFirstName" type="text">
-						</td>
-						<td>
-							<input class="searchLastName" type="text">
-						</td>
-						<td>
-							<select name="category">
-								<option value="UW-Superior">UW-Superior</option>
-								<option> </option>
-							</select>
-						</td>
-					</tr>
-				</table>
-				<br />
-				<center><input class="searchButton" type="submit" value="search" id="button" onclick="Search()"></center>
-				<br />
-				<br />
-				<br />
-				<table align="center">
-					<tbody>
-						<tr>
-							<td>
-								<b style="font-size:18px;">Results</b>
-							</td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td>
-								<p>Select All</p>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<p><b>First Name</b></p>
-							</td>
-							<td>
-								<p><b>Last Name</b></p>
-							</td>
-							<td>
-								<p><b>Category</b></p>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="1" checked />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="submit" value="Edit" id="button">
-							</td>
-							<td>
-								<input type="text" value="Martha">
-							</td>
-							<td>
-								<input type="text" value="Larson">
-							</td>
-							<td>
-								<select name="category">
-									<option value="UW-Superior">UW-Superior</option>
-									<option> </option>
-								</select>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="2" checked />
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<input type="submit" value="Edit" id="button">
-							</td>
-							<td>
-								<input type="text" value="Maria">
-							</td>
-							<td>
-								<input type="text" value="Lariot">
-							</td>
-							<td>
-								<select name="category">
-									<option value="UW-Superior">UW-Superior</option>
-									<option> </option>
-								</select>
-							</td>
-							<td>
-								<input type="checkbox" name="select" value="3" checked />
-							</td>
-						</tr>
-					</tbody>
-				</table>
-				<br />
-				<br />
-				<br />
-				<br />
-				<center><input type="submit" value="template" id="button"></center>
-			</td>
+            <td>
+                <table align="center">
+                    <tr>
+                        <td>
+                            <p align="center">First Name</p>
+                        </td>
+                        <td>
+                            <p align="center">Last Name</p>
+                        </td>
+                        <td>
+                            <p align="center">Category</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input class="searchFirstName" type="text">
+                        </td>
+                        <td>
+                            <input class="searchLastName" type="text">
+                        </td>
+                        <td>
+                            <select class="searchOrganization"name="category">
+                                <option value="UW-Superior">UW-Superior</option>
+                                <option> </option>
+                            </select>
+                        </td>
+                    </tr>
+                </table>
+                <br />
+                <center><input class="searchButton" type="button" value="search" id="button" onclick="Search()"></center>
+                <button class="test" onclick="location.href='@Url.Action("Search", "Search", "firstName=test")'">Butt-on test</button>
+                <br />
+                <br />
+                <br />
+                <table align="center">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <b style="font-size:18px;">Results</b>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <p>Select All</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td></td>
+                            <td>
+                                <p><b>First Name</b></p>
+                            </td>
+                            <td>
+                                <p><b>Last Name</b></p>
+                            </td>
+                            <td>
+                                <p><b>Category</b></p>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="select" value="1" checked />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" value="Edit" id="button">
+                            </td>
+                            <td>
+                                <input type="text" value="Martha">
+                            </td>
+                            <td>
+                                <input type="text" value="Larson">
+                            </td>
+                            <td>
+                                <select name="category">
+                                    <option value="UW-Superior">UW-Superior</option>
+                                    <option> </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="select" value="2" checked />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <input type="submit" value="Edit" id="button">
+                            </td>
+                            <td>
+                                <input type="text" value="Maria">
+                            </td>
+                            <td>
+                                <input type="text" value="Lariot">
+                            </td>
+                            <td>
+                                <select name="category">
+                                    <option value="UW-Superior">UW-Superior</option>
+                                    <option> </option>
+                                </select>
+                            </td>
+                            <td>
+                                <input type="checkbox" name="select" value="3" checked />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <br />
+                <br />
+                <br />
+                <center><input type="submit" value="template" id="button"></center>
+            </td>
 		</table>
 	</div>
 </body>

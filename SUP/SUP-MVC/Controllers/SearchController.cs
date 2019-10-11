@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using SUP_Library;
 
 namespace SUP_MVC.Controllers
@@ -92,23 +94,29 @@ namespace SUP_MVC.Controllers
 
         // POST: Search/SearchClients
         [HttpPost]
-        public bool SearchClients(string firstName, string lastName, string organization)
+        public string SearchClients([FromBody] string args)
         {
             try
             {
-                // TODO: Add delete logic here
+                string[] separatedArgs = args.Split(',');
+                if (separatedArgs.Length != 3)
+                {
+                    throw(new Exception("Oopsie"));
+                }
 
-                var Clients = DatabaseConnection.QueryClient(firstName, lastName, organization);
+                var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
+                var json = JsonConvert.SerializeObject(Clients); ;
 
-                return true;
+                return json;
             }
             catch(Exception e)
             {
-                return false;
+                return "FAAAAAILLL";
             }
         }
         public ActionResult Search()
 		{
+
 			return View();
 		}
     }
