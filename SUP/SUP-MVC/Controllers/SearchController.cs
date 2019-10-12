@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SUP_Library;
 using SUP_MVC.Models.Search;
 
@@ -93,23 +94,29 @@ namespace SUP_MVC.Controllers
 
         // POST: Search/SearchClients
         [HttpPost]
-        public ActionResult SearchClients(SearchViewModel model)
+        public string SearchClients([FromBody] string args)
         {
             try
             {
-                // TODO: Add delete logic here
+                string[] separatedArgs = args.Split(',');
+                if (separatedArgs.Length != 3)
+                {
+                    throw(new Exception("Oopsie"));
+                }
 
-                var Clients = DatabaseConnection.QueryClient("", "", "");
-
-				return Json("Success");
-			}
+                var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
+                var json = JsonConvert.SerializeObject(Clients);
+                
+                return json;
+            }
             catch(Exception e)
             {
-				return Json("Failure");
-			}
+                return "FAAAAAILLL";
+            }
         }
         public ActionResult Search()
 		{
+
 			return View();
 		}
     }

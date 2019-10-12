@@ -14,7 +14,50 @@
 			var email = document.getElementbyid("email");
 			if (!email.checkValidity())
 				email.setCustomvalidity("Please enter the right email format!");
-		}
+        }
+        getClientIdFromURL();
+        function getClientIdFromURL() {
+            var args = location.href.split('?');
+            console.log(args);
+            var params = "";
+            if (args.length > 1) {
+                params = args[1].split('=');
+                console.log(params);
+            }
+            var clientId = "";
+            if (params.length > 1) {
+                clientId = params[1];
+                console.log(clientId);
+            }
+
+            if (clientId != "") {
+                loadClientData(clientId);
+            }
+        }
+        function loadClientData(clientId) {
+            console.log(clientId);
+            var dataPost = clientId;
+            $.ajax({
+                url: '/AddClient/GetClient',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    console.log('Yeay!')
+                    var returnedData = JSON.parse(result);
+                    var currentClient = returnedData[0];
+                    var firstName = currentClient["First_Name"];
+                    var lastName = currentClient["Last_Name"];
+                    $('.firstNameInput').val(firstName);
+                    $('.lastNameInput').val(lastName);
+                },
+                async: true,
+                processData: false
+            });
+        }
 	</script>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -28,7 +71,7 @@
 					<b>Required fields(*)</b>
 					<br />
 					<form action="" method="get" id="client_info" onchange="submitForm();" onsubmit="return check()">
-						<p>Prefix<input type="text" placeholder="Mr.">Job title<input type="text"> First Name* <input type="text" placeholder="Sally" required>  Last Name*<input type="text" placeholder="Sue" required> </p>
+						<p>Prefix<input type="text" placeholder="Mr.">Job title<input type="text"> First Name* <input type="text" class="firstNameInput" placeholder="First Name" required>  Last Name*<input type="text" class="lastNameInput" placeholder="Last Name" required> </p>
                         <p>
                             Company*<select name="company" size="1" required>
                                 

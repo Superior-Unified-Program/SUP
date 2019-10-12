@@ -158,6 +158,28 @@ namespace SUP_Library
 
         }
 
+
+        public static List<Client> GetClientById(string clientId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    var sql = "getClientById";
+
+                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { Client_Id = clientId }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+
+                    return data;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+
+
+        }
+
         #endregion
 
         #region ContactInformation Connection
