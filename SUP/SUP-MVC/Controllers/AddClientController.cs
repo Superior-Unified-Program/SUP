@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SUP_Library;
 
 namespace SUP_MVC.Controllers
 {
@@ -90,7 +92,26 @@ namespace SUP_MVC.Controllers
             }
         }
 
-		public ActionResult AddClient()
+        // POST: Search/SearchClients
+        [HttpPost]
+        public string GetClient([FromBody] string args)
+        {
+            try
+            {
+                var clientId = args;
+                // NOTE: The below line of code will be added once the "GetClientById" functionality is implemented.
+                //var Clients = DatabaseConnection.GetClientById(clientId);
+                var json = JsonConvert.SerializeObject(clientId);
+
+                return json;
+            }
+            catch (Exception e)
+            {
+                return "FAAAAAILLL";
+            }
+        }
+
+        public ActionResult AddClient()
 		{
 			return View();
 		}

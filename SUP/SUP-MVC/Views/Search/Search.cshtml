@@ -84,13 +84,23 @@
                     if (currentRow['Org'] != null) {
                         Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
                     }
+                    Row.find('.rowEditButton').val(currentRow['ID']);
                     $('.templateRow').parent().append(Row);
                 }
+                $('.rowEditButton').unbind('click').click(function () {
+                    console.log($(this).val());
+                    editClient($(this).val());
+                });
             },
             async: true,
             processData: false
         });
     }
+
+    function editClient(clientId) {
+        location.href = '/AddClient/AddClient?clientId=' + clientId;
+    }
+
     function popForm() {
 			document.getElementById("form").style.display = "block";
 		}
@@ -198,7 +208,7 @@ function reserveCheck(name){
                             </tr>
                             <tr class="templateRow" style="">
                                 <td>
-                                    <input class="rowEditButton" type="submit" value="Edit" id="button">
+                                    <button class="rowEditButton" value="0">edit</button>
                                 </td>
                                 <td>
                                     <input class="rowFirstName" type="text" value="" disabled="true">
