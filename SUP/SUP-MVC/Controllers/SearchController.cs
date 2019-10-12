@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SUP_Library;
+using SUP_MVC.Models.Search;
 
 namespace SUP_MVC.Controllers
 {
@@ -92,20 +93,20 @@ namespace SUP_MVC.Controllers
 
         // POST: Search/SearchClients
         [HttpPost]
-        public bool SearchClients(string firstName, string lastName, string organization)
+        public ActionResult SearchClients(SearchViewModel model)
         {
             try
             {
                 // TODO: Add delete logic here
 
-                var Clients = DatabaseConnection.QueryClient(firstName, lastName, organization);
+                var Clients = DatabaseConnection.QueryClient("", "", "");
 
-                return true;
-            }
+				return Json("Success");
+			}
             catch(Exception e)
             {
-                return false;
-            }
+				return Json("Failure");
+			}
         }
         public ActionResult Search()
 		{

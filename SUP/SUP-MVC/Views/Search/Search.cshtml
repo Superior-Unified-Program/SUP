@@ -50,45 +50,30 @@
 </head>
 
 <script>
-    function Search() {
-        var dataToPost = "TEST";
 
-        /*$.post("Search/SearchClients/", dataToPost)
-            .done(function (response, status, jqxhr) {
-                console.log("yeay");
-            })
-            .fail(function (jqxhr, status, error) {
-                console.log("nnnneay");
-            });*/
+	function Search() {
+		Console.log("wtf")
+		$("#searchFirstName").on('submit', function (e) {
+			e.preventDefault() // prevent the form's normal submission
 
-        var firstName = $('.searchFirstName').val();
-        var lastName = $('.searchLastName').val();
-        var organization = $('.organization').val();
+			var dataToPost = $(this).serialize()
 
-        var requestData = JSON.stringify({
-            'firstName': firstName,
-            'lastName': lastName,
-            'organization': organization
-               });
-        $.ajax({
-            url: '/Search/SearchClients',
-            type: 'POST',
-            data: requestData,
-            dataType: 'json',
-            contentType: 'application/json; charset=utf-8',
-            error: function (xhr) {
-                alert('Error: ' + xhr.statusText);
-                console.log("ney");
-                console.log(response);
-            },
-            success: function (result) {
-                console.log("yey");
-                console.log(result);
-            },
-            async: true,
-            processData: false
-        });
-    }
+			$.post("Search/SearchClients", dataToPost)
+				.done(function(response, status, jqxhr){ 
+					// this is the "success" callback
+				})
+				.fail(function(jqxhr, status, error){ 
+					// this is the ""error"" callback
+				})
+			})
+		}
+	}
+
+
+
+
+
+
     function popForm() {
 			document.getElementById("form").style.display = "block";
 		}
@@ -142,10 +127,10 @@ function reserveCheck(name){
                         <form action="">
                             <tr>
                                 <td>
-                                    <input type="text" placeholder="Mar">
+                                    <input id="searchFirstName" type="text" placeholder="First Name">
                                 </td>
                                 <td>
-                                    <input type="text" placeholder="Lar">
+                                    <input class="searchLastName" type="text" placeholder="Last Name">
                                 </td>
                                 <td>
                                     <select name="category">
@@ -167,7 +152,7 @@ function reserveCheck(name){
                             <tr><td height="10px"></td></tr>
                             <tr>
                                 <td colspan="3">
-                                    <input type="submit" value="search" align="right">
+                                    <input type="button" value="search" align="right" onclick="Search()">
                                 </td>
                             </tr>
                         </form>

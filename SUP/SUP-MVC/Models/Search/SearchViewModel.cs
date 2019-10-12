@@ -6,6 +6,8 @@ namespace SUP_MVC.Models.Search
 	{
 		public string RequestId { get; set; }
 
+		public string firstName { get; set; }
+
 		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 	}
 }
