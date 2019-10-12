@@ -57,14 +57,7 @@
     function Search() {
         var firstName = $('.searchFirstName').val();
         var lastName = $('.searchLastName').val();
-        var organization = $('.searchOrganization').val();
-
-        $.post('Search/SearchClients', { "": $('.searchFirstName').val() });
-        var JSONObject = { // Create JSON object to pass through AJAX
-            FirstName: firstName, //Make sure these names match the properties in VM
-            LastName: lastName,
-            Organization: organization
-        };
+        var organization = $( ".searchOrganization option:selected" ).text(); //$('.searchOrganization').val();
 
         var dataPost = firstName+','+lastName+','+organization;
         $.ajax({
@@ -88,7 +81,9 @@
                     Row.removeClass('templateRow').addClass('removableRow').show();
                     Row.find('.rowFirstName').val(currentRow['First_Name']);
                     Row.find('.rowLastName').val(currentRow['Last_Name']);
-                    Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+                    if (currentRow['Org'] != null) {
+                        Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+                    }
                     $('.templateRow').parent().append(Row);
                 }
             },
@@ -203,7 +198,7 @@ function reserveCheck(name){
                             </tr>
                             <tr class="templateRow" style="">
                                 <td>
-                                    <input type="submit" value="Edit" id="button">
+                                    <input class="rowEditButton" type="submit" value="Edit" id="button">
                                 </td>
                                 <td>
                                     <input class="rowFirstName" type="text" value="" disabled="true">
