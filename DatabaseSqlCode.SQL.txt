@@ -158,25 +158,25 @@ GO
 CREATE OR ALTER PROCEDURE checkForNearMatch
 
 	-- Add the parameters for the stored procedure here
-	@firstName nvarchar(50), @lastName varchar(64)
+	@firstName varchar(50) = null, @lastName varchar(50) = null
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
+    -- Insert statements for procedure here
 
-	DECLARE @isValid BIT
-	IF ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1) SET @isValid = 1
-	ELSE SET @isValid = 0
+	DECLARE @nearMatch BIT
+	IF ((SELECT COUNT(First_Name) FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2) > 0) SET @nearMatch = 1
+	ELSE SET @nearMatch = 0
 
-	SELECT @isValid
+	SELECT @nearMatch AS nearMatch
 
-	SELECT * FROM CLient WHERE ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1)
+	SELECT First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
 
 END
-GO
+
 
 -- =============================================
 -- Create date: 10/9/2019
