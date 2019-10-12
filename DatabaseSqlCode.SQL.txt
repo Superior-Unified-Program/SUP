@@ -42,7 +42,7 @@ CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Last_Name varch
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Line1, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, City, State, Zip ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
@@ -219,3 +219,22 @@ BEGIN
 	INSERT INTO Account(User_Name, Password, User_Type, Office) VALUES (@userName, @password, @userType, @office)
 END
 GO
+
+-- =============================================
+-- Create date: 10/12/2019
+-- Description:	Returns a single client by searching for the ID
+-- =============================================
+CREATE OR ALTER   PROCEDURE getClientByID
+	-- Add the parameters for the stored procedure here
+    @Client_Id int
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	SELECT * FROM Client WHERE ID = @Client_Id 
+
+END
