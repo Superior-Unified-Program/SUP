@@ -111,6 +111,40 @@ namespace SUP_MVC.Controllers
             }
         }
 
+
+        // POST: AddClient/UpdateClient
+        [HttpPost]
+        public bool UpdateClient([FromBody] string args)
+        {
+            try
+            {
+
+                string[] separatedArgs = args.Split(',');
+                if (separatedArgs.Length < 3)
+                {
+                    throw (new Exception("Oopsie"));
+                }
+                var firstName = separatedArgs[0];
+                var lastName = separatedArgs[1];
+                var organization = separatedArgs[2];
+
+                // NOTE: The below line of code will be added once the "GetClientById" functionality is implemented.
+                var c = new SUP_Library.DBComponent.Client();
+                c.First_Name = firstName;
+                c.Last_Name = lastName;
+                c.Org = new SUP_Library.DBComponent.Organization();
+                c.Org.Org_Name = organization;
+                DatabaseConnection.addClient(c);
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         public ActionResult AddClient()
 		{
 			return View();

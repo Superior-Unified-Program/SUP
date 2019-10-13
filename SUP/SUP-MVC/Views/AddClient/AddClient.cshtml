@@ -58,6 +58,29 @@
                 processData: false
             });
         }
+
+        function saveClientData() {
+            var firstName = $('.firstNameInput').val();
+            var lastName = $('.lastNameInput').val();
+            var organization = $('.lastNameInput').text();
+
+            var dataPost = firstName + ',' + lastName + ',' + organization;
+            $.ajax({
+                url: '/AddClient/UpdateClient',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    console.log('Yeay!')
+                    console(JSON.parse(result));
+                },
+                async: true,
+                processData: false
+            });
+        }
 	</script>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -70,12 +93,12 @@
 				<td rowspan="6" id="main_info" valign="bottom">
 					<b>Required fields(*)</b>
 					<br />
-					<form action="" method="get" id="client_info" onchange="submitForm();" onsubmit="return check()">
+					<form action="" method="get" id="client_info" onchange="" onsubmit="saveClientData()">
 						<p>Prefix<input type="text" placeholder="Mr.">Job title<input type="text"> First Name* <input type="text" class="firstNameInput" placeholder="First Name" required>  Last Name*<input type="text" class="lastNameInput" placeholder="Last Name" required> </p>
                         <p>
                             Company*<select name="company" size="1" required>
                                 
-                                <option placeholder="UW Superior " selected="UW superior">UW Superior</option>
+                                <option class="organizationInput" placeholder="UW Superior" selected="UW superior">UW Superior</option>
                                 <option> </option>
                             </select>
 
