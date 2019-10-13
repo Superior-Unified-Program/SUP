@@ -54,11 +54,11 @@ CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRI
 CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
-CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(10), 
+CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20), 
 CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Works_For')
-CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(10), Title varchar(20), 
+CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(20), Title varchar(20), 
 CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ), 
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
