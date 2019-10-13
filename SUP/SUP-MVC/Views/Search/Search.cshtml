@@ -4,138 +4,167 @@
 	ViewData["Title"] = "Search";
 }
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>Search</title>
-		<style>
-			.organize {
-				width: 100%;
-				height: 100%;
-			}
+<head>
+    <meta charset="utf-8">
+    <title>Search</title>
+    <style>
+        .organize {
+            width: 100%;
+            height: 100%;
+        }
 
-			.logo {
-				height: 95%;
-				float: right;
-				top: 1px;
-				margin-top: 2px;
-				margin-right: 2px;
-			}
+        .logo {
+            height: 95%;
+            float: right;
+            top: 1px;
+            margin-top: 2px;
+            margin-right: 2px;
+        }
 
-			.universitylogo {
-				height: 95%;
-				float: right;
-				top: 1px;
-				margin-top: 2px;
-				margin-right: 2px;
-			}
+        .universitylogo {
+            height: 95%;
+            float: right;
+            top: 1px;
+            margin-top: 2px;
+            margin-right: 2px;
+        }
 
-			#button {
-				text-align: inherit;
-			}
-			.popupForm{
-				display: none;
-				background-color: #E0E0E0;
-				border: 1px solid black;
-				position: fixed;
-				bottom: 10%;
-				top: 10%;
-				left: 10%;
-				right: 10%;
-			
+        #button {
+            text-align: inherit;
+        }
 
-			}
-		</style>
-		<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	</head>
+        .popupForm {
+            display: none;
+            background-color: #E0E0E0;
+            border: 1px solid black;
+            position: fixed;
+            bottom: 10%;
+            top: 10%;
+            left: 10%;
+            right: 10%;
+        }
+    </style>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
-	<script>
+    <script>
         $(document).ready(function () {
             Search();
-			$('.searchOrganization').change(function () {
-				Search();
-			})
-		})
-		function Search() {
-			var firstName = $('.searchFirstName').val();
-			var lastName = $('.searchLastName').val();
-			var organization = $( ".searchOrganization option:selected" ).text(); //$('.searchOrganization').val();
+            $('.searchOrganization').change(function () {
+                Search();
+            });
+            $('.checkAll').change(function () {
+                var checkedAll = false;
+                checkedAll = $('.checkAll').prop('checked');
+                $('.rowSelected').prop("checked", checkedAll);
+            })
+        })
+        function Search() {
+            var firstName = $('.searchFirstName').val();
+            var lastName = $('.searchLastName').val();
+            var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
 
-			var dataPost = firstName+','+lastName+','+organization;
-			$.ajax({
-				url: '/Search/SearchClients',
-				type: 'POST',
-				data: JSON.stringify(dataPost),
-				contentType: 'application/json; charset=utf-8',
-				error: function (xhr) {
-					alert('Error: ' + xhr.statusText);
-				},
-				success: function (result) {
-					var returnedData = JSON.parse(result);
-					$('.removableRow').remove();
-					$('.templateRow').hide();
-					if (returnedData.length == 0) {
-						$('.templateRow').show();
-					}
-					for (var i = 0; i < returnedData.length; i++) {
-						var currentRow = returnedData[i];
-						var Row = $('.templateRow').clone();
-						Row.removeClass('templateRow').addClass('removableRow').show();
-						Row.find('.rowFirstName').val(currentRow['First_Name']);
-						Row.find('.rowLastName').val(currentRow['Last_Name']);
-						if (currentRow['Org'] != null) {
-							Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
-						}
-						Row.find('.rowEditButton').val(currentRow['ID']);
-						$('.templateRow').parent().append(Row);
-					}
-					$('.rowEditButton').unbind('click').click(function () {
-						console.log($(this).val());
-						editClient($(this).val());
-					});
-				},
-				async: true,
-				processData: false
-			});
-		}
+            var dataPost = firstName + ',' + lastName + ',' + organization;
+            $.ajax({
+                url: '/Search/SearchClients',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    var returnedData = JSON.parse(result);
+                    $('.removableRow').remove();
+                    $('.templateRow').hide();
+                    if (returnedData.length == 0) {
+                        $('.templateRow').show();
+                    }
+                    for (var i = 0; i < returnedData.length; i++) {
+                        var currentRow = returnedData[i];
+                        var Row = $('.templateRow').clone();
+                        Row.removeClass('templateRow').addClass('removableRow').show();
+                        Row.find('.rowFirstName').val(currentRow['First_Name']);
+                        Row.find('.rowLastName').val(currentRow['Last_Name']);
+                        if (currentRow['Org'] != null) {
+                            Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+                        }
+                        var clientId = currentRow['ID']
+                        Row.find('.rowViewButton').val(clientId);
+                        $('.checkedId').each(function (index) {
+                            if ($(this).text() == clientId) {
+                                Row.find('.rowSelected').prop('checked', true);
+                            }
+                        });
+                        $('.templateRow').parent().append(Row);
+                    }
+                    $('.rowEditButton').unbind('click').click(function () {
+                        editClient($(this).val());
+                    });
+                    $('.rowSelected').unbind('click');
+                    $('.rowSelected').click(function () {
+                        var clientId = $(this).parent().parent().find('.rowViewButton').val();
+                        if ($(this).prop('checked') == true) {
+                            var Row = $('.checkedIdTemplate').clone();
+                            Row.removeClass('checkedIdTemplate').addClass('checkedId');
+                            Row.text(clientId);
+                            $('.checkedIdsDiv').append(Row);
+                        } else {
+                            $('.checkedId').each(function (index) {
+                                if ($(this).text() == clientId) {
+                                    $(this).remove();
+                                }
+                            });
+                        }
+                    });
+                },
+                async: true,
+                processData: false
+            });
+        }
 
-		function editClient(clientId) {
-			location.href = '/AddClient/AddClient?clientId=' + clientId;
-		}
+        function editClient(clientId) {
+            location.href = '/AddClient/AddClient?clientId=' + clientId;
+        }
 
-		function popForm() {
-				document.getElementById("form").style.display = "block";
-			}
+        function popForm() {
+            document.getElementById("form").style.display = "block";
+        }
 
-			function closeForm() {
-				document.getElementById("form").style.display = "none";
-			}
-			function toggle(source) {
-	  var checkboxes = document.getElementsByName('selectAll');
-	  for(var checkbox in checkboxes)
-		checkbox.checked = source.checked;
-	  }
+        function closeForm() {
+            document.getElementById("form").style.display = "none";
+        }
+        function toggle(source) {
+            var checkboxes = document.getElementsByName('selectAll');
+            for (var checkbox in checkboxes)
+                checkbox.checked = source.checked;
+        }
 
-	function allCheck(name,boolValue) {
-		var allvalue = document.getElementsByName(name); 
-		for (var i = 0; i < allvalue.length; i++) {      
-			if (allvalue[i].type == "checkbox")           
-				allvalue[i].checked = boolValue;           
-		}
-	}
+        function allCheck(name, boolValue) {
+            var allvalue = document.getElementsByName(name);
+            for (var i = 0; i < allvalue.length; i++) {
+                if (allvalue[i].type == "checkbox")
+                    allvalue[i].checked = boolValue;
+            }
+        }
 
-	function reserveCheck(name){
-		var revalue = document.getElementsByName(name); 
-		for(i=0;i<revalue.length;i++){
-   			if(revalue[i].checked == true) 
-				revalue[i].checked = false;
-  			else 
-				revalue[i].checked = true;
-		}
-	}
+        function reserveCheck(name) {
+            var revalue = document.getElementsByName(name);
+            for (i = 0; i < revalue.length; i++) {
+                if (revalue[i].checked == true)
+                    revalue[i].checked = false;
+                else
+                    revalue[i].checked = true;
+            }
+        }
 
-	</script>
+    </script>
+</head>
+
 
 	<body class="organize">
+        <div class="checkedIdsDiv" style="display:none;">
+            <p class="checkedIdTemplate"></p>
+        </div>
 		<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
 			<div style="position:relative; margin-left: 25%; width: 650px;" align="right">
 				<table style="position:relative; left: -90px">
@@ -206,7 +235,7 @@
 							<p><b>Category</b></p>
 						</td>
 						<td>
-							<input type="checkbox" name="choice" id="choice">
+							<input class="checkAll" type="checkbox" name="choice" id="choice">
 						</td>
 					</tr>
 				</tbody>
@@ -216,7 +245,7 @@
 					<tbody>
 						<tr class="templateRow" style="">
 							<td>
-								<button class="rowEditButton" value="0">edit</button>
+								<button class="rowViewButton" value="0">View</button>
 							</td>
 							<td>
 								<input class="rowFirstName" type="text" value="" disabled="true">
