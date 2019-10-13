@@ -100,7 +100,7 @@ namespace SUP_MVC.Controllers
             {
                 var clientId = args;
                 // NOTE: The below line of code will be added once the "GetClientById" functionality is implemented.
-                //var Clients = DatabaseConnection.GetClientById(clientId);
+                var Clients = DatabaseConnection.GetClientById(clientId);
                 var json = JsonConvert.SerializeObject(clientId);
 
                 return json;
