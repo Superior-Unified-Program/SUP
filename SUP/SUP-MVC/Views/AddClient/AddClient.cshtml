@@ -48,7 +48,7 @@
                 success: function (result) {
                     console.log('Yeay!')
                     var returnedData = JSON.parse(result);
-                    var currentClient = returnedData[0];
+                    var currentClient = returnedData;
                     var firstName = currentClient["First_Name"];
                     var lastName = currentClient["Last_Name"];
                     $('.firstNameInput').val(firstName);
