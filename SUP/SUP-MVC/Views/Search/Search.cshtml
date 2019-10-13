@@ -52,10 +52,14 @@
             $('.searchOrganization').change(function () {
                 Search();
             });
-            $('.checkAll').change(function () {
+            $('.checkAll').click(function () {
                 var checkedAll = false;
                 checkedAll = $('.checkAll').prop('checked');
-                $('.rowSelected').prop("checked", checkedAll);
+                $('.rowSelected').each(function () {
+                    if (checkedAll != $(this).prop('checked')) {
+                        $(this).click();
+                    }
+                });
             })
         })
         function Search() {
@@ -97,7 +101,7 @@
                         });
                         $('.templateRow').parent().append(Row);
                     }
-                    $('.rowEditButton').unbind('click').click(function () {
+                    $('.rowViewButton').unbind('click').click(function () {
                         editClient($(this).val());
                     });
                     $('.rowSelected').unbind('click');
