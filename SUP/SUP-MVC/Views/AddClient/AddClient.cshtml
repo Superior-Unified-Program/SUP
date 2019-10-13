@@ -94,6 +94,29 @@
                 processData: false
             });
         }
+
+        function saveClientData() {
+            var firstName = $('.firstNameInput').val();
+            var lastName = $('.lastNameInput').val();
+            var organization = $('.lastNameInput').text();
+
+            var dataPost = firstName + ',' + lastName + ',' + organization;
+            $.ajax({
+                url: '/AddClient/UpdateClient',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    console.log('Yeay!')
+                    console(JSON.parse(result));
+                },
+                async: true,
+                processData: false
+            });
+        }
 	</script>
 
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
