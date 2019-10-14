@@ -8,5 +8,6 @@ namespace SUP_MVC.Models.Search
         public string LastName { get; set; }
         public string Organization { get; set; }
 
+        public string[] storedClientIds { get; set; }
     }
 }
