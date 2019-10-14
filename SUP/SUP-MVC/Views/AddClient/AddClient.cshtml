@@ -128,31 +128,31 @@
 			<div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
 				<div class="tableHeader">Client Information</div>
 				<div class="row">
-					<div class="cell">Prefix<br /><input type="text" placeholder="" style="width: 45px"></div>
-					<div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required></div>
-					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required></div>
-					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px"></div>
+					<div class="cell">Prefix<br /><input type="text" placeholder="" style="width: 45px" tabindex="1"></div>
+					<div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
+					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">
 						Company*<br />
-						<select name="company" size="1" required>
+						<select name="company" size="1" required tabindex="5">
 
 							<option placeholder="">School</option>
 							<option placeholder="">Government</option>
 							<option> </option>
 						</select>
 					</div>
-					<div class="cell">Company name<br /><input type="text"></div>
-					<div class="cell">Job title<br /><input type="text"></div>
+					<div class="cell">Company name<br /><input type="text" tabindex="6"></div>
+					<div class="cell">Job title<br /><input type="text" tabindex="7"></div>
 				</div>
 				<div class="tableHeader">Contact Information</div>
 				<div class="row">
-					<div class="cell">Address Line1*<br /><input type="text" placeholder="Address Line 1" required></div>
-					<div class="cell">City*<br /><input type="text" placeholder="City" required></div>
+					<div class="cell">Address Line1*<br /><input type="text" placeholder="Address Line 1" required tabindex="8"></div>
+					<div class="cell">City*<br /><input type="text" placeholder="City" required tabindex="10"></div>
 					<div class="cell">
-						State<br /><select name="state">
+						State<br /><select name="state" tabindex="11">
 							<option value="AL">Alabama</option>
 							<option value="AK">Alaska</option>
 							<option value="AZ">Arizona</option>
@@ -206,23 +206,23 @@
 							<option value="WY">Wyoming</option>
 						</select>
 					</div>
-					<div class="cell">Zipcode *<br /><input type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}"></div>
+					<div class="cell">Zipcode *<br /><input type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
 				</div>
 				<div class="row">
-					<div class="cell">Address Line2<br /><input type="text" placeholder="Address Line 2"></div>
+					<div class="cell">Address Line2<br /><input type="text" placeholder="Address Line 2" tabindex="9" tabindex="13"></div>
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
-					<div class="cell">Email address*<br /><input type="email" id="email" placeholder="Email" required></div>
-					<div class="cell">Phone Number<br /><input type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}"></div>
+					<div class="cell">Email address*<br /><input type="email" id="email" placeholder="Email" required tabindex="14"></div>
+					<div class="cell">Phone Number<br /><input type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="15"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div class="activeCell">Active<br /><input type="checkbox" checked="checked"></div>
-					<div class="noteCell">Note<br /><textarea name="Note" rows="3" cols="125"></textArea><div>
+					<div class="activeCell">Active<br /><input type="checkbox" checked="checked" tabindex="16"></div>
+					<div class="noteCell">Note<br /><textarea name="Note" rows="3" cols="125" tabindex="17"></textArea><div>
 				</div>
 				<div class="row">
-					<div class="saveEditCell"><input type="submit" value="Save" id="button"></div>
+					<div class="saveEditCell"><input type="submit" value="Save" id="button" tabindex="18"></div>
 				</div>
 			</div>
 		</form>
