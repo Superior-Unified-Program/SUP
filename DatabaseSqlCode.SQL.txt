@@ -42,7 +42,7 @@ CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Last_Name varch
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Line1, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, City, State, Zip ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
@@ -54,11 +54,11 @@ CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRI
 CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
-CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(10), 
+CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20), 
 CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Works_For')
-CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(10), Title varchar(20), 
+CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(20), Title varchar(20), 
 CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ), 
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
@@ -158,25 +158,25 @@ GO
 CREATE OR ALTER PROCEDURE checkForNearMatch
 
 	-- Add the parameters for the stored procedure here
-	@firstName nvarchar(50), @lastName varchar(64)
+	@firstName varchar(50) = null, @lastName varchar(50) = null
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
+    -- Insert statements for procedure here
 
-	DECLARE @isValid BIT
-	IF ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1) SET @isValid = 1
-	ELSE SET @isValid = 0
+	DECLARE @nearMatch BIT
+	IF ((SELECT COUNT(First_Name) FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2) > 0) SET @nearMatch = 1
+	ELSE SET @nearMatch = 0
 
-	SELECT @isValid
+	SELECT @nearMatch AS nearMatch
 
-	SELECT * FROM CLient WHERE ((SELECT DIFFERENCE(@firstName, (SELECT First_Name FROM CLIENT))) > 1)
+	SELECT First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
 
 END
-GO
+
 
 -- =============================================
 -- Create date: 10/9/2019
@@ -219,3 +219,98 @@ BEGIN
 	INSERT INTO Account(User_Name, Password, User_Type, Office) VALUES (@userName, @password, @userType, @office)
 END
 GO
+
+-- =============================================
+-- Create date: 10/12/2019
+-- Description:	Returns a single client by searching for the ID
+-- =============================================
+CREATE OR ALTER   PROCEDURE getClientByID
+	-- Add the parameters for the stored procedure here
+    @Client_Id int
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Insert statements for procedure here
+	SELECT * FROM Client WHERE ID = @Client_Id 
+
+END
+GO
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Create date: 10/12/2019
+-- Description:	updates tables based on parameters given
+-- =============================================
+
+ALTER   PROCEDURE [dbo].[updateClient]
+	-- Add the parameters for the stored procedure here
+	@ID int, @firstName varchar(50) = null, 
+	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
+	@permitNum varchar(50) = null, @active bit = null, 
+	@notes varchar(30) = null, @orgName varchar(30), 
+	@orgType varchar(10), @title varchar(20) = null, 
+	@phoneNumber varchar(11) = null, @email varchar(30), 
+	@line1 varchar(35) = null, @line2 varchar(35) = null, 
+	@city varchar(25) = null, @state varchar(2) = null, 
+	@zipCode varchar(5) = null, @boss int = null, 
+	@assistant int = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- update values in the tables.
+	IF @firstName IS NOT NULL 
+		UPDATE Client SET First_Name = @firstName WHERE ID = @ID
+	IF @lastName IS NOT NULL 
+		UPDATE Client SET Last_Name = @lastName WHERE ID = @ID
+	IF @middleInitial IS NOT NULL 
+		UPDATE Client SET Middle_initial = @middleInitial WHERE ID = @ID
+	IF @permitNum IS NOT NULL 
+		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
+	IF @active IS NOT NULL 
+		UPDATE Client SET Permit_Num = @active WHERE ID = @ID
+	IF @notes IS NOT NULL 
+		UPDATE Client SET Notes = @notes WHERE ID = @ID
+	-- 
+	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 
+		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
+	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
+		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
+			WHERE [Name] = @orgName AND [Type] = @orgType
+	IF @title IS NOT NULL 
+		UPDATE Works_For SET Title = @title 
+			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+	--
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND Number = @phoneNumber) = 0 
+		INSERT INTO Phone(Client_ID, Number) VALUES(@ID, @phoneNumber)
+	IF @phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @phoneNumber 
+			WHERE Client_ID = @ID AND Number = @phoneNumber
+	--
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND Email = @email) = 0 
+		INSERT INTO Email(Client_ID, Email) VALUES(@ID, @email)
+	IF @email IS NOT NULL 
+		UPDATE Email SET Email = @email 
+			WHERE Client_ID = @ID AND Email = @email
+	--
+	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode) = 0 
+		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
+	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
+		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
+			WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode
+	-- 
+	IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
+		INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
+	IF @boss IS NOT NULL OR @assistant IS NOT NULL 
+		Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
+			WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+
+END

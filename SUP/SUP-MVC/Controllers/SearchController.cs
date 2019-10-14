@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using SUP_Library;
+using SUP_MVC.Models.Search;
 
 namespace SUP_MVC.Controllers
 {
@@ -105,9 +105,8 @@ namespace SUP_MVC.Controllers
                 }
 
                 var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
-                var json = JsonConvert.SerializeObject(Clients); ;
+                var json = JsonConvert.SerializeObject(Clients);
                 
-
                 return json;
             }
             catch(Exception e)

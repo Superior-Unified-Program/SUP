@@ -84,6 +84,8 @@
 		}
 	</style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+	<script>
+	</script>
 
 
 
@@ -115,7 +117,7 @@
 			</tr>
 			<tr>
 				<form>
-					<th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" })</th>
+					<th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" }, new { onclick = "return confirm('Are sure want to Logout?');" })</th>
 				</form>
 			</tr>
 		</table>

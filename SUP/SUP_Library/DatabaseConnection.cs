@@ -127,27 +127,40 @@ namespace SUP_Library
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
-                    // SELECT * FROM Client WHERE Last_Name LIKE 'bo%' and First_Name LIKE 'bi%'
-                    //  var results = connection.Query<Client>("queryClient", new { lastName = qLastName, firstName = qFirstName, org=qOrganization }).ToList();
-                    var sql = "queryClient";
-                    
-                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
-                    //var client = data.First();
+                   
+                    var sql = "queryClient";   // name of stored procedure              
+
+                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
+                    // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
+                    // The joined table is split at the Client_ID column
+                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, 
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();                                 
+
+                    return data ; // return (client) list of results;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
 
 
-                    //var results = connection.Query<Client>("SELECT * FROM Client WHERE Last_Name LIKE '" + qLastName + "%' and First_Name LIKE'" + qFirstName +"%'").ToList();
-                    /* if (results.Count != 0)
-                     {
-                         if (thePassword != currentAccount[0].password) return false;
-                         return true;
-                     }
-                     return false;
-                     */
-                    //var toReturn = data;
+        }
 
-                    
 
-                    return data ; //results;
+        public static Client GetClientById(string clientId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    var sql = "getClientById";   // name of stored procedure
+
+                    // Send request for getClientById stored procedure with values for Client_Id, the Id number for the client that should be retrieved
+                    // Will retrieve a single client or a default value if results are empty
+                    var data = connection.Query<Client>(sql, new { Client_Id = clientId }, commandType: CommandType.StoredProcedure).SingleOrDefault();
+
+                    return data;
                 }
             }
             catch (Exception exc)
