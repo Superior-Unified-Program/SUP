@@ -87,8 +87,19 @@
                     var currentClient = returnedData;
                     var firstName = currentClient["First_Name"];
                     var lastName = currentClient["Last_Name"];
+                    var middleinitial = currentClient["Middle_initial"];
+                    var organization = currentClient["Org"];
+                    var company = currentClient["Company"];
+                    var isActive = currentClient["Active"];
                     $('.firstNameInput').val(firstName);
+                    $('.middleInitialInput').val(middleinitial);
                     $('.lastNameInput').val(lastName);
+                    $('.organizationInput').val(organization);
+                    $('.companyInput').val(company);
+                    if (isActive) {
+                        console.log(isActive);
+                        $(".activeInput").prop( "checked", true );
+                    }
                 },
                 async: true,
                 processData: false
@@ -137,14 +148,14 @@
 				<div class="row">
 					<div class="cell">
 						Company*<br />
-						<select name="company" size="1" required tabindex="5">
+						<select name="Organization" class="organizationInput" size="1" required tabindex="5">
 
 							<option placeholder="">School</option>
 							<option placeholder="">Government</option>
 							<option> </option>
 						</select>
 					</div>
-					<div class="cell">Company name<br /><input type="text" tabindex="6"></div>
+					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
 					<div class="cell">Job title<br /><input type="text" tabindex="7"></div>
 				</div>
 				<div class="tableHeader">Contact Information</div>
@@ -218,7 +229,7 @@
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div class="activeCell">Active<br /><input type="checkbox" checked="checked" tabindex="16"></div>
+					<div>Active<br /><input class="activeInput" type="checkbox" tabindex="16"></div>
 					<div class="noteCell">Note<br /><textarea name="Note" rows="3" cols="125" tabindex="17"></textArea><div>
 				</div>
 				<div class="row">
