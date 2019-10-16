@@ -92,15 +92,21 @@ namespace SUP_MVC.Controllers
             }
         }
 
-        // POST: Search/SearchClients
+        // POST: AddClient/SearchClients
         [HttpPost]
         public string GetClient([FromBody] string args)
         {
             try
             {
                 var clientId = args;
-                // NOTE: The below line of code will be added once the "GetClientById" functionality is implemented.
+                
                 var Clients = DatabaseConnection.GetClientById(clientId);
+                // NOTE: The below line of code will be added once the "GetClientOrganizationByClientId" functionality is implemented.
+                //Clients.Org = DatabaseConnection.GetClientOrganizationById(clientId);
+
+                // NOTE: The below line of code will be added once the "GetClientAddressByClientId" functionality is implemented.
+                //Clients.Org = DatabaseConnection.GetClientAddressById(clientId);
+
                 var json = JsonConvert.SerializeObject(Clients);
 
                 return json;
