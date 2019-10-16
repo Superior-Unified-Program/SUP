@@ -10,5 +10,7 @@ namespace SUP_MVC.Models.Search
         public string Organization { get; set; }
 
         public string[] storedClientIds { get; set; }
+
+        //public bool selected
     }
 }
