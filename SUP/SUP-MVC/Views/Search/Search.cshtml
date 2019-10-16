@@ -88,7 +88,9 @@
                         var Row = $('.templateRow').clone();
                         Row.removeClass('templateRow').addClass('removableRow').show();
                         Row.find('.rowFirstName').val(currentRow['First_Name']);
-                        Row.find('.rowLastName').val(currentRow['Last_Name']);
+						Row.find('.rowLastName').val(currentRow['Last_Name']);
+						Row.find('.rowEmailAddress').val(currentRow['EmailAddress']);
+                        Row.find('.rowPhoneNumber').val(currentRow['PhoneNumber']);
                         if (currentRow['Org'] != null) {
                             Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
                         }
@@ -212,12 +214,13 @@
 					<tr><td height="10px"></td></tr>
 				</table>
 			</div>
-			<table style="position:relative; margin-left: 25%; left: -15px">
+			<table style="position:relative; margin-left: calc(10% + 120px); left: -15px">
 				<tbody>
 					<tr>
-						<td>
-							<b style="font-size:18px;">Results</b>
-						</td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -232,11 +235,17 @@
 						<td style="width: 183px">
 							<p><b>First Name</b></p>
 						</td>
-						<td style="width: 185px">
+						<td style="width: 188px">
 							<p><b>Last Name</b></p>
 						</td>
-						<td style="width: 184px">
+						<td style="width: 199px">
 							<p><b>Category</b></p>
+						</td>
+						<td style="width: 175px">
+							<p><b>Email</b></p>
+						</td>
+						<td style="width: 128px">
+							<p><b>Phone #</b></p>
 						</td>
 						<td>
 							<input class="checkAll" type="checkbox" name="choice" id="choice">
@@ -244,7 +253,7 @@
 					</tr>
 				</tbody>
 			</table>
-			<div style="height: 400px; overflow-y:scroll; overflow-x: hidden; width: 670px; margin-left: calc(25% - 20px);" align="right">
+			<div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1050px; margin-left: calc(10% - 20px);" align="right">
 				<table style="position:relative; left: -20px">
 					<tbody>
 						<tr class="templateRow" style="">
@@ -259,6 +268,12 @@
 							</td>
 							<td>
 								<input class="rowOrganization" type="text" value="" disabled="true">
+							</td>
+							<td>
+								<input class="rowEmailAddress" type="text" value="" disabled="true">
+							</td>
+							<td>
+								<input class="rowPhoneNumber" type="text" value="" disabled="true">
 							</td>
 							<td>
 								<input class="rowSelected" type="checkbox" name="choice" id="choice" />
