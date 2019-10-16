@@ -12,6 +12,7 @@ namespace SUP.Pages.Search
     {
         public void OnGet()
         {
+
         }
     }
 }

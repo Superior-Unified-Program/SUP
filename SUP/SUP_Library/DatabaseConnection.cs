@@ -99,6 +99,7 @@ namespace SUP_Library
 
                     Console.WriteLine(connection.State);
                     
+
                     string sql = "addClient";
                     var affected = connection.Execute(sql,
                        new
@@ -130,9 +131,9 @@ namespace SUP_Library
                     //  var results = connection.Query<Client>("queryClient", new { lastName = qLastName, firstName = qFirstName, org=qOrganization }).ToList();
                     var sql = "queryClient";
                     
-                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, org = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();
                     //var client = data.First();
-
+                    
 
                     //var results = connection.Query<Client>("SELECT * FROM Client WHERE Last_Name LIKE '" + qLastName + "%' and First_Name LIKE'" + qFirstName +"%'").ToList();
                     /* if (results.Count != 0)
@@ -143,8 +144,6 @@ namespace SUP_Library
                      return false;
                      */
                     //var toReturn = data;
-
-                    
 
                     return data ; //results;
                 }
