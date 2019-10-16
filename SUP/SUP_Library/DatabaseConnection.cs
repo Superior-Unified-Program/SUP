@@ -146,9 +146,9 @@ namespace SUP_Library
 
 
         }
-        public static List<Client> QueryClientTEST(string qLastName, string qFirstName, string qOrganization)
+        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrganization)
         {
-            /*
+            /* 
              * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
 							LEFT JOIN Address ON Client.ID = Address.Client_ID
 							LEFT JOIN Email ON Client.ID = Email.Client_ID
@@ -159,11 +159,11 @@ namespace SUP_Library
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
 
-                    var sql = "queryClientTEST";   // name of stored procedure              
+                    var sql = "queryClientFull";   // name of stored procedure              
 
                     // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
-                    // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
-                    // The joined table is split at the Client_ID column
+                    // Stored procedure joins five tables, so we have Dapper put first table values into Client class and into classes found within Client
+                    // The joined tables are split at the Client_ID column
                     var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
                                { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
                                new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
@@ -190,6 +190,30 @@ namespace SUP_Library
                     // Send request for getClientById stored procedure with values for Client_Id, the Id number for the client that should be retrieved
                     // Will retrieve a single client or a default value if results are empty
                     var data = connection.Query<Client>(sql, new { Client_Id = clientId }, commandType: CommandType.StoredProcedure).SingleOrDefault();
+
+                    return data;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+        }
+        public static Client GetClientByIdFull(string clientId)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    var sql = "getClientByIdFull";   // name of stored procedure
+
+                    // Send request for getClientByIdFull. 
+
+                    var data = connection.Query<Client, Organization, Address, EmailAddress, PhoneNumber, Client>(sql, (client, org, address, email, phone) =>
+                    { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
+                               new { Client_ID = clientId }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).SingleOrDefault();
+
+                    //var data = connection.Query<Client>(sql, new { Client_Id = clientId }, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
                     return data;
                 }
