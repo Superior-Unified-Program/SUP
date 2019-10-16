@@ -146,7 +146,38 @@ namespace SUP_Library
 
 
         }
+        public static List<Client> QueryClientTEST(string qLastName, string qFirstName, string qOrganization)
+        {
+            /*
+             * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
+							LEFT JOIN Address ON Client.ID = Address.Client_ID
+							LEFT JOIN Email ON Client.ID = Email.Client_ID
+							LEFT JOIN Phone ON Client.ID = Phone.Client_ID
+            */
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
 
+                    var sql = "queryClientTEST";   // name of stored procedure              
+
+                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
+                    // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
+                    // The joined table is split at the Client_ID column
+                    var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
+                               { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+
+                    return data; // return (client) list of results;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+
+
+        }
 
         public static Client GetClientById(string clientId)
         {

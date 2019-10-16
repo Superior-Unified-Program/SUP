@@ -91,6 +91,7 @@
                     var organization = currentClient["Org"];
                     var company = currentClient["Company"];
                     var isActive = currentClient["Active"];
+                    var note = currentClient["Notes"];
                     $('.firstNameInput').val(firstName);
                     $('.middleInitialInput').val(middleinitial);
                     $('.lastNameInput').val(lastName);
@@ -100,6 +101,7 @@
                         console.log(isActive);
                         $(".activeInput").prop( "checked", true );
                     }
+                    $('.noteInput').val(note);
                 },
                 async: true,
                 processData: false
@@ -230,7 +232,7 @@
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div>Active<br /><input class="activeInput" type="checkbox" tabindex="16"></div>
-					<div class="noteCell">Note<br /><textarea name="Note" rows="3" cols="125" tabindex="17"></textArea><div>
+					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="17"></textArea><div>
 				</div>
 				<div class="row">
 					<div class="saveEditCell"><input type="submit" value="Save" id="button" tabindex="18"></div>
