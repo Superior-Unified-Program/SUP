@@ -66,8 +66,8 @@
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
             var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
-
-            var dataPost = firstName + ',' + lastName + ',' + organization;
+            var active = ($('.displayOnlyActiveClientsInput:checked').length >= 1);
+            var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
             $.ajax({
                 url: '/Search/SearchClients',
                 type: 'POST',
@@ -287,17 +287,17 @@
 				<form action="middlewareHere" class="form-container">
 					<h1>Login</h1>
 
-					<label for="email"><b>Email</b></label>
-					<input type="text" placeholder="Enter Email" name="email" required>
+                <label for="email"><b>Email</b></label>
+                <input type="text" placeholder="Enter Email" name="email" required>
 
-					<label for="psw"><b>Password</b></label>
-					<input type="password" placeholder="Enter Password" name="psw" required>
+                <label for="psw"><b>Password</b></label>
+                <input type="password" placeholder="Enter Password" name="psw" required>
 
-					<button type="submit" class="btn">Login</button>
-					<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-				</form>
+                <button type="submit" class="btn">Login</button>
+                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+            </form>
 
-			</div>
-		</div>
-	</body>
+        </div>
+    </div>
+</body>
 </html>

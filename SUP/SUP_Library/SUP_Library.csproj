@@ -59,9 +59,11 @@
     <Compile Include="DatabaseConnection.cs" />
     <Compile Include="DBComponent\Account.cs" />
     <Compile Include="DBComponent\Address.cs" />
+    <Compile Include="DBComponent\Email.cs" />
     <Compile Include="DBComponent\Client.cs" />
     <Compile Include="DBComponent\ContactInformation.cs" />
     <Compile Include="DBComponent\Organization.cs" />
+    <Compile Include="DBComponent\PhoneNumber.cs" />
     <Compile Include="Harsh.cs" />
     <Compile Include="MailMerge.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

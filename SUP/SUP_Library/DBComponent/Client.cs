@@ -11,15 +11,21 @@ namespace SUP_Library.DBComponent
         public int ID { get; set; }
 
         //public string Prefix { get; set; }
-        public string Company { get; set; }
+        //public string Company { get; set; }
         public string Permit_Num { get; set; }
-        public string PhoneNumber { get; set; }
-        public string EmailAddress { get; set; }
+        //public string PhoneNumber { get; set; }
+        //public string EmailAddress { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
         public char Middle_initial { get; set; }
 
         public Organization Org { get; set; }
+        public Address Address { get; set; }
+
+        public EmailAddress Email { get; set; }
+
+        public PhoneNumber Phone { get; set; }
+
         public bool   Active { get; set; }
         public int    Assistant { get; set; }
         public string Notes { get; set; }
@@ -27,6 +33,9 @@ namespace SUP_Library.DBComponent
         public Client()
         {
             Org = new Organization(); // classes probably should be initialized and not null
+            Address = new Address();
+            Email = new EmailAddress();
+            Phone = new PhoneNumber();
         }
         
         

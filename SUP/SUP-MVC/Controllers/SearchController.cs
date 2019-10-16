@@ -99,12 +99,29 @@ namespace SUP_MVC.Controllers
             try
             {
                 string[] separatedArgs = args.Split(',');
-                if (separatedArgs.Length != 3)
+                if (separatedArgs.Length != 4)
                 {
                     throw(new Exception("Oopsie"));
                 }
 
                 var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
+
+                // if searching for active clients only, remove inactive clients.
+                if (separatedArgs[3] == "true")
+                {
+                    var clientCount = Clients.Count();
+                    for (var i = 0; i < clientCount; i++)
+                    {
+                        var client = Clients.ElementAt(i);
+                        if (!client.Active)
+                        {
+                            Clients.Remove(client);
+                            clientCount-=1;
+                            i -= 1;
+                        }
+                    }
+                }
+
                 var json = JsonConvert.SerializeObject(Clients);
                 
                 return json;
