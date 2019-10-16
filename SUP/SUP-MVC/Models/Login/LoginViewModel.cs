@@ -7,5 +7,7 @@ namespace SUP_MVC.Models.Login
 		public string RequestId { get; set; }
 
 		public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+
 	}
 }
