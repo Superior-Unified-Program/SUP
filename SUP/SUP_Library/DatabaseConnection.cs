@@ -29,7 +29,7 @@ namespace SUP_Library
         private static string getConnectionString()
         {
             // This retern the connection string in App.config file as the name same with connectionName.
-            return "Initial Catalog=SUPdb; Data Source=68.112.175.122; Integrated Security=False; User Id=SUPuser; Password=abc123;";
+            //return "Initial Catalog=SUPdb; Data Source=68.112.175.122; Integrated Security=False; User Id=SUPuser; Password=abc123;";
             return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
         }
         #endregion

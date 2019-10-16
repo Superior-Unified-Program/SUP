@@ -8,7 +8,7 @@ using Word = Microsoft.Office.Interop.Word;
 
 namespace SUP_Library
 {
-    public class MailMerge
+    public class Merge
     {
         /// <summary>
         /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
