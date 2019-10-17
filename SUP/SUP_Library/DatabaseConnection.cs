@@ -100,6 +100,7 @@ namespace SUP_Library
 
                     Console.WriteLine(connection.State);
                     
+
                     string sql = "addClient";
                     var affected = connection.Execute(sql,
                        new
