@@ -100,7 +100,7 @@ namespace SUP_MVC.Controllers
             {
                 var clientId = args;
                 
-                var Clients = DatabaseConnection.GetClientById(clientId);
+                var Clients = DatabaseConnection.GetClientByIdFull(clientId);
                 // NOTE: The below line of code will be added once the "GetClientOrganizationByClientId" functionality is implemented.
                 //Clients.Org = DatabaseConnection.GetClientOrganizationById(clientId);
 
