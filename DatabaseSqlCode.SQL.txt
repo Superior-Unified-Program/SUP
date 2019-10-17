@@ -38,11 +38,11 @@ CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Typ
 CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10) Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, Line2, City, State, Zip ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
@@ -76,7 +76,6 @@ GO
 GO*/
 
 -- =============================================
--- Author:		Matt
 -- Create date: 10/7/2019
 -- Description:	verifies login
 -- =============================================
@@ -312,5 +311,27 @@ BEGIN
 	IF @boss IS NOT NULL OR @assistant IS NOT NULL 
 		Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
 			WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+
+END
+
+-- =============================================
+-- Create date: 10/16/2019
+-- Description:	Updates active status
+-- =============================================
+
+CREATE OR ALTER PROCEDURE updateActiveStatus
+
+	-- Add the parameters for the stored procedure here
+	@ID int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+
+	IF ((SELECT Active FROM Client Client WHERE @ID = ID) = 1) UPDATE Client SET Active = 0 WHERE @ID = ID
+	ELSE UPDATE Client SET Active = 1
 
 END
