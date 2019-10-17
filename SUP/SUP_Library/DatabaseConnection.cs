@@ -94,6 +94,9 @@ namespace SUP_Library
 
         // all connections related to Client table go here
 
+
+
+        /*
         public static void addClient(Client newClient)
         {
             string conString = getConnectionString();
@@ -127,6 +130,57 @@ namespace SUP_Library
                 throw exc;
             }
         }
+        */
+
+        public static void addClient(Client newClient)
+        {
+            // Fill out client class and pass to addClient to add client and all associated data to database
+            // Uses the database addClient stored procedure
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+
+                    // no support for assistant yet, until we figure out exactly how we are going to implement that
+
+                    var sql = "addClient";   // name of stored procedure              
+
+                    // Parameters to send to addClient stored proedure
+                    var par = new DynamicParameters();
+                    
+                    // Client base class parameters
+                    par.Add("@prefix", newClient.Prefix);
+                    par.Add("@firstName", newClient.First_Name);
+                    par.Add("@lastName", newClient.Last_Name);
+                    par.Add("@middleInitial", newClient.Middle_initial);
+                    par.Add("@permitNum", newClient.Permit_Num);
+                    par.Add("@active", newClient.Active);
+                    par.Add("@notes", newClient.Notes);
+                    // Organization Parameters
+                    par.Add("@orgName", newClient.Org.Org_Name);
+                    par.Add("@orgType", newClient.Org.Org_Type);
+                    par.Add("@title", newClient.Org.Title);
+                    // Phone
+                    par.Add("@phoneNumber", newClient.Phone.Number);
+                    // Email
+                    par.Add("@email", newClient.Email.Email);
+                    // Address
+                    par.Add("@line1",newClient.Address.LineOne);
+                    par.Add("@line2",newClient.Address.LineTwo);
+                    par.Add("@city",newClient.Address.City);
+                    par.Add("@state",newClient.Address.State);
+                    par.Add("@zipCode",newClient.Address.Zipcode);
+
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                                    
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+        }
+
         public static List<Client> QueryClient(string qLastName, string qFirstName, string qOrganization)
         {
             try
