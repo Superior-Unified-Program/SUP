@@ -132,44 +132,60 @@ namespace SUP_Library
         }
         */
 
+        // addClient and updateClient are very similar, so these methods are being passed to a larger method called alterClient which changes a few things depending on which stored proc they are calling 
         public static void addClient(Client newClient)
         {
-            // Fill out client class and pass to addClient to add client and all associated data to database
-            // Uses the database addClient stored procedure
+            alterClient(newClient, true);
+        }
+        public static void updateClient(Client client)
+        {
+            alterClient(client, false);
+        }
+        private static void alterClient(Client client, bool newClient)
+        {
+            // Fill out client class and pass to addClient/updateClient to add/update client and all associated data in database
+            // Uses the database addClient or updateClient stored procedures
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
 
                     // no support for assistant yet, until we figure out exactly how we are going to implement that
+                    string sql; //name of stored procedure
 
-                    var sql = "addClient";   // name of stored procedure              
+                    if (newClient) // if newClient is true, then this method is being called from addClient
+                        sql = "addClient";
+                    else
+                        sql = "updateClient";
 
-                    // Parameters to send to addClient stored proedure
+                    // Parameters to send to addClient/updateClient stored proedure
                     var par = new DynamicParameters();
-                    
+
                     // Client base class parameters
-                    par.Add("@prefix", newClient.Prefix);
-                    par.Add("@firstName", newClient.First_Name);
-                    par.Add("@lastName", newClient.Last_Name);
-                    par.Add("@middleInitial", newClient.Middle_initial);
-                    par.Add("@permitNum", newClient.Permit_Num);
-                    par.Add("@active", newClient.Active);
-                    par.Add("@notes", newClient.Notes);
+                    if (!newClient) 
+                        par.Add("@ID", client.ID); // updateClient needs the client ID
+                    if (newClient)
+                        par.Add("@prefix", client.Prefix); // updateClient doesn't support prefix yet
+                    par.Add("@firstName", client.First_Name);
+                    par.Add("@lastName", client.Last_Name);
+                    par.Add("@middleInitial", client.Middle_initial);
+                    par.Add("@permitNum", client.Permit_Num);
+                    par.Add("@active", client.Active);
+                    par.Add("@notes", client.Notes);
                     // Organization Parameters
-                    par.Add("@orgName", newClient.Org.Org_Name);
-                    par.Add("@orgType", newClient.Org.Org_Type);
-                    par.Add("@title", newClient.Org.Title);
+                    par.Add("@orgName", client.Org.Org_Name);
+                    par.Add("@orgType", client.Org.Org_Type);
+                    par.Add("@title", client.Org.Title);
                     // Phone
-                    par.Add("@phoneNumber", newClient.Phone.Number);
+                    par.Add("@phoneNumber", client.Phone.Number);
                     // Email
-                    par.Add("@email", newClient.Email.Email);
+                    par.Add("@email", client.Email.Email);
                     // Address
-                    par.Add("@line1",newClient.Address.LineOne);
-                    par.Add("@line2",newClient.Address.LineTwo);
-                    par.Add("@city",newClient.Address.City);
-                    par.Add("@state",newClient.Address.State);
-                    par.Add("@zipCode",newClient.Address.Zipcode);
+                    par.Add("@line1",client.Address.LineOne);
+                    par.Add("@line2",client.Address.LineTwo);
+                    par.Add("@city",client.Address.City);
+                    par.Add("@state",client.Address.State);
+                    par.Add("@zipCode",client.Address.Zipcode);
 
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
                                     
