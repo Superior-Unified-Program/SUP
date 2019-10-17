@@ -89,8 +89,10 @@
                         Row.removeClass('templateRow').addClass('removableRow').show();
                         Row.find('.rowFirstName').val(currentRow['First_Name']);
                         Row.find('.rowLastName').val(currentRow['Last_Name']);
-                        Row.find('.rowEmailAddress').val(currentRow['EmailAddress']);
-                        Row.find('.rowPhoneNumber').val(currentRow['PhoneNumber']);
+                        if (currentRow['Email'] != null) 
+                            Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
+                        if (currentRow['Phone'] != null) 
+                            Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
                         if (currentRow['Org'] != null) {
                             Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
                         }
@@ -184,7 +186,7 @@
                         <p align="center">Last Name</p>
                     </td>
                     <td>
-                        <p align="center">Category</p>
+                        <p align="center">Organization Type</p>
                     </td>
                 </tr>
                 <tr>
@@ -244,7 +246,7 @@
                         <p><b>Last Name</b></p>
                     </td>
                     <td style="width: 199px">
-                        <p><b>Category</b></p>
+                        <p><b>Organization Name</b></p>
                     </td>
                     <td style="width: 175px">
                         <p><b>Email</b></p>

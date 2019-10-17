@@ -104,7 +104,7 @@ namespace SUP_MVC.Controllers
                     throw(new Exception("Oopsie"));
                 }
 
-                var Clients = DatabaseConnection.QueryClient(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
+                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
 
                 // if searching for active clients only, remove inactive clients.
                 if (separatedArgs[3] == "true")
