@@ -11,7 +11,7 @@ USE [master];
 
 --CREATE LOGIN teamRADGSHAUser
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
-   exec('CREATE LOGIN SUPuser WITH PASSWORD    = ''abc123'';')
+   exec('CREATE LOGIN SUPuser WITH PASSWORD = ''abc123'';')
 GO
 
 USE [SUPdb]
@@ -21,15 +21,9 @@ IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
 --update roles
-EXEC sys.sp_addrolemember
-	@rolename = 'db_datareader',
-	@membername = 'SUPuser'
-EXEC sys.sp_addrolemember
-	@rolename = 'db_datawriter',
-	@membername = 'SUPuser'
-EXEC sys.sp_addrolemember
-	@rolename = 'db_owner',
-	@membername = 'SUPuser'
+CREATE ROLE executeSP
+GRANT EXECUTE TO executeSP
+ALTER ROLE [executeSP] ADD MEMBER [SUPuser]
 GO
 
 --create tables
