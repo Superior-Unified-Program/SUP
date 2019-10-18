@@ -51,21 +51,23 @@
         }
 
         .auto_hidden {
-            width: 204px;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            border-left: 1px solid #333;
-            border-right: 1px solid #333;
+            width: 200px;
+            border:#E0E0E0;
+            border-top: 1px solid ;
+            border-bottom: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
             position: absolute;
             display: none;
         }
 
         .auto_show {
-            width: 204px;
-            border-top: 1px solid #333;
-            border-bottom: 1px solid #333;
-            border-left: 1px solid #333;
-            border-right: 1px solid #333;
+            width: 200px;
+            border:#E0E0E0;
+            border-top: 1px solid;
+            border-bottom: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
             position: absolute;
             z-index: 9999;
             display: block;
@@ -101,6 +103,8 @@
                 });
             })
         })
+
+        var returnedData;
         function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
@@ -116,7 +120,9 @@
                     alert('Error: ' + xhr.statusText);
                 },
                 success: function (result) {
-                    var returnedData = JSON.parse(result);
+                    returnedData = JSON.parse(result);
+                    
+
                     $('.removableRow').remove();
                     $('.templateRow').hide();
                     if (returnedData.length == 0) {
@@ -208,80 +214,84 @@
 
 
 
-        var $ = function (id) {
+        var $ = function (id)
+        {
             return "string" == typeof id ? document.getElementById(id) : id;
         }
-        var Bind = function (object, fun) {
+        var combine = function (result, a) {
             return function () {
-                return fun.apply(object, arguments);
+                return a.apply(result, arguments);
             }
         }
-        function AutoComplete(obj, autoObj, arr) {
-            this.obj = $(obj);        //input
-            this.autoObj = $(autoObj);//node on DIV
-            this.value_arr = arr;        //no repeat
+        function AutoComplete(input, node_Div, repeat) {
+            this.input = $(input);        
+            this.node_Div = $(node_Div);
+            this.noRepeat = repeat;        
             this.index = -1;          //index on div
-            this.search_value = "";   //save searching input
+            this.searchValue = "";   //save searching input
         }
         AutoComplete.prototype = {
             //initialize the div position
-            init: function () {
-                this.autoObj.style.left = this.obj.offsetLeft + "px";
-                this.autoObj.style.top = this.obj.offsetTop + this.obj.offsetHeight +35 + "px";
-                this.autoObj.style.width = this.obj.offsetWidth - 2 + "px";
+            initialize: function () {
+                this.node_Div.style.left = this.input.offsetLeft + "px";
+                this.node_Div.style.top = this.input.offsetTop + this.input.offsetHeight +35 + "px";
+                this.node_Div.style.width = this.input.offsetWidth - 2 + "px";
             },
 
-            deleteDIV: function () {
-                while (this.autoObj.hasChildNodes()) {
-                    this.autoObj.removeChild(this.autoObj.firstChild);
+            deleteDiv: function () {
+                while (this.node_Div.hasChildNodes()) {
+                    this.node_Div.removeChild(this.node_Div.firstChild);
                 }
-                this.autoObj.className = "auto_hidden";
+                this.node_Div.className = "auto_hidden";
             },
 
-            setValue: function (_this) {
+            setValue: function (object) {
                 return function () {
-                    _this.obj.value = this.seq;
-                    _this.autoObj.className = "auto_hidden";
+                    object.input.value = this.seq;
+                    object.node_Div.className = "auto_hidden";
                 }
             },
 
-            autoOnmouseover: function (_this, _div_index) {
+            autoOnmouseover: function (object, index_div) {
                 return function () {
-                    _this.index = _div_index;
-                    var length = _this.autoObj.children.length;
-                    for (var j = 0; j < length; j++) {
-                        if (j != _this.index) {
-                            _this.autoObj.childNodes[j].className = 'auto_onmouseout';
+                    var length;
+                    object.index = index_div;
+                    length = object.node_Div.children.length;
+                    for (var i = 0; i < length; i++) {
+                        if (i != object.index) {
+                            object.node_Div.childNodes[i].className = 'auto_onmouseout';
                         } else {
-                            _this.autoObj.childNodes[j].className = 'auto_onmouseover';
+                            object.node_Div.childNodes[i].className = 'auto_onmouseover';
                         }
                     }
                 }
             },
 
-            changeClassname: function (length) {
+            nameChanged: function (length) {
                 for (var i = 0; i < length; i++) {
                     if (i != this.index) {
-                        this.autoObj.childNodes[i].className = 'auto_onmouseout';
+                        this.node_Div.childNodes[i].className = 'auto_onmouseout';
                     } else {
-                        this.autoObj.childNodes[i].className = 'auto_onmouseover';
-                        this.obj.value = this.autoObj.childNodes[i].seq;
+                        this.node_Div.childNodes[i].className = 'auto_onmouseover';
+                        this.input.value = this.node_Div.childNodes[i].seq;
                     }
                 }
             }
             ,
 
             pressKey: function (event) {
-                var length = this.autoObj.children.length;
+                var length = this.node_Div.children.length;
                 //"↓"
                 if (event.keyCode == 40) {
                     ++this.index;
-                    if (this.index > length) {
+                    if (this.index > length)
+                    {
                         this.index = 0;
-                    } else if (this.index == length) {
-                        this.obj.value = this.search_value;
                     }
-                    this.changeClassname(length);
+                    else if (this.index == length) {
+                        this.input.value = this.searchValue;
+                    }
+                    this.nameChanged(length);
                 }
                 //"↑"
                 else if (event.keyCode == 38) {
@@ -289,13 +299,13 @@
                     if (this.index < -1) {
                         this.index = length - 1;
                     } else if (this.index == -1) {
-                        this.obj.value = this.search_value;
+                        this.input.value = this.searchValue;
                     }
-                    this.changeClassname(length);
+                    this.nameChanged(length);
                 }
                 //enter
                 else if (event.keyCode == 13) {
-                    this.autoObj.className = "auto_hidden";
+                    this.node_Div.className = "auto_hidden";
                     this.index = -1;
                 } else {
                     this.index = -1;
@@ -304,31 +314,31 @@
 
             start: function (event) {
                 if (event.keyCode != 13 && event.keyCode != 38 && event.keyCode != 40) {
-                    this.init();
-                    this.deleteDIV();
-                    this.search_value = this.obj.value;
-                    var valueArr = this.value_arr;
-                    valueArr.sort();
-                    if (this.obj.value.replace(/(^\s*)|(\s*$)/g, '') == "") { return; }
-                    try { var reg = new RegExp("(" + this.obj.value + ")", "i"); }
+                    this.initialize();
+                    this.deleteDiv();
+                    this.searchValue = this.input.value;
+                    var arrV = this.noRepeat;
+                    arrV.sort();
+                    if (this.input.value.replace(/(^\s*)|(\s*$)/g, '') == "") { return; }
+                    try { var reg = new RegExp("(" + this.input.value + ")", "i"); }
                     catch (e) { return; }
-                    var div_index = 0;
-                    for (var i = 0; i < valueArr.length; i++) {
-                        if (reg.test(valueArr[i])) {
+                    var index = 0;
+                    for (var i = 0; i < arrV.length; i++) {
+                        if (reg.test(arrV[i])) {
                             var div = document.createElement("div");
                             div.className = "auto_onmouseout";
-                            div.seq = valueArr[i];
+                            div.seq = arrV[i];
                             div.onclick = this.setValue(this);
-                            div.onmouseover = this.autoOnmouseover(this, div_index);
-                            div.innerHTML = valueArr[i].replace(reg, "<strong>$1</strong>");
-                            this.autoObj.appendChild(div);
-                            this.autoObj.className = "auto_show";
-                            div_index++;
+                            div.onmouseover = this.autoOnmouseover(this, index);
+                            div.innerHTML = arrV[i].replace(reg, "<strong>$1</strong>");
+                            this.node_Div.appendChild(div);
+                            this.node_Div.className = "auto_show";
+                            index++;
                         }
                     }
                 }
                 this.pressKey(event);
-                window.onresize = Bind(this, function () { this.init(); });
+                window.onresize = combine(this, function () { this.initialize(); });
             }
         }
      
@@ -364,7 +374,7 @@
                             <input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
                             <div class="auto_hidden" id="auto"></div>
                             <script>
-                                var autoComplete = new AutoComplete('search_FirstName', 'auto', ['not', 'finished', 'yet', 'need', 'the', 'data']);
+                                var autoComplete = new AutoComplete('search_FirstName', 'auto', returnedData);//returnedData caused sort, event error
                             </script>
 
                         </td>
