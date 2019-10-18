@@ -181,11 +181,11 @@ namespace SUP_Library
                     // Email
                     par.Add("@email", client.Email.Email);
                     // Address
-                    par.Add("@line1",client.Address.LineOne);
-                    par.Add("@line2",client.Address.LineTwo);
+                    par.Add("@line1",client.Address.Line1);
+                    par.Add("@line2",client.Address.Line2);
                     par.Add("@city",client.Address.City);
                     par.Add("@state",client.Address.State);
-                    par.Add("@zipCode",client.Address.Zipcode);
+                    par.Add("@zipCode",client.Address.Zip);
                     
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
                                     

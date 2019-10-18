@@ -101,12 +101,6 @@ namespace SUP_MVC.Controllers
                 var clientId = args;
                 
                 var Clients = DatabaseConnection.GetClientByIdFull(clientId);
-                // NOTE: The below line of code will be added once the "GetClientOrganizationByClientId" functionality is implemented.
-                //Clients.Org = DatabaseConnection.GetClientOrganizationById(clientId);
-
-                // NOTE: The below line of code will be added once the "GetClientAddressByClientId" functionality is implemented.
-                //Clients.Org = DatabaseConnection.GetClientAddressById(clientId);
-
                 var json = JsonConvert.SerializeObject(Clients);
 
                 return json;
@@ -126,21 +120,37 @@ namespace SUP_MVC.Controllers
             {
 
                 string[] separatedArgs = args.Split(',');
-                if (separatedArgs.Length < 3)
+                if (separatedArgs.Length < 4)
                 {
                     throw (new Exception("Oopsie"));
                 }
-                var firstName = separatedArgs[0];
-                var lastName = separatedArgs[1];
-                var organization = separatedArgs[2];
+                var clientId = separatedArgs[0];
+                var firstName = separatedArgs[1];
+                var lastName = separatedArgs[2];
+                var organization = separatedArgs[3];
+                var Client = DatabaseConnection.GetClientById(clientId);
+                if (Client != null)
+                {
+                    Client.First_Name = firstName;
+                    Client.Last_Name = lastName;
+                    Client.Org = new SUP_Library.DBComponent.Organization();
+                    Client.Org.Org_Name = organization;
 
-                // NOTE: The below line of code will be added once the "GetClientById" functionality is implemented.
-                var c = new SUP_Library.DBComponent.Client();
-                c.First_Name = firstName;
-                c.Last_Name = lastName;
-                c.Org = new SUP_Library.DBComponent.Organization();
-                c.Org.Org_Name = organization;
-                DatabaseConnection.addClient(c);
+                    DatabaseConnection.updateClient(Client);
+                }
+                else
+                {
+                    Client = new SUP_Library.DBComponent.Client();
+
+                    Int32.TryParse(clientId, out int numValue);
+                    Client.ID =  numValue;
+                    Client.First_Name = firstName;
+                    Client.Last_Name = lastName;
+                    Client.Org = new SUP_Library.DBComponent.Organization();
+                    Client.Org.Org_Name = organization;
+
+                    DatabaseConnection.addClient(Client);
+                }
 
 
                 return true;
