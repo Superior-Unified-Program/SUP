@@ -95,14 +95,12 @@
                     if (currentClient['Org'] != null) {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
-                    console.log(currentClient['Address']);
+
                     if (currentClient['Address'] != null) {
-                        console.log(currentClient['Address']['LineOne']);
-                        $('.addressLineOneInput').val(currentClient['Address']['LineOne']);
+                        $('.addressLineOneInput').val(currentClient['Address']['Line1']);
                     }
                     if (currentClient['Address'] != null) {
-                        console.log(currentClient['Address']['LineTwo']);
-                        $('.addressLineTwoInput').val(currentClient['Address']['LineTwo']);
+                        $('.addressLineTwoInput').val(currentClient['Address']['Line2']);
                     }
                     if (currentClient['Address'] != null) {
                         $('.cityInput').val(currentClient['Address']['City']);
@@ -111,7 +109,7 @@
                         $('.stateInput').val(currentClient['Address']['State']);
                     }
                     if (currentClient['Address'] != null) {
-                        $('.zipInput').val(currentClient['Address']['Zipcode']);
+                        $('.zipInput').val(currentClient['Address']['Zip']);
                     }
                     var company = currentClient["Company"];
                     var isActive = currentClient["Active"];
@@ -269,7 +267,7 @@
 					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="17"></textArea><div>
 				</div>
 				<div class="row">
-					<div class="saveEditCell"><input onclick="saveClientData()" value="Save" id="button" tabindex="18"></div>
+					<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="18"></div>
 				</div>
 			</div>
 		</form>

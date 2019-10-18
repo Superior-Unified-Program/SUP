@@ -142,8 +142,6 @@ namespace SUP_MVC.Controllers
                 {
                     Client = new SUP_Library.DBComponent.Client();
 
-                    Int32.TryParse(clientId, out int numValue);
-                    Client.ID =  numValue;
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
                     Client.Org = new SUP_Library.DBComponent.Organization();
