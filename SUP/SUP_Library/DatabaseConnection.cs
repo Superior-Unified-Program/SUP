@@ -133,15 +133,15 @@ namespace SUP_Library
         */
 
         // addClient and updateClient are very similar, so these methods are being passed to a larger method called alterClient which changes a few things depending on which stored proc they are calling 
-        public static void addClient(Client newClient)
+        public static int addClient(Client newClient)
         {
-            alterClient(newClient, true);
+            return alterClient(newClient, true);
         }
-        public static void updateClient(Client client)
+        public static int updateClient(Client client)
         {
-            alterClient(client, false);
+            return alterClient(client, false);
         }
-        private static void alterClient(Client client, bool newClient)
+        private static int alterClient(Client client, bool newClient)
         {
             // Fill out client class and pass to addClient/updateClient to add/update client and all associated data in database
             // Uses the database addClient or updateClient stored procedures
@@ -164,8 +164,8 @@ namespace SUP_Library
                     // Client base class parameters
                     if (!newClient) 
                         par.Add("@ID", client.ID); // updateClient needs the client ID
-                    if (newClient)
-                        par.Add("@prefix", client.Prefix); // updateClient doesn't support prefix yet
+                    
+                    par.Add("@prefix", client.Prefix);
                     par.Add("@firstName", client.First_Name);
                     par.Add("@lastName", client.Last_Name);
                     par.Add("@middleInitial", client.Middle_initial);
@@ -186,13 +186,21 @@ namespace SUP_Library
                     par.Add("@city",client.Address.City);
                     par.Add("@state",client.Address.State);
                     par.Add("@zipCode",client.Address.Zip);
+
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
                     
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
-                                    
+                   
+                    // get ID and return it
+                    int result = par.Get<int>("result");
+                    System.Diagnostics.Debug.WriteLine("ID is: " + result);
+                    return result;
+                   
                 }
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
         }
