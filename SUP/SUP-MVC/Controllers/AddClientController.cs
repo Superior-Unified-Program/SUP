@@ -120,22 +120,56 @@ namespace SUP_MVC.Controllers
             {
 
                 string[] separatedArgs = args.Split(',');
-                if (separatedArgs.Length < 4)
+                if (separatedArgs.Length < 13)
                 {
                     throw (new Exception("Oopsie"));
                 }
                 var clientId = separatedArgs[0];
                 var firstName = separatedArgs[1];
                 var lastName = separatedArgs[2];
-                var organization = separatedArgs[3];
+                var MiddleInitial = separatedArgs[3];
+                var organization = separatedArgs[4];
+                var companyName = separatedArgs[5];
+                var title = separatedArgs[6];
+                var Line1 = separatedArgs[7];
+                var Line2 = separatedArgs[8];
+                var City = separatedArgs[9];
+                var State = separatedArgs[10];
+                var Zip = separatedArgs[11];
+                var Email = separatedArgs[12];
+                var Note = separatedArgs[13];
+                var Phone = separatedArgs[14];
+                var Active = separatedArgs[15];
                 var Client = DatabaseConnection.GetClientById(clientId);
                 if (Client != null)
                 {
+
+                    int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    Client.Org = new SUP_Library.DBComponent.Organization();
-                    Client.Org.Org_Name = organization;
-
+                    if (MiddleInitial?.Length >= 1)
+                    {
+                        Client.Middle_initial = MiddleInitial[0];
+                    }
+                    Client.Org = new SUP_Library.DBComponent.Organization
+                    {
+                        Client_ID = intClientId,
+                        Org_Name = companyName,
+                        Org_Type = organization,
+                        Title = title
+                    };
+                    Client.Email = new SUP_Library.DBComponent.EmailAddress
+                    {
+                        Client_ID = intClientId,
+                        Email = Email
+                    };
+                    Client.Phone = new SUP_Library.DBComponent.PhoneNumber
+                    {
+                        Client_ID = intClientId,
+                        Number = Phone
+                    };
+                    Client.Notes = Note;
+                    Client.Active = (Active == "true");
                     DatabaseConnection.updateClient(Client);
                 }
                 else
@@ -144,9 +178,22 @@ namespace SUP_MVC.Controllers
 
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    Client.Org = new SUP_Library.DBComponent.Organization();
-                    Client.Org.Org_Name = organization;
-
+                    Client.Org = new SUP_Library.DBComponent.Organization
+                    {
+                        Org_Name = companyName,
+                        Org_Type = organization,
+                        Title = title
+                    };
+                    Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
+                    Client.Email = new SUP_Library.DBComponent.EmailAddress
+                    {
+                        Email = Email
+                    };
+                    Client.Phone = new SUP_Library.DBComponent.PhoneNumber
+                    {
+                        Number = Phone
+                    };
+                    Client.Notes = Note;
                     DatabaseConnection.addClient(Client);
                 }
 

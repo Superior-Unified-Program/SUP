@@ -143,9 +143,24 @@
             }
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
-            var organization = $('.lastNameInput').text();
+            var middleInitial = $('.middleInitialInput').val();
+            var company = $('.companyInput').text();
+            var organization = $('.organizationInput').text();
+            var title = $('.titleInput').val();
+            var Line1 = $('.addressLineOneInput').val();
+            var Line2 = $('.addressLineTwoInput').val();
+            var City = $('.cityInput').val();
+            var State = $('.stateInput').val();
+            var Zip = $('.zipInput').val();
+            var Email = $('.emailInput').val();
+            var Note = $('.noteInput').val();
+            var Phone = $(".phoneInput").val();
+            var Active = $(".activeInput").prop( "checked");
 
-            var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + organization;
+            var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
+                organization + ',' + company + ',' + title +
+                ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip + 
+                ',' + Email + ',' + Note + ',' + Phone + ',' + Active;
             $.ajax({
                 url: '/AddClient/UpdateClient',
                 type: 'POST',
@@ -156,7 +171,7 @@
                 },
                 success: function (result) {
                     console.log('Yeay!')
-                    console(JSON.parse(result));
+                    console.log(JSON.parse(result));
                 },
                 async: true,
                 processData: false
@@ -190,7 +205,7 @@
 						</select>
 					</div>
 					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
-					<div class="cell">Job title<br /><input type="text" tabindex="7"></div>
+					<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
 				</div>
 				<div class="tableHeader">Contact Information</div>
 				<div class="row">

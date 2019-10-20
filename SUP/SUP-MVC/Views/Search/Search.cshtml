@@ -318,7 +318,9 @@
                     this.deleteDiv();
                     this.searchValue = this.input.value;
                     var arrV = this.noRepeat;
-                    arrV.sort();
+                    if (arrV != undefined && arrV != null) {
+                        arrV.sort();
+                    }
                     if (this.input.value.replace(/(^\s*)|(\s*$)/g, '') == "") { return; }
                     try { var reg = new RegExp("(" + this.input.value + ")", "i"); }
                     catch (e) { return; }
