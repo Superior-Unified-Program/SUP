@@ -1,13 +1,19 @@
 ﻿@model SUP_MVC.Models.Search.SearchViewModel
 
 @{
-	ViewData["Title"] = "Search";
+    ViewData["Title"] = "Search";
 }
 <html>
 <head>
     <meta charset="utf-8">
     <title>Search</title>
     <style>
+        body {
+            margin-left: 0px;
+            margin-top: 0px;
+            margin-right: 0px;
+            margin-bottom: 0px;
+        }
         .organize {
             width: 100%;
             height: 100%;
@@ -43,6 +49,41 @@
             left: 10%;
             right: 10%;
         }
+
+        .auto_hidden {
+            width: 200px;
+            border:#E0E0E0;
+            border-top: 1px solid ;
+            border-bottom: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
+            position: absolute;
+            display: none;
+        }
+
+        .auto_show {
+            width: 200px;
+            border:#E0E0E0;
+            border-top: 1px solid;
+            border-bottom: 1px solid;
+            border-left: 1px solid;
+            border-right: 1px solid;
+            position: absolute;
+            z-index: 9999;
+            display: block;
+        }
+
+        .auto_onmouseover {
+            color: #ffffff;
+            background-color: highlight;
+            width: 100%;
+        }
+
+        .auto_onmouseout {
+            color: #000000;
+            width: 100%;
+            background-color: #ffffff;
+        }
     </style>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
@@ -62,6 +103,8 @@
                 });
             })
         })
+
+        var returnedData;
         function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
@@ -77,7 +120,9 @@
                     alert('Error: ' + xhr.statusText);
                 },
                 success: function (result) {
-                    var returnedData = JSON.parse(result);
+                    returnedData = JSON.parse(result);
+                    
+
                     $('.removableRow').remove();
                     $('.templateRow').hide();
                     if (returnedData.length == 0) {
@@ -89,9 +134,9 @@
                         Row.removeClass('templateRow').addClass('removableRow').show();
                         Row.find('.rowFirstName').val(currentRow['First_Name']);
                         Row.find('.rowLastName').val(currentRow['Last_Name']);
-                        if (currentRow['Email'] != null) 
+                        if (currentRow['Email'] != null)
                             Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
-                        if (currentRow['Phone'] != null) 
+                        if (currentRow['Phone'] != null)
                             Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
                         if (currentRow['Org'] != null) {
                             Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
@@ -130,6 +175,7 @@
             });
         }
 
+
         function editClient(clientId) {
             location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
@@ -167,7 +213,139 @@
         }
 
 
-/**/</script>
+
+        var $ = function (id)
+        {
+            return "string" == typeof id ? document.getElementById(id) : id;
+        }
+        var combine = function (result, a) {
+            return function () {
+                return a.apply(result, arguments);
+            }
+        }
+        function AutoComplete(input, node_Div, repeat) {
+            this.input = $(input);        
+            this.node_Div = $(node_Div);
+            this.noRepeat = repeat;        
+            this.index = -1;          //index on div
+            this.searchValue = "";   //save searching input
+        }
+        AutoComplete.prototype = {
+            //initialize the div position
+            initialize: function () {
+                this.node_Div.style.left = this.input.offsetLeft + "px";
+                this.node_Div.style.top = this.input.offsetTop + this.input.offsetHeight +35 + "px";
+                this.node_Div.style.width = this.input.offsetWidth - 2 + "px";
+            },
+
+            deleteDiv: function () {
+                while (this.node_Div.hasChildNodes()) {
+                    this.node_Div.removeChild(this.node_Div.firstChild);
+                }
+                this.node_Div.className = "auto_hidden";
+            },
+
+            setValue: function (object) {
+                return function () {
+                    object.input.value = this.seq;
+                    object.node_Div.className = "auto_hidden";
+                }
+            },
+
+            autoOnmouseover: function (object, index_div) {
+                return function () {
+                    var length;
+                    object.index = index_div;
+                    length = object.node_Div.children.length;
+                    for (var i = 0; i < length; i++) {
+                        if (i != object.index) {
+                            object.node_Div.childNodes[i].className = 'auto_onmouseout';
+                        } else {
+                            object.node_Div.childNodes[i].className = 'auto_onmouseover';
+                        }
+                    }
+                }
+            },
+
+            nameChanged: function (length) {
+                for (var i = 0; i < length; i++) {
+                    if (i != this.index) {
+                        this.node_Div.childNodes[i].className = 'auto_onmouseout';
+                    } else {
+                        this.node_Div.childNodes[i].className = 'auto_onmouseover';
+                        this.input.value = this.node_Div.childNodes[i].seq;
+                    }
+                }
+            }
+            ,
+
+            pressKey: function (event) {
+                var length = this.node_Div.children.length;
+                //"↓"
+                if (event.keyCode == 40) {
+                    ++this.index;
+                    if (this.index > length)
+                    {
+                        this.index = 0;
+                    }
+                    else if (this.index == length) {
+                        this.input.value = this.searchValue;
+                    }
+                    this.nameChanged(length);
+                }
+                //"↑"
+                else if (event.keyCode == 38) {
+                    this.index--;
+                    if (this.index < -1) {
+                        this.index = length - 1;
+                    } else if (this.index == -1) {
+                        this.input.value = this.searchValue;
+                    }
+                    this.nameChanged(length);
+                }
+                //enter
+                else if (event.keyCode == 13) {
+                    this.node_Div.className = "auto_hidden";
+                    this.index = -1;
+                } else {
+                    this.index = -1;
+                }
+            },
+
+            start: function (event) {
+                if (event.keyCode != 13 && event.keyCode != 38 && event.keyCode != 40) {
+                    this.initialize();
+                    this.deleteDiv();
+                    this.searchValue = this.input.value;
+                    var arrV = this.noRepeat;
+                    if (arrV != undefined && arrV != null) {
+                        arrV.sort();
+                    }
+                    if (this.input.value.replace(/(^\s*)|(\s*$)/g, '') == "") { return; }
+                    try { var reg = new RegExp("(" + this.input.value + ")", "i"); }
+                    catch (e) { return; }
+                    var index = 0;
+                    for (var i = 0; i < arrV.length; i++) {
+                        if (reg.test(arrV[i])) {
+                            var div = document.createElement("div");
+                            div.className = "auto_onmouseout";
+                            div.seq = arrV[i];
+                            div.onclick = this.setValue(this);
+                            div.onmouseover = this.autoOnmouseover(this, index);
+                            div.innerHTML = arrV[i].replace(reg, "<strong>$1</strong>");
+                            this.node_Div.appendChild(div);
+                            this.node_Div.className = "auto_show";
+                            index++;
+                        }
+                    }
+                }
+                this.pressKey(event);
+                window.onresize = combine(this, function () { this.initialize(); });
+            }
+        }
+     
+
+            /**/</script>
 </head>
 
 
@@ -177,46 +355,58 @@
     </div>
     <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
         <div style="position:relative; margin-left: 25%; width: 650px;" align="right">
-            <table style="position:relative; left: -90px">
-                <tr>
-                    <td>
-                        <p align="center">First Name</p>
-                    </td>
-                    <td>
-                        <p align="center">Last Name</p>
-                    </td>
-                    <td>
-                        <p align="center">Organization Type</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <input class="searchFirstName" type="text" onKeyUp="Search()" placeholder="First Name">
-                    </td>
-                    <td>
-                        <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
-                    </td>
-                    <td>
-                        <select class="searchOrganization" onKeyUp="Search()" name="category">
-                            <!--We need to keep an empty option to allow searches that do not include organization-->
-                            <option value=""></option>
-                            <option value="business">Business</option>
-                            <option value="electedOfficial">Elected Official</option>
-                            <option value="school">School</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="middle">Middle</option>
-                            <option value="highSchool">High School</option>
-                            <option value="higherEd">Higher Ed.</option>
-                            <option value="nonProfit">Non-profit</option>
-                            <option value="UWSystem">UW-System</option>
-                            <option value="boardOfRegent">Board of Regent</option>
-                            <option value="foundation">Foundation</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td height="10px"></td></tr>
-            </table>
+            <form>
+                <table style="position:relative; left: -90px">
+                    <tr>
+                        <td>
+                            <p align="center">First Name</p>
+                        </td>
+                        <td>
+                            <p align="center">Last Name</p>
+                        </td>
+                        <td>
+                            <p align="center">Organization Type</p>
+                        </td>
+                    </tr>
+
+
+                    <tr>
+                        <td>
+
+                            <input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+                            <div class="auto_hidden" id="auto"></div>
+                            <script>
+                                var autoComplete = new AutoComplete('search_FirstName', 'auto', returnedData);//returnedData caused sort, event error
+                            </script>
+
+                        </td>
+                        <td>
+                            <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
+                        </td>
+                        <td>
+                            <select class="searchOrganization" onKeyUp="Search()" name="category">
+                                <!--We need to keep an empty option to allow searches that do not include organization-->
+                                <option value=""></option>
+                                <option value="business">Business</option>
+                                <option value="electedOfficial">Elected Official</option>
+                                <option value="school">School</option>
+                                <option value="elementary">Elementary</option>
+                                <option value="middle">Middle</option>
+                                <option value="highSchool">High School</option>
+                                <option value="higherEd">Higher Ed.</option>
+                                <option value="nonProfit">Non-profit</option>
+                                <option value="UWSystem">UW-System</option>
+                                <option value="boardOfRegent">Board of Regent</option>
+                                <option value="foundation">Foundation</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr><td height="10px"></td></tr>
+
+
+                </table>
+            </form>
             <div style="float:left; margin-left: calc(10% + 180px);">
                 <p style="float:left;">Display active only: </p>
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />

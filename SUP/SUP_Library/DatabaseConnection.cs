@@ -94,6 +94,9 @@ namespace SUP_Library
 
         // all connections related to Client table go here
 
+
+
+        /*
         public static void addClient(Client newClient)
         {
             string conString = getConnectionString();
@@ -127,7 +130,115 @@ namespace SUP_Library
                 throw exc;
             }
         }
-        public static List<Client> QueryClient(string qLastName, string qFirstName, string qOrganization)
+        */
+
+        // addClient and updateClient are very similar, so these methods are being passed to a larger method called alterClient which changes a few things depending on which stored proc they are calling 
+        public static int addClient(Client newClient)
+        {
+            return alterClient(newClient, true);
+        }
+        public static int updateClient(Client client)
+        {
+            return alterClient(client, false);
+        }
+        private static int alterClient(Client client, bool newClient)
+        {
+            // Fill out client class and pass to addClient/updateClient to add/update client and all associated data in database
+            // Uses the database addClient or updateClient stored procedures
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+
+                    // no support for assistant yet, until we figure out exactly how we are going to implement that
+                    string sql; //name of stored procedure
+
+                    if (newClient) // if newClient is true, then this method is being called from addClient
+                        sql = "addClient";
+                    else
+                        sql = "updateClient";
+
+                    // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
+
+                    // Client base class parameters
+                    if (!newClient) 
+                        par.Add("@ID", client.ID); // updateClient needs the client ID
+                    
+                    par.Add("@prefix", client.Prefix);
+                    par.Add("@firstName", client.First_Name);
+                    par.Add("@lastName", client.Last_Name);
+                    par.Add("@middleInitial", client.Middle_initial);
+                    par.Add("@permitNum", client.Permit_Num);
+                    par.Add("@active", client.Active);
+                    par.Add("@notes", client.Notes);
+                    // Organization Parameters
+                    par.Add("@orgName", client.Org.Org_Name);
+                    par.Add("@orgType", client.Org.Org_Type);
+                    par.Add("@title", client.Org.Title);
+                    // Phone
+                    par.Add("@phoneNumber", client.Phone.Number);
+                    // Email
+                    par.Add("@email", client.Email.Email);
+                    // Address
+                    par.Add("@line1",client.Address.Line1);
+                    par.Add("@line2",client.Address.Line2);
+                    par.Add("@city",client.Address.City);
+                    par.Add("@state",client.Address.State);
+                    par.Add("@zipCode",client.Address.Zip);
+
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+                    
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                   
+                    // get ID and return it
+                    int result = par.Get<int>("result");
+                    System.Diagnostics.Debug.WriteLine("ID is: " + result);
+                    return result;
+                   
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+       
+        public static List<Client> checkForNearMatch(Client client)
+        {
+            return checkForNearMatch(client.Last_Name, client.First_Name);
+        }
+
+        public static List<Client> checkForNearMatch(string qLastName, string qFirstName)
+        {
+            // Implements the database stored procedure checkForNearMatch
+            // Takes a first and last name and returns a list of Client objects with their IDs and names only filled out which are a near match
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+
+                    var sql = "checkForNearMatch";   // name of stored procedure              
+
+                    // Send request for checkForNearMatch stored procedure with values for lastName, firstName provided
+                    var data = connection.Query<Client>(sql,
+                               new { lastName = qLastName, firstName = qFirstName }, commandType: CommandType.StoredProcedure).ToList();
+
+                    return data; // return (client) list of results;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+        }
+
+        public static List<Client> QueryClient(Client client)
+        {
+            return QueryClient(client.Last_Name, client.First_Name, client.Org.Org_Type);
+        }
+        public static List<Client> QueryClient(string qLastName, string qFirstName, string qOrgType)
         {
             try
             {
@@ -140,7 +251,7 @@ namespace SUP_Library
                     // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
                     // The joined table is split at the Client_ID column
                     var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, 
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();                                 
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();                                 
 
                     return data ; // return (client) list of results;
                 }
@@ -152,7 +263,12 @@ namespace SUP_Library
 
 
         }
-        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrganization)
+
+        public static List<Client> QueryClientFull(Client client)
+        {
+            return QueryClientFull(client.Last_Name, client.First_Name, client.Org.Org_Type);
+        }
+        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType)
         {
             /* 
              * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
@@ -172,7 +288,7 @@ namespace SUP_Library
                     // The joined tables are split at the Client_ID column
                     var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
                                { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrganization }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
 
                     return data; // return (client) list of results;
                 }
