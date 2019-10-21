@@ -30,20 +30,20 @@ CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Typ
 CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10) Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, Line2, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
-CREATE TABLE Phone ( Client_ID int, [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
-CONSTRAINT FK_Phone_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Phone ( Client_ID int, Type varchar(10), [Number] varchar(11), CONSTRAINT PK_Phone_TEST PRIMARY KEY ( Client_ID, [Type]),
+CONSTRAINT FK_Phone_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Email')
-CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
-CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Email ( Client_ID int, Type varchar(10), [Email] varchar(30), CONSTRAINT PK_Email_TEST PRIMARY KEY ( Client_ID, [Type]), 
+CONSTRAINT FK_Email_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
 CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20), 
@@ -60,6 +60,7 @@ CREATE TABLE Assists ( Boss_ID int, Assistant_ID int, Notes varchar(30),
 CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
 CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
+
 
 GO
 
