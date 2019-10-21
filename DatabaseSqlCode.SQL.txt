@@ -21,9 +21,7 @@ IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
 --update roles
-CREATE ROLE executeSP
-GRANT EXECUTE TO executeSP
-ALTER ROLE [executeSP] ADD MEMBER [SUPuser]
+GRANT EXECUTE TO SUPuser
 GO
 
 --create tables
