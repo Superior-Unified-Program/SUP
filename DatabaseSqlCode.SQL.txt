@@ -230,28 +230,30 @@ BEGIN
 	SELECT * FROM Client WHERE ID = @Client_Id 
 
 END
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
+
 GO
 -- =============================================
--- Create date: 10/12/2019
+-- Create date: 10/22/2019
 -- Description:	updates tables based on parameters given
 -- =============================================
 
 ALTER   PROCEDURE [dbo].[updateClient]
 	-- Add the parameters for the stored procedure here
-	@ID int, @firstName varchar(50) = null, 
+	@ID int, @prefix varchar(100) = null, @firstName varchar(50) = null, 
 	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
 	@permitNum varchar(50) = null, @active bit = null, 
-	@notes varchar(30) = null, @orgName varchar(30), 
-	@orgType varchar(10), @title varchar(20) = null, 
-	@phoneNumber varchar(11) = null, @email varchar(30), 
+	@notes varchar(30) = null, 
+	@orgName varchar(30), @orgType varchar(10), @title varchar(20) = null, 
+	@Business_phoneNumber varchar(11) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_email varchar(30), @Personal_email varchar(30) = null, 
 	@line1 varchar(35) = null, @line2 varchar(35) = null, 
 	@city varchar(25) = null, @state varchar(2) = null, 
 	@zipCode varchar(5) = null, @boss int = null, 
 	@assistant int = null
+
+	-- need to add personalPhone, businessPhone, personalEmail, businessEmail. phone number and email need to be removed.
+	-- type isnt needed since its implied based on the parameter name.
+	-- the types are stored as 'personal' and 'business' based on how addClient adds them in.
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -259,6 +261,8 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- update values in the tables.
+	IF @prefix IS NOT NULL
+		UPDATE Client SET Prefix = @prefix WHERE ID = @ID
 	IF @firstName IS NOT NULL 
 		UPDATE Client SET First_Name = @firstName WHERE ID = @ID
 	IF @lastName IS NOT NULL 
@@ -268,7 +272,7 @@ BEGIN
 	IF @permitNum IS NOT NULL 
 		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
 	IF @active IS NOT NULL 
-		UPDATE Client SET Permit_Num = @active WHERE ID = @ID
+		UPDATE Client SET Active = @active WHERE ID = @ID
 	IF @notes IS NOT NULL 
 		UPDATE Client SET Notes = @notes WHERE ID = @ID
 	-- 
@@ -281,29 +285,55 @@ BEGIN
 		UPDATE Works_For SET Title = @title 
 			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
 	--
-	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND Number = @phoneNumber) = 0 
-		INSERT INTO Phone(Client_ID, Number) VALUES(@ID, @phoneNumber)
-	IF @phoneNumber IS NOT NULL 
-		UPDATE Phone SET Number = @phoneNumber 
-			WHERE Client_ID = @ID AND Number = @phoneNumber
+	/*
+	These need to be updated and new parameters need to be added to the begining of the procedure.
+	type isnt needed since its implied based on the parameter name.
+	the types are stored as 'personal' and 'business' based on how addClient adds them in.
+	*/
+	--------------------------------------------------------------------------------------------
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'business') = 0
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'business', @Business_phoneNumber)
+	IF @Business_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Business_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'personal') = 0
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'personal', @Personal_phoneNumber)
+	IF @Personal_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Personal_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
 	--
-	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND Email = @email) = 0 
-		INSERT INTO Email(Client_ID, Email) VALUES(@ID, @email)
-	IF @email IS NOT NULL 
-		UPDATE Email SET Email = @email 
-			WHERE Client_ID = @ID AND Email = @email
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'business') = 0 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'business', @Business_email)
+	IF @Business_email IS NOT NULL 
+		UPDATE Email SET Email = @Business_email 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'personal') = 0 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'personal', @Personal_email)
+	IF @Personal_email IS NOT NULL 
+		UPDATE Email SET Email = @Personal_email 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
+	
+	---------------------------------------------------------------------------------------------
 	--
 	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode) = 0 
 		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
 	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
 		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
 			WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode
-	-- 
-	IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
-		INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
-	IF @boss IS NOT NULL OR @assistant IS NOT NULL 
-		Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
-			WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+	
+	
+	-- This errors out right now if assistant or boss is null (which at the moment is always)
+	--IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
+	--	INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
+	--IF @boss IS NOT NULL OR @assistant IS NOT NULL 
+	--	Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
+	--		WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+
+	--SELECT @ID
+
+	return @ID
 
 END
 
