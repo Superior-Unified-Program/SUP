@@ -111,7 +111,7 @@
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
             var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
-            var active = ($('.displayOnlyActiveClientsInput:checked').length >= 1);
+            var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
             $.ajax({
                 url: '/Search/SearchClients',
@@ -461,7 +461,7 @@
 								<option value=""></option>
 								<option value="business">Business</option>
 								<option value="electedOfficial">Elected Official</option>
-								<option value="school">School</option>
+								<option value="educationAll">Education - All</option>
 								<option value="elementary">Elementary</option>
 								<option value="middle">Middle</option>
 								<option value="highSchool">High School</option>
@@ -469,7 +469,7 @@
 								<option value="nonProfit">Non-profit</option>
 								<option value="UWSystem">UW-System</option>
 								<option value="boardOfRegent">Board of Regent</option>
-								<option value="foundation">Foundation</option>
+								<option value="advancement">Advancement</option>
 								<option value="other">Other</option>
 							</select>
 						</td>
@@ -480,7 +480,7 @@
                 </table>
             </form>
             <div style="float:left; margin-left: calc(10% + 180px);">
-                <p style="float:left;">Display active only: </p>
+                <p style="float:left;">Display Inactive: </p>
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
             </div>
         </div>
