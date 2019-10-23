@@ -173,19 +173,22 @@ namespace SUP_Library
                     par.Add("@active", client.Active);
                     par.Add("@notes", client.Notes);
                     // Organization Parameters
-                    par.Add("@orgName", client.Org.Org_Name);
-                    par.Add("@orgType", client.Org.Org_Type);
-                    par.Add("@title", client.Org.Title);
+                    par.Add("@orgName", client.Org?.Org_Name);
+                    par.Add("@orgType", client.Org?.Org_Type);
+                    par.Add("@title", client.Org?.Title);
                     // Phone
-                    par.Add("@phoneNumber", client.Phone.Number);
+                    par.Add("@Business_phoneNumber", client.Phone?.Number);
+                    par.Add("@Personal_phoneNumber", client.Phone?.Number);
                     // Email
-                    par.Add("@email", client.Email.Email);
+                    //par.Add("@email", client.Email.Email);
+                    par.Add("@Business_email", client.Email?.Email);
+                    par.Add("@Personal_email", client.Email?.Email);
                     // Address
-                    par.Add("@line1",client.Address.Line1);
-                    par.Add("@line2",client.Address.Line2);
-                    par.Add("@city",client.Address.City);
-                    par.Add("@state",client.Address.State);
-                    par.Add("@zipCode",client.Address.Zip);
+                    par.Add("@line1",client.Address?.Line1);
+                    par.Add("@line2",client.Address?.Line2);
+                    par.Add("@city",client.Address?.City);
+                    par.Add("@state",client.Address?.State);
+                    par.Add("@zipCode",client.Address?.Zip);
                     
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
                                     
