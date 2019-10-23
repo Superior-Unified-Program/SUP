@@ -177,9 +177,11 @@ namespace SUP_Library
                     par.Add("@orgType", client.Org.Org_Type);
                     par.Add("@title", client.Org.Title);
                     // Phone
-                    par.Add("@phoneNumber", client.Phone.Number);
+                    //par.Add("@phoneNumber", client.Phone.Number);
+                    par.Add("@businessNumber", client.Phone.Number);
                     // Email
-                    par.Add("@email", client.Email.Email);
+                    //par.Add("@email", client.Email.Email);
+                    par.Add("@businessEmail", client.Email.Email);
                     // Address
                     par.Add("@line1",client.Address.Line1);
                     par.Add("@line2",client.Address.Line2);
@@ -305,6 +307,7 @@ namespace SUP_Library
         {
             try
             {
+               
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     var sql = "getClientById";   // name of stored procedure
@@ -318,6 +321,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
         }
@@ -342,6 +346,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
 
