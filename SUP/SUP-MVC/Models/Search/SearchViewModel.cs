@@ -11,6 +11,8 @@ namespace SUP_MVC.Models.Search
 
         public string[] storedClientIds { get; set; }
 
+		public string[] firstNames { get; set; }
+
         //public bool selected
     }
 }

@@ -173,13 +173,16 @@ namespace SUP_Library
                     par.Add("@active", client.Active);
                     par.Add("@notes", client.Notes);
                     // Organization Parameters
-                    par.Add("@orgName", client.Org.Org_Name);
-                    par.Add("@orgType", client.Org.Org_Type);
-                    par.Add("@title", client.Org.Title);
+                    par.Add("@orgName", client.Org?.Org_Name);
+                    par.Add("@orgType", client.Org?.Org_Type);
+                    par.Add("@title", client.Org?.Title);
                     // Phone
-                    par.Add("@phoneNumber", client.Phone.Number);
+                    par.Add("@Business_phoneNumber", client.Phone?.Number);
+                    par.Add("@Personal_phoneNumber", client.Phone?.Number);
                     // Email
-                    par.Add("@email", client.Email.Email);
+                    //par.Add("@email", client.Email.Email);
+                    par.Add("@Business_email", client.Email?.Email);
+                    par.Add("@Personal_email", client.Email?.Email);
                     // Address
                     par.Add("@line1",client.Address.Line1);
                     par.Add("@line2",client.Address.Line2);
@@ -266,9 +269,9 @@ namespace SUP_Library
 
         public static List<Client> QueryClientFull(Client client)
         {
-            return QueryClientFull(client.Last_Name, client.First_Name, client.Org.Org_Type);
+            return QueryClientFull(client.Last_Name, client.First_Name, client.Org.Org_Type, client.Org.Title);
         }
-        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType)
+        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType, string qTitle="")
         {
             /* 
              * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
@@ -288,7 +291,7 @@ namespace SUP_Library
                     // The joined tables are split at the Client_ID column
                     var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
                                { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType, title = qTitle }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
 
                     return data; // return (client) list of results;
                 }
@@ -305,6 +308,7 @@ namespace SUP_Library
         {
             try
             {
+               
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     var sql = "getClientById";   // name of stored procedure
@@ -318,6 +322,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
         }
@@ -342,6 +347,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
 

@@ -158,16 +158,16 @@ namespace SUP_MVC.Controllers
                         Org_Type = organization,
                         Title = title
                     };
-                    Client.Email = new SUP_Library.DBComponent.EmailAddress
+                    /*Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
                         Client_ID = intClientId,
                         Email = Email
-                    };
-                    Client.Phone = new SUP_Library.DBComponent.PhoneNumber
+                    };*/
+                    /*Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
                         Client_ID = intClientId,
                         Number = Phone
-                    };
+                    };*/
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
                     DatabaseConnection.updateClient(Client);

@@ -21,9 +21,7 @@ IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
 --update roles
-CREATE ROLE executeSP
-GRANT EXECUTE TO executeSP
-ALTER ROLE [executeSP] ADD MEMBER [SUPuser]
+GRANT EXECUTE TO SUPuser
 GO
 
 --create tables
@@ -32,20 +30,20 @@ CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Typ
 CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10) Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, Line2, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
-CREATE TABLE Phone ( Client_ID int, [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
-CONSTRAINT FK_Phone_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Phone ( Client_ID int, Type varchar(10), [Number] varchar(11), CONSTRAINT PK_Phone_TEST PRIMARY KEY ( Client_ID, [Type]),
+CONSTRAINT FK_Phone_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Email')
-CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
-CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Email ( Client_ID int, Type varchar(10), [Email] varchar(30), CONSTRAINT PK_Email_TEST PRIMARY KEY ( Client_ID, [Type]), 
+CONSTRAINT FK_Email_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
 CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20), 
@@ -57,17 +55,26 @@ CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ),
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assists')
-CREATE TABLE Assists ( Boss_ID int, Assistant_ID int, Notes varchar(30), 
-CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
-CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
-CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assistant')
+CREATE TABLE Assistant ( Boss_ID int, First_Name varchar(50), Last_Name varchar(50), 
+CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID ), 
+CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID) )
 
 GO
 
-/*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+--creation of any views
+-----------------------------------------------------------------------------------------------------------------------------
+--creates a view that is used in the queryClientFull SP
+CREATE VIEW viewAll
+AS
+SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
+		FULL JOIN [Address] ON ID = Address.Client_ID
+		FULL JOIN Works_For ON ID = Works_For.Client_ID
+GO
 
-GO*/
+--creation of any stored Procedures
+-------------------------------------------------------------------------------------------------------------------------------
+
 
 -- =============================================
 -- Create date: 10/7/2019
@@ -96,12 +103,12 @@ GO
 
 -- =============================================
 -- Create date: 10/7/2019
--- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
+-- Description:	Takes 4 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
 -- =============================================
-CREATE OR ALTER PROCEDURE queryClient
+ALTER       PROCEDURE [dbo].[queryClientFull]
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
-	@orgType varchar(30) = ''
+	@orgType varchar(30) = '', @title varchar(20) = ''
 
 AS
 BEGIN
@@ -110,14 +117,38 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	BEGIN
-	IF @orgType = ''
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') ORDER BY Last_Name, First_Name, Middle_initial
-	else
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%') ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
-	END
+	IF @orgType IS NULL SET @orgType = ''
+	IF @lastName IS NULL SET @lastName = ''
+	IF @firstName IS NULL SET @firstName = ''
+	IF @title IS NULL SET @title = ''
+
+
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Notes varchar(30),
+		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+
+	INSERT INTO #searchResults SELECT * FROM [viewAll]
+
+	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
+
+	UPDATE #searchResults SET Personal_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+	UPDATE #searchResults SET Personal_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Phone = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
+	WHERE First_Name LIKE (@firstName + '%') 
+		AND Last_Name LIKE (@lastName + '%') 
+		AND Org_type LIKE (@orgType + '%')
+		AND Title LIKE (@title + '%') OR Title IS NULL
+	ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
+
+	DROP TABLE #searchResults
 
 END
+GO
 
 -- =============================================
 -- Create date: 10/7/2019
@@ -231,28 +262,30 @@ BEGIN
 	SELECT * FROM Client WHERE ID = @Client_Id 
 
 END
-GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
+
 GO
 -- =============================================
--- Create date: 10/12/2019
+-- Create date: 10/22/2019
 -- Description:	updates tables based on parameters given
 -- =============================================
 
-ALTER   PROCEDURE [dbo].[updateClient]
+CREATE OR ALTER   PROCEDURE updateClient
 	-- Add the parameters for the stored procedure here
-	@ID int, @firstName varchar(50) = null, 
+	@ID int, @prefix varchar(100) = null, @firstName varchar(50) = null, 
 	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
 	@permitNum varchar(50) = null, @active bit = null, 
-	@notes varchar(30) = null, @orgName varchar(30), 
-	@orgType varchar(10), @title varchar(20) = null, 
-	@phoneNumber varchar(11) = null, @email varchar(30), 
+	@notes varchar(30) = null, 
+	@orgName varchar(30), @orgType varchar(10), @title varchar(20) = null, 
+	@Business_phoneNumber varchar(11) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_email varchar(30), @Personal_email varchar(30) = null, 
 	@line1 varchar(35) = null, @line2 varchar(35) = null, 
 	@city varchar(25) = null, @state varchar(2) = null, 
 	@zipCode varchar(5) = null, @boss int = null, 
 	@assistant int = null
+
+	-- need to add personalPhone, businessPhone, personalEmail, businessEmail. phone number and email need to be removed.
+	-- type isnt needed since its implied based on the parameter name.
+	-- the types are stored as 'personal' and 'business' based on how addClient adds them in.
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
@@ -260,6 +293,8 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- update values in the tables.
+	IF @prefix IS NOT NULL
+		UPDATE Client SET Prefix = @prefix WHERE ID = @ID
 	IF @firstName IS NOT NULL 
 		UPDATE Client SET First_Name = @firstName WHERE ID = @ID
 	IF @lastName IS NOT NULL 
@@ -269,7 +304,7 @@ BEGIN
 	IF @permitNum IS NOT NULL 
 		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
 	IF @active IS NOT NULL 
-		UPDATE Client SET Permit_Num = @active WHERE ID = @ID
+		UPDATE Client SET Active = @active WHERE ID = @ID
 	IF @notes IS NOT NULL 
 		UPDATE Client SET Notes = @notes WHERE ID = @ID
 	-- 
@@ -282,29 +317,55 @@ BEGIN
 		UPDATE Works_For SET Title = @title 
 			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
 	--
-	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND Number = @phoneNumber) = 0 
-		INSERT INTO Phone(Client_ID, Number) VALUES(@ID, @phoneNumber)
-	IF @phoneNumber IS NOT NULL 
-		UPDATE Phone SET Number = @phoneNumber 
-			WHERE Client_ID = @ID AND Number = @phoneNumber
+	/*
+	These need to be updated and new parameters need to be added to the begining of the procedure.
+	type isnt needed since its implied based on the parameter name.
+	the types are stored as 'personal' and 'business' based on how addClient adds them in.
+	*/
+	--------------------------------------------------------------------------------------------
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'business') = 0
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'business', @Business_phoneNumber)
+	IF @Business_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Business_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'personal') = 0
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'personal', @Personal_phoneNumber)
+	IF @Personal_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Personal_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
 	--
-	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND Email = @email) = 0 
-		INSERT INTO Email(Client_ID, Email) VALUES(@ID, @email)
-	IF @email IS NOT NULL 
-		UPDATE Email SET Email = @email 
-			WHERE Client_ID = @ID AND Email = @email
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'business') = 0 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'business', @Business_email)
+	IF @Business_email IS NOT NULL 
+		UPDATE Email SET Email = @Business_email 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'personal') = 0 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'personal', @Personal_email)
+	IF @Personal_email IS NOT NULL 
+		UPDATE Email SET Email = @Personal_email 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
+	
+	---------------------------------------------------------------------------------------------
 	--
 	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode) = 0 
 		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
 	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
 		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
 			WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode
-	-- 
-	IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
-		INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
-	IF @boss IS NOT NULL OR @assistant IS NOT NULL 
-		Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
-			WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+	
+	
+	-- This errors out right now if assistant or boss is null (which at the moment is always)
+	--IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
+	--	INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
+	--IF @boss IS NOT NULL OR @assistant IS NOT NULL 
+	--	Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
+	--		WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+
+	--SELECT @ID
+
+	return @ID
 
 END
 
