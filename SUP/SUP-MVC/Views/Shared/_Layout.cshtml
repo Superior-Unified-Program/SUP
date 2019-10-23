@@ -10,87 +10,195 @@
 
 	<title>@ViewData["Title"]</title>
 	<style>
-		.organize {
-            text-align: center;
-            width: 100%;
-            height: 100%;
-        }
+    .organize {
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    }
 
-		.logo {
-			height: 95%;
-			float: right;
-			top: 1px;
-			margin-top: 2px;
-			margin-right: 2px;
-		}
+    .logo {
+    height: 95%;
+    float: right;
+    top: 1px;
+    margin-top: 2px;
+    margin-right: 2px;
+    }
 
-		.universitylogo {
-			height: 95%;
-			float: right;
-			top: 1px;
-			margin-top: 2px;
-			margin-right: 2px;
-		}
+    .universitylogo {
+    height: 95%;
+    float: right;
+    top: 1px;
+    margin-top: 2px;
+    margin-right: 2px;
+    }
 
-		#button {
-			text-align: inherit;
-		}
+    #button {
+    text-align: inherit;
+    }
 
-		.welcome {
-			height: 10%;
-			text-align: left;
-			border: 0px solid #000000;
-			font-size: 20px;
-			color: black;
-			font-family: Calibri;
-			font-weight: bold;
-		}
+    .welcome {
+    height: 10%;
+    text-align: left;
+    border: 0px solid #000000;
+    font-size: 20px;
+    color: black;
+    font-family: Calibri;
+    font-weight: bold;
+    }
 
-		.tab {
-			column-width: auto;
-			width: 20%;
-			text-align: left;
-			border: 1.56px solid #000000;
-			height: 5%;
-		}
+    .tab {
+    column-width: auto;
+    width: 20%;
+    text-align: left;
+    border: 1.56px solid #000000;
+    height: 5%;
+    }
 
-		.tab:hover {
-			column-width: auto;
-			width: 20%;
-			background: #FFCB08;
-			text-align: left;
-			border: 1.56px solid #000000;
-			height: 5%;
-		}
+    .tab:hover {
+    column-width: auto;
+    width: 20%;
+    background: #FFCB08;
+    text-align: left;
+    border: 1.56px solid #000000;
+    height: 5%;
+    }
 
-		.tab a {
-			font-size: 20px;
-			color: black;
-			font-family: Calibri;
-			font-weight: bold;
-			text-decoration: none;
-		}
+    .tab a {
+    font-size: 20px;
+    color: black;
+    font-family: Calibri;
+    font-weight: bold;
+    text-decoration: none;
+    }
 
-		.ribbon {
-            background-image: linear-gradient(to right, #FFF700 , #FFD700);
-			border-collapse: collapse;
-			height: 100%;
-			border: 1.56px solid #000000;
-		}
+    .ribbon {
+    background-image: linear-gradient(to right, #FFF700 , #FFD700);
+    border-collapse: collapse;
+    height: 100%;
+    border: 1.56px solid #000000;
+    }
 
-		#button {
-			text-align: inherit;
-		}
+    #button {
+    text-align: inherit;
+    }
 
-		td {
-			text-align: left;
-		}
+    td {
+    text-align: left;
+    }
 
-		p {
-			margin-bottom: .25em;
-			margin-top: .25em;
-		}
-	</style>
+    p {
+    margin-bottom: .25em;
+    margin-top: .25em;
+    }
+    .setup{
+    display: none;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    overflow: auto;
+    background-color: #E0E0E0;
+    border: 1px solid black;
+    position: fixed;
+    bottom: 10%;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    }
+
+    .confirmation{
+    display: none;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    overflow: auto;
+    background-color: #E0E0E0;
+    border: 1px solid black;
+    position: fixed;
+    bottom: 10%;
+    top: 10%;
+    left: 10%;
+    width: 80%;
+    }
+
+    .topRow{
+    flex: 10%;
+    max-height: 10%;
+    background-color: black;
+    }
+    .topRow img{
+    float: right;
+    }
+
+    .searchRow{
+    flex: 10%;
+    max-height: 10%;
+    padding: 15px 100px;
+    }
+
+    .resultRow{
+    flex: 60%;
+    max-height: 60%;
+    overflow: auto;
+    }
+
+    .buttonRow{
+    flex: 10%;
+    max-height: 10%;
+    }
+
+    .continue{
+    cursor: pointer;
+    position: absolute;
+    left: 45%;
+    width: 100px;
+    }
+
+    .addTemplate{
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    left: 235px;
+    width: 100px;
+    }
+
+    .closeButton {
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    right: 30px;
+    width: 100px;
+    }
+
+    .browse{
+    overflow-x: hidden;
+    cursor: pointer;
+    position: absolute;
+    bottom: 20px;
+    left: 30px;
+    width: 200px;
+    }
+
+
+    #poptable{
+    position: absolute;
+    overflow: auto;
+    left: 5%；
+    top: 25%;
+    width: 100%;
+    }
+    #colSet{
+    overflow: auto;
+    text-align: left;
+    padding: 8px;
+    }
+    #radioSet{
+    text-align: right;
+    }
+    #poptable th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    width: 25%;
+    }
+  </style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script>
 	</script>

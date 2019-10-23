@@ -9,11 +9,11 @@ namespace SUP_Library.DBComponent
     public class Address
     {
         public string Client_ID { get; set;  }
-        public string LineOne { get; set; }
-        public string LineTwo { get; set; }
+        public string Line1 { get; set; }
+        public string Line2 { get; set; }
         public string City { get; set; }
         public string State { get; set; }
-        public string Zipcode { get; set; }
+        public string Zip { get; set; }
 
 
         public Address()
@@ -27,11 +27,11 @@ namespace SUP_Library.DBComponent
 
         public Address(string LineOne, string LineTwo, string City, string State, string Zipcode)
         {
-            this.LineOne = LineOne;
-            this.LineTwo = LineTwo;
+            this.Line1 = LineOne;
+            this.Line2 = LineTwo;
             this.City = City;
             this.State = State;
-            this.Zipcode = Zipcode;
+            this.Zip = Zipcode;
             /* setLineOne(LineOne);
             setLineTwo(LineTwo);
             setCity(City);
