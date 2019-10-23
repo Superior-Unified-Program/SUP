@@ -25,11 +25,11 @@
 			text-align: left;
 		}
 		.noteCell {
-			width: 95%;
+			width: 50%;
 			text-align: left;
 		}
 		.activeCell {
-			width: 5%;
+			width: 25%;
 			text-align: left;
 		}
 		.saveEditCell {
@@ -273,16 +273,19 @@
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
-					<div class="cell">Email address*<br /><input class="emailInput" type="email" id="email" placeholder="Email" required tabindex="14"></div>
-					<div class="cell">Phone Number<br /><input class="phoneInput" type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="14"></div>
+					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="16"></div>
+					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="17"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div>Active<br /><input class="activeInput" type="checkbox" tabindex="16"></div>
-					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="17"></textArea><div>
+					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18"></div>
+					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="20"></textArea><div>
 				</div>
 				<div class="row">
-					<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="18"></div>
+					<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="21"></div>
 				</div>
 			</div>
 		</form>
