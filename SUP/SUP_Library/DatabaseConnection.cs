@@ -30,7 +30,7 @@ namespace SUP_Library
         private static string getConnectionString()
         {
             var appSettingsJson = ConnectionStringProvider.GetAppSettings();
-            string connectionString = appSettingsJson["SupConnectionString"];
+            string connectionString = appSettingsJson["SupConnectionString"];  
             // This retern the connection string in App.config file as the name same with connectionName.
             //return "Initial Catalog=SUPdb; Data Source=68.112.175.122; Integrated Security=False; User Id=SUPuser; Password=abc123;";
             //return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;
@@ -133,15 +133,15 @@ namespace SUP_Library
         */
 
         // addClient and updateClient are very similar, so these methods are being passed to a larger method called alterClient which changes a few things depending on which stored proc they are calling 
-        public static void addClient(Client newClient)
+        public static int addClient(Client newClient)
         {
-            alterClient(newClient, true);
+            return alterClient(newClient, true);
         }
-        public static void updateClient(Client client)
+        public static int updateClient(Client client)
         {
-            alterClient(client, false);
+            return alterClient(client, false);
         }
-        private static void alterClient(Client client, bool newClient)
+        private static int alterClient(Client client, bool newClient)
         {
             // Fill out client class and pass to addClient/updateClient to add/update client and all associated data in database
             // Uses the database addClient or updateClient stored procedures
@@ -164,8 +164,8 @@ namespace SUP_Library
                     // Client base class parameters
                     if (!newClient) 
                         par.Add("@ID", client.ID); // updateClient needs the client ID
-                    if (newClient)
-                        par.Add("@prefix", client.Prefix); // updateClient doesn't support prefix yet
+                    
+                    par.Add("@prefix", client.Prefix);
                     par.Add("@firstName", client.First_Name);
                     par.Add("@lastName", client.Last_Name);
                     par.Add("@middleInitial", client.Middle_initial);
@@ -184,18 +184,26 @@ namespace SUP_Library
                     par.Add("@Business_email", client.Email?.Email);
                     par.Add("@Personal_email", client.Email?.Email);
                     // Address
-                    par.Add("@line1",client.Address?.Line1);
-                    par.Add("@line2",client.Address?.Line2);
-                    par.Add("@city",client.Address?.City);
-                    par.Add("@state",client.Address?.State);
-                    par.Add("@zipCode",client.Address?.Zip);
+                    par.Add("@line1",client.Address.Line1);
+                    par.Add("@line2",client.Address.Line2);
+                    par.Add("@city",client.Address.City);
+                    par.Add("@state",client.Address.State);
+                    par.Add("@zipCode",client.Address.Zip);
+
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
                     
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
-                                    
+                   
+                    // get ID and return it
+                    int result = par.Get<int>("result");
+                    System.Diagnostics.Debug.WriteLine("ID is: " + result);
+                    return result;
+                   
                 }
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
         }
@@ -261,9 +269,9 @@ namespace SUP_Library
 
         public static List<Client> QueryClientFull(Client client)
         {
-            return QueryClientFull(client.Last_Name, client.First_Name, client.Org.Org_Type);
+            return QueryClientFull(client.Last_Name, client.First_Name, client.Org.Org_Type, client.Org.Title);
         }
-        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType)
+        public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType, string qTitle="")
         {
             /* 
              * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
@@ -283,7 +291,7 @@ namespace SUP_Library
                     // The joined tables are split at the Client_ID column
                     var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
                                { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType, title = qTitle }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
 
                     return data; // return (client) list of results;
                 }
@@ -300,6 +308,7 @@ namespace SUP_Library
         {
             try
             {
+               
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     var sql = "getClientById";   // name of stored procedure
@@ -313,6 +322,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
         }
@@ -337,6 +347,7 @@ namespace SUP_Library
             }
             catch (Exception exc)
             {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
                 throw exc;
             }
 
