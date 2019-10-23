@@ -148,7 +148,8 @@
                         }
                         if (currentRow['Org'] != null)
                         {
-                            Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+							Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+							Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
                         }
                         var clientId = currentRow['ID']
                         Row.find('.rowViewButton').val(clientId);
@@ -484,70 +485,78 @@
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
             </div>
         </div>
-        <table style="float:left; position:relative; margin-left: calc(10% + 120px); left: -15px">
+        <table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
             <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <a href="javascript:allCheck('choice',true)">Select</a>
-                        <a href="javascript:allCheck('choice',false)">No select</a>
-                        <a href="javascript:reserveCheck('choice')"> Inverse</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="width: 183px">
-                        <p><b>First Name</b></p>
-                    </td>
-                    <td style="width: 188px">
-                        <p><b>Last Name</b></p>
-                    </td>
-                    <td style="width: 199px">
-                        <p><b>Organization Name</b></p>
-                    </td>
-                    <td style="width: 175px">
-                        <p><b>Email</b></p>
-                    </td>
-                    <td style="width: 128px">
-                        <p><b>Phone #</b></p>
-                    </td>
-                    <td>
-                        <input class="checkAll" type="checkbox" name="choice" id="choice">
-                    </td>
-                </tr>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td colspan="2">
+						<a href="javascript:allCheck('choice',true)">Select</a>
+						<a href="javascript:allCheck('choice',false)">No select</a>
+						<a href="javascript:reserveCheck('choice')"> Inverse</a>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style="width: 183px">
+						<p><b>First Name</b></p>
+					</td>
+					<td style="width: 186px">
+						<p><b>Last Name</b></p>
+					</td>
+					<td style="width: 185px">
+						<p><b>Job Title</b></p>
+					</td>
+					<td style="width: 182px">
+						<p><b>Organization Name</b></p>
+					</td>
+					<td style="width: 182px">
+						<p><b>Email</b></p>
+					</td>
+					<td style="width: 188px">
+						<p><b>Phone #</b></p>
+					</td>
+					<td>
+						<input class="checkAll" type="checkbox" name="choice" id="choice">
+					</td>
+				</tr>
             </tbody>
         </table>
-        <div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1050px; margin-left: calc(10% - 20px);" align="right">
-            <table style="position:relative; left: -20px">
+        <div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1210px; margin-left: calc(10% - 95px);" align="right">
+
+
+            <table class="templateTable" style="position:relative;">
                 <tbody>
-                    <tr class="templateRow" style="">
-                        <td>
-                            <button class="rowViewButton" value="0">View</button>
-                        </td>
-                        <td>
-                            <input class="rowFirstName" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowLastName" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowOrganization" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowEmailAddress" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowPhoneNumber" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowSelected" type="checkbox" name="choice" id="choice" />
-                        </td>
-                    </tr>
+					<tr class="templateRow" style="">
+						<td>
+							<button class="rowViewButton tableCell" value="0">View</button>
+						</td>
+						<td>
+							<input class="rowFirstName tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowLastName tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowJobTitle tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowOrganization tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowEmailAddress tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowPhoneNumber tableCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowSelected tableCell" type="checkbox" name="choice" id="choice" />
+						</td>
+					</tr>
                 </tbody>
             </table>
         </div>
