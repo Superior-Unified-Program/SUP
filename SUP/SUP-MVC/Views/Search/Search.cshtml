@@ -88,8 +88,9 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
-        $(document).ready(function () {
-            Search();
+		$(document).ready(function () {
+			Search();
+
             $('.searchOrganization').change(function () {
                 Search();
             });
@@ -105,7 +106,7 @@
         })
 
         var returnedData;
-        function Search() {
+		function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
             var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
@@ -132,7 +133,7 @@
                         var currentRow = returnedData[i];
                         var Row = $('.templateRow').clone();
                         Row.removeClass('templateRow').addClass('removableRow').show();
-                        Row.find('.rowFirstName').val(currentRow['First_Name']);
+						Row.find('.rowFirstName').val(currentRow['First_Name']);
                         Row.find('.rowLastName').val(currentRow['Last_Name']);
                         if (currentRow['Email'] != null)
                             Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
@@ -173,8 +174,32 @@
                 async: true,
                 processData: false
             });
-        }
+		}
 
+		
+		async function updateFirstNames() {
+			var dataPost = ',,,';
+			const names = await $.ajax({
+					url: '/Search/SearchClients',
+					type: 'POST',
+					data: JSON.stringify(dataPost),
+					contentType: 'application/json; charset=utf-8',
+					error: function (xhr) {
+						alert('Error: ' + xhr.statusText);
+					},
+					success: function (result) {
+					},
+					async: true,
+					processData: false
+				});
+			returnedData = JSON.parse(names);
+			var nameList = [];
+			for (var i = 0; i < returnedData.length; i++) {
+				var currentRow = returnedData[i];
+				nameList.push(currentRow['First_Name'])
+			}
+			return nameList;
+		}
 
         function editClient(clientId) {
             location.href = '/AddClient/AddClient?clientId=' + clientId;
@@ -340,7 +365,8 @@
                 this.pressKey(event);
                 window.onresize = combine(this, function () { this.initialize(); });
             }
-        }
+		}
+
      
 
             /**/</script>
@@ -348,151 +374,153 @@
 
 
 <body class="organize">
-    <div class="checkedIdsDiv" style="display:none;">
-        <p class="checkedIdTemplate"></p>
-    </div>
-    <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-        <div style="position:relative; margin-left: 25%; width: 650px;" align="right">
-            <form>
-                <table style="position:relative; left: -90px">
-                    <tr>
-                        <td>
-                            <p align="center">First Name</p>
-                        </td>
-                        <td>
-                            <p align="center">Last Name</p>
-                        </td>
-                        <td>
-                            <p align="center">Organization Type</p>
-                        </td>
-                    </tr>
+	<div class="checkedIdsDiv" style="display:none;">
+		<p class="checkedIdTemplate"></p>
+	</div>
+	<div class="firstNamesList" style="display:none;">
+		<p class="firstNameTemplate"></p>
+	</div>
+	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+		<div style="position:relative; margin-left: 25%; width: 650px;" align="right">
+			<form>
+				<table style="position:relative; left: -90px">
+					<tr>
+						<td>
+							<p align="center">First Name</p>
+						</td>
+						<td>
+							<p align="center">Last Name</p>
+						</td>
+						<td>
+							<p align="center">Organization Type</p>
+						</td>
+					</tr>
 
 
-                    <tr>
-                        <td>
+					<tr>
+						<td>
 
-                            <input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
-                            <div class="auto_hidden" id="auto"></div>
-                            <script>
-                                var autoComplete = new AutoComplete('search_FirstName', 'auto', returnedData);//returnedData caused sort, event error
-                            </script>
+							<input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+							<div class="auto_hidden" id="auto"></div>
+							<script>
+								var autoComplete = new AutoComplete('search_FirstName', 'auto', updateFirstNames());//returnedData caused sort, event error
+							</script>
+						</td>
+						<td>
+							<input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
+						</td>
+						<td>
+							<select class="searchOrganization" onKeyUp="Search()" name="category">
+								<!--We need to keep an empty option to allow searches that do not include organization-->
+								<option value=""></option>
+								<option value="business">Business</option>
+								<option value="electedOfficial">Elected Official</option>
+								<option value="school">School</option>
+								<option value="elementary">Elementary</option>
+								<option value="middle">Middle</option>
+								<option value="highSchool">High School</option>
+								<option value="higherEd">Higher Ed.</option>
+								<option value="nonProfit">Non-profit</option>
+								<option value="UWSystem">UW-System</option>
+								<option value="boardOfRegent">Board of Regent</option>
+								<option value="foundation">Foundation</option>
+								<option value="other">Other</option>
+							</select>
+						</td>
+					</tr>
+					<tr><td height="10px"></td></tr>
 
-                        </td>
-                        <td>
-                            <input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
-                        </td>
-                        <td>
-                            <select class="searchOrganization" onKeyUp="Search()" name="category">
-                                <!--We need to keep an empty option to allow searches that do not include organization-->
-                                <option value=""></option>
-                                <option value="business">Business</option>
-                                <option value="electedOfficial">Elected Official</option>
-                                <option value="school">School</option>
-                                <option value="elementary">Elementary</option>
-                                <option value="middle">Middle</option>
-                                <option value="highSchool">High School</option>
-                                <option value="higherEd">Higher Ed.</option>
-                                <option value="nonProfit">Non-profit</option>
-                                <option value="UWSystem">UW-System</option>
-                                <option value="boardOfRegent">Board of Regent</option>
-                                <option value="foundation">Foundation</option>
-                                <option value="other">Other</option>
-                            </select>
-                        </td>
-                    </tr>
-                    <tr><td height="10px"></td></tr>
 
+				</table>
+			</form>
+			<div style="float:left; margin-left: calc(10% + 180px);">
+				<p style="float:left;">Display active only: </p>
+				<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
+			</div>
+		</div>
+		<table style="float:left; position:relative; margin-left: calc(10% + 120px); left: -15px">
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td>
+						<a href="javascript:allCheck('choice',true)">Select</a>
+						<a href="javascript:allCheck('choice',false)">No select</a>
+						<a href="javascript:reserveCheck('choice')"> Inverse</a>
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td style="width: 183px">
+						<p><b>First Name</b></p>
+					</td>
+					<td style="width: 188px">
+						<p><b>Last Name</b></p>
+					</td>
+					<td style="width: 199px">
+						<p><b>Organization Name</b></p>
+					</td>
+					<td style="width: 175px">
+						<p><b>Email</b></p>
+					</td>
+					<td style="width: 128px">
+						<p><b>Phone #</b></p>
+					</td>
+					<td>
+						<input class="checkAll" type="checkbox" name="choice" id="choice">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1050px; margin-left: calc(10% - 20px);" align="right">
+			<table style="position:relative; left: -20px">
+				<tbody>
+					<tr class="templateRow" style="">
+						<td>
+							<button class="rowViewButton" value="0">View</button>
+						</td>
+						<td>
+							<input class="rowFirstName" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowLastName" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowOrganization" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowEmailAddress" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowPhoneNumber" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowSelected" type="checkbox" name="choice" id="choice" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<button class="template" onclick="popForm()">Select Template</button>
+		<div class="popupForm" id="form">
+			<form action="middlewareHere" class="form-container">
+				<h1>Login</h1>
 
-                </table>
-            </form>
-            <div style="float:left; margin-left: calc(10% + 180px);">
-                <p style="float:left;">Display active only: </p>
-                <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
-            </div>
-        </div>
-        <table style="float:left; position:relative; margin-left: calc(10% + 120px); left: -15px">
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <a href="javascript:allCheck('choice',true)">Select</a>
-                        <a href="javascript:allCheck('choice',false)">No select</a>
-                        <a href="javascript:reserveCheck('choice')"> Inverse</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="width: 183px">
-                        <p><b>First Name</b></p>
-                    </td>
-                    <td style="width: 188px">
-                        <p><b>Last Name</b></p>
-                    </td>
-                    <td style="width: 199px">
-                        <p><b>Organization Name</b></p>
-                    </td>
-                    <td style="width: 175px">
-                        <p><b>Email</b></p>
-                    </td>
-                    <td style="width: 128px">
-                        <p><b>Phone #</b></p>
-                    </td>
-                    <td>
-                        <input class="checkAll" type="checkbox" name="choice" id="choice">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1050px; margin-left: calc(10% - 20px);" align="right">
-            <table style="position:relative; left: -20px">
-                <tbody>
-                    <tr class="templateRow" style="">
-                        <td>
-                            <button class="rowViewButton" value="0">View</button>
-                        </td>
-                        <td>
-                            <input class="rowFirstName" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowLastName" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowOrganization" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowEmailAddress" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowPhoneNumber" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowSelected" type="checkbox" name="choice" id="choice" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <button class="template" onclick="popForm()">Select Template</button>
-        <div class="popupForm" id="form">
-            <form action="middlewareHere" class="form-container">
-                <h1>Login</h1>
+				<label for="email"><b>Email</b></label>
+				<input type="text" placeholder="Enter Email" name="email" required>
 
-                <label for="email"><b>Email</b></label>
-                <input type="text" placeholder="Enter Email" name="email" required>
+				<label for="psw"><b>Password</b></label>
+				<input type="password" placeholder="Enter Password" name="psw" required>
 
-                <label for="psw"><b>Password</b></label>
-                <input type="password" placeholder="Enter Password" name="psw" required>
+				<button type="submit" class="btn">Login</button>
+				<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+			</form>
 
-                <button type="submit" class="btn">Login</button>
-                <button type="button" class="btn cancel" onclick="closeForm()">Close</button>
-            </form>
-
-        </div>
-    </div>
+		</div>
+	</div>
 </body>
 </html>
