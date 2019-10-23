@@ -10,7 +10,7 @@ namespace SUP_Library.DBComponent
     {
         public int ID { get; set; }
 
-        //public string Prefix { get; set; }
+        public string Prefix { get; set; }
         //public string Company { get; set; }
         public string Permit_Num { get; set; }
         //public string PhoneNumber { get; set; }
