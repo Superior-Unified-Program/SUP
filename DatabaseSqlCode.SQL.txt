@@ -61,43 +61,6 @@ CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ),
 CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
 
--- trigger for account
-GO
-ALTER TRIGGER [dbo].[trgAccountAudit]
-ON [dbo].[Account]
-AFTER INSERT, DELETE, UPDATE
-AS
-BEGIN
-SET NOCOUNT ON;
-INSERT INTO AccountAudits(
-        User_Name, 
-        User_Type,
-        Failed_Login,
-        office,
-        updated_at, 
-        operation
-    )
-    SELECT
-        i.User_Name,
-        User_Type,
-        Failed_Login,
-        office,
-        GETDATE(),
-        'INS'
-    FROM
-        inserted i
-    UNION ALL
-    SELECT
-        d.User_Name,
-        User_Type,
-        Failed_Login,
-        office,
-        GETDATE(),
-        'DEL'
-    FROM
-        deleted d;
-END
-
 GO
 
 /*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
