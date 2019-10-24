@@ -37,7 +37,7 @@ namespace SUP_Library
             #region Save and clean up Excel File
 
             string eFileName = "ExcelFile" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + ".xlsm";
-            eWorkbook.SaveAs(@"C:\Users\hoang\Desktop\ExcelTest.xlsx");
+            eWorkbook.SaveAs(@"ExcelTest.xlsx");
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
 
