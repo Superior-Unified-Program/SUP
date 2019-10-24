@@ -55,55 +55,26 @@ CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ),
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assists')
-CREATE TABLE Assists ( Boss_ID int, Assistant_ID int, Notes varchar(30), 
-CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
-CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
-CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assistant')
+CREATE TABLE Assistant ( Boss_ID int, First_Name varchar(50), Last_Name varchar(50), 
+CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID ), 
+CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID) )
 
--- trigger for account
 GO
-ALTER TRIGGER [dbo].[trgAccountAudit]
-ON [dbo].[Account]
-AFTER INSERT, DELETE, UPDATE
+
+--creation of any views
+-----------------------------------------------------------------------------------------------------------------------------
+--creates a view that is used in the queryClientFull SP
+CREATE VIEW viewAll
 AS
-BEGIN
-SET NOCOUNT ON;
-INSERT INTO AccountAudits(
-        User_Name, 
-        User_Type,
-        Failed_Login,
-        office,
-        updated_at, 
-        operation
-    )
-    SELECT
-        i.User_Name,
-        User_Type,
-        Failed_Login,
-        office,
-        GETDATE(),
-        'INS'
-    FROM
-        inserted i
-    UNION ALL
-    SELECT
-        d.User_Name,
-        User_Type,
-        Failed_Login,
-        office,
-        GETDATE(),
-        'DEL'
-    FROM
-        deleted d;
-END
-
+SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
+		FULL JOIN [Address] ON ID = Address.Client_ID
+		FULL JOIN Works_For ON ID = Works_For.Client_ID
 GO
 
-/*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+--creation of any stored Procedures
+-------------------------------------------------------------------------------------------------------------------------------
 
-
-GO*/
 
 -- =============================================
 -- Create date: 10/7/2019
@@ -132,12 +103,12 @@ GO
 
 -- =============================================
 -- Create date: 10/7/2019
--- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
+-- Description:	Takes 4 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
 -- =============================================
-CREATE OR ALTER PROCEDURE queryClient
+ALTER       PROCEDURE [dbo].[queryClientFull]
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
-	@orgType varchar(30) = ''
+	@orgType varchar(30) = '', @title varchar(20) = ''
 
 AS
 BEGIN
@@ -146,14 +117,38 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	BEGIN
-	IF @orgType = ''
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') ORDER BY Last_Name, First_Name, Middle_initial
-	else
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%') ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
-	END
+	IF @orgType IS NULL SET @orgType = ''
+	IF @lastName IS NULL SET @lastName = ''
+	IF @firstName IS NULL SET @firstName = ''
+	IF @title IS NULL SET @title = ''
+
+
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Notes varchar(30),
+		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+
+	INSERT INTO #searchResults SELECT * FROM [viewAll]
+
+	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
+
+	UPDATE #searchResults SET Personal_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+	UPDATE #searchResults SET Personal_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Phone = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
+	WHERE First_Name LIKE (@firstName + '%') 
+		AND Last_Name LIKE (@lastName + '%') 
+		AND Org_type LIKE (@orgType + '%')
+		AND Title LIKE (@title + '%') OR Title IS NULL
+	ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
+
+	DROP TABLE #searchResults
 
 END
+GO
 
 -- =============================================
 -- Create date: 10/7/2019
