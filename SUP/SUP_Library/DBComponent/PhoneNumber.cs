@@ -9,6 +9,23 @@ namespace SUP_Library.DBComponent
     public class PhoneNumber
     {
         public int Client_ID { get; set; }
-        public string Number { get; set; }
+
+        public string Personal_Phone { get; set; }
+
+        public string Business_Phone { get; set; }
+
+        public string Assistant_Phone { get; set; }
+        public string Number // deprecated
+        { 
+            get
+            {
+                return Business_Phone;
+            }
+            set
+            {
+                Business_Phone = value;
+            }
+        
+        }
     }
 }
