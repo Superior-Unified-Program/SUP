@@ -100,12 +100,11 @@ BEGIN
 
 END
 GO
-
 -- =============================================
 -- Create date: 10/7/2019
--- Description:	Takes 4 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
+-- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
 -- =============================================
-ALTER       PROCEDURE [dbo].[queryClientFull]
+CREAT OR ALTER PROCEDURE queryClientFull
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
 	@orgType varchar(30) = '', @title varchar(20) = ''
@@ -123,7 +122,7 @@ BEGIN
 	IF @title IS NULL SET @title = ''
 
 
-	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Notes varchar(30),
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit, Notes varchar(30),
 		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
 
 	INSERT INTO #searchResults SELECT * FROM [viewAll]
@@ -135,9 +134,9 @@ BEGIN
 	UPDATE #searchResults SET Assistant_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
 	UPDATE #searchResults SET Personal_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'personal')
 	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
-	UPDATE #searchResults SET Assistant_Phone = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
 
-	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
 		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
 	WHERE First_Name LIKE (@firstName + '%') 
 		AND Last_Name LIKE (@lastName + '%') 
@@ -269,7 +268,7 @@ GO
 -- Description:	updates tables based on parameters given
 -- =============================================
 
-ALTER   PROCEDURE [dbo].[updateClient]
+Creat OR ALTER   PROCEDURE updateClient
 	-- Add the parameters for the stored procedure here
 	@ID int, @prefix varchar(10) = null, @firstName varchar(50),
 	@lastName varchar(50), @middleInitial varchar(1) = null,
