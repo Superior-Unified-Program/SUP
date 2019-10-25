@@ -27,7 +27,20 @@ namespace SUP_Library.DBComponent
         public PhoneNumber Phone { get; set; }
 
         public bool   Active { get; set; }
-        public int    Assistant { get; set; }
+        public string Assistant_First_Name { get; set; }
+        public string Assistant_Last_Name { get; set; }
+        public string Assisntant_Last_Name // allow dapper to pull in misspelled column in db
+        { 
+            get
+            {
+                return Assistant_Last_Name;
+            }
+            set
+            {
+                Assistant_Last_Name = value;
+            }
+        
+        }
         public string Notes { get; set; }
 
         public Client()
