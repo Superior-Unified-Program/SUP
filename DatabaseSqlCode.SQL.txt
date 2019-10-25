@@ -265,23 +265,25 @@ END
 
 GO
 -- =============================================
--- Create date: 10/22/2019
+-- Create date: 10/25/2019
 -- Description:	updates tables based on parameters given
 -- =============================================
 
-CREATE OR ALTER   PROCEDURE updateClient
+ALTER   PROCEDURE [dbo].[updateClient]
 	-- Add the parameters for the stored procedure here
-	@ID int, @prefix varchar(100) = null, @firstName varchar(50) = null, 
-	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
-	@permitNum varchar(50) = null, @active bit = null, 
-	@notes varchar(30) = null, 
-	@orgName varchar(30), @orgType varchar(10), @title varchar(20) = null, 
-	@Business_phoneNumber varchar(11) = null, @Personal_phoneNumber varchar(11) = null,
-	@Business_email varchar(30), @Personal_email varchar(30) = null, 
-	@line1 varchar(35) = null, @line2 varchar(35) = null, 
-	@city varchar(25) = null, @state varchar(2) = null, 
-	@zipCode varchar(5) = null, @boss int = null, 
-	@assistant int = null
+	@ID int, @prefix varchar(10) = null, @firstName varchar(50),
+	@lastName varchar(50), @middleInitial varchar(1) = null,
+	@permitNum varchar(50) = null,
+	@active bit = 1, @notes varchar(30) = '',
+	@orgName varchar(30), @orgType varchar(20),
+	@title varchar(20) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
+	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
+	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
+	@line2 varchar(35) = null, @city varchar(25) = null,
+	@state varchar(2) = null, @zipCode varchar(5) = null,
+	@assistantFirstName varchar(50) = null, @assistantLastName varchar(50) = null
+
 
 	-- need to add personalPhone, businessPhone, personalEmail, businessEmail. phone number and email need to be removed.
 	-- type isnt needed since its implied based on the parameter name.
@@ -308,7 +310,7 @@ BEGIN
 	IF @notes IS NOT NULL 
 		UPDATE Client SET Notes = @notes WHERE ID = @ID
 	-- 
-	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 
+	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 AND (@orgName IS NOT NULL OR @orgType IS NOT NULL )
 		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
 	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
 		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
@@ -323,25 +325,25 @@ BEGIN
 	the types are stored as 'personal' and 'business' based on how addClient adds them in.
 	*/
 	--------------------------------------------------------------------------------------------
-	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'business') = 0
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'business') = 0 AND @Business_phoneNumber IS NOT NULL 
 		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'business', @Business_phoneNumber)
 	IF @Business_phoneNumber IS NOT NULL 
 		UPDATE Phone SET Number = @Business_phoneNumber 
 			WHERE Client_ID = @ID AND [Type] = 'business'
 
-	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'personal') = 0
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'personal') = 0 AND @Personal_phoneNumber IS NOT NULL 
 		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'personal', @Personal_phoneNumber)
 	IF @Personal_phoneNumber IS NOT NULL 
 		UPDATE Phone SET Number = @Personal_phoneNumber 
 			WHERE Client_ID = @ID AND [Type] = 'personal'
 	--
-	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'business') = 0 
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'business') = 0 AND @Business_email IS NOT NULL 
 		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'business', @Business_email)
 	IF @Business_email IS NOT NULL 
 		UPDATE Email SET Email = @Business_email 
 			WHERE Client_ID = @ID AND [Type] = 'business'
 
-	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'personal') = 0 
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'personal') = 0 AND @Personal_email IS NOT NULL 
 		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'personal', @Personal_email)
 	IF @Personal_email IS NOT NULL 
 		UPDATE Email SET Email = @Personal_email 
@@ -349,21 +351,24 @@ BEGIN
 	
 	---------------------------------------------------------------------------------------------
 	--
-	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode) = 0 
+	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID) = 0 AND (@line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL )
 		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
 	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
 		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
-			WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode
+			WHERE Client_ID = @ID 
 	
-	
-	-- This errors out right now if assistant or boss is null (which at the moment is always)
-	--IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
-	--	INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
-	--IF @boss IS NOT NULL OR @assistant IS NOT NULL 
-	--	Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
-	--		WHERE Boss_ID = @boss AND Assistant_ID = @assistant
+	---------------------------------------------------------------------------------------------
 
-	--SELECT @ID
+	IF ((SELECT COUNT(*) FROM Assistant WHERE Boss_ID = @ID) = 0) AND (@assistantFirstName IS NOT NULL OR @assistantLastName IS NOT NULL OR @Assistant_Email IS NOT NULL OR @Assistant_phoneNumber IS NOT NULL)
+		Begin	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES(@ID, @assistantFirstName, @assistantLastName) 
+				INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'assistant', @Assistant_phoneNumber)
+				INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'assistant', @Assistant_Email)
+		END
+	IF (@assistantFirstName IS NOT NULL OR @assistantLastName IS NOT NULL OR @Assistant_Email IS NOT NULL OR @Assistant_phoneNumber IS NOT NULL)
+		Begin	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES(@ID, @assistantFirstName, @assistantLastName) 
+				INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'assistant', @Assistant_phoneNumber)
+				INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'assistant', @Assistant_Email)
+		END
 
 	return @ID
 
