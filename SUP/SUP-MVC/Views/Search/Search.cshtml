@@ -450,7 +450,7 @@
 							<input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
 							<div class="auto_hidden" id="auto"></div>
 							<script>
-								var autoComplete = new AutoComplete('search_FirstName', 'auto', updateFirstNames());//returnedData caused sort, event error
+								//var autoComplete = new AutoComplete('search_FirstName', 'auto', updateFirstNames());//returnedData caused sort, event error
 							</script>
 						</td>
 						<td>
@@ -478,15 +478,15 @@
 					<tr><td height="10px"></td></tr>
 
 
-                </table>
-            </form>
-            <div style="float:left; margin-left: calc(10% + 180px);">
-                <p style="float:left;">Display Inactive: </p>
-                <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
-            </div>
-        </div>
-        <table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
-            <tbody>
+				</table>
+			</form>
+			<div style="float:left; margin-left: calc(10% + 180px);">
+				<p style="float:left;">Display Inactive: </p>
+				<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
+			</div>
+		</div>
+		<table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
+			<tbody>
 				<tr>
 					<td></td>
 					<td></td>
@@ -524,13 +524,11 @@
 						<input class="checkAll" type="checkbox" name="choice" id="choice">
 					</td>
 				</tr>
-            </tbody>
-        </table>
-        <div style="height: 420px; overflow-y:scroll; overflow-x: hidden; width: 1210px; margin-left: calc(10% - 95px);" align="right">
-
-
-            <table class="templateTable" style="position:relative;">
-                <tbody>
+			</tbody>
+		</table>
+		<div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 1210px; margin-left: calc(10% - 95px);" align="right">
+			<table class="templateTable" style="position:relative;" >
+				<tbody>
 					<tr class="templateRow" style="">
 						<td>
 							<button class="rowViewButton tableCell" value="0">View</button>
@@ -557,92 +555,95 @@
 							<input class="rowSelected tableCell" type="checkbox" name="choice" id="choice" />
 						</td>
 					</tr>
-                </tbody>
-            </table>
-        </div>
-        <button class="template" onclick="popSetup()">Select Template</button>
-        <div class="setup" id="setup">
-    <div class="topRow">
-      <img src="superior_logo.jpg" style="max-height: 100%">
-      <img src="logo.jpg" style="max-height: 100%">
-    </div>
-    <div class="searchRow">
-      <form action="middlewareHere">
-        <div>
-          <input type="text" style="width: 80%">
-          <input type="submit" value="search" style="width: 15%">
-        </div>
-      </form>
-    </div>
-    <div class="resultRow">
-      <table id="poptable">
-        <tr>
-          <th>&nbsp;</th>
-          <th>Name</th>
-          <th>Date modified</th>
-          <th>Uploaded by</th>
-        </tr>
-        <tr>
-          <td id="radioSet"><input type="radio" name="template"></td>
-          <td id="colSet">ParkingPassTemplate</td>
-          <td id="colSet">9/9/9999</td>
-          <td id="colSet">username1</td>
-        </tr>
-        <tr>
-          <td id="radioSet"><input type="radio" name="template"></td>
-          <td id="colSet">LetterTemplate</td>
-          <td id="colSet">8/8/8888</td>
-          <td id="colSet">thatOneGuy17</td>
-        </tr>
-        <tr>
-          <td id="radioSet"><input type="radio" name="template"></td>
-          <td id="colSet">HolidayCardTemplate</td>
-          <td id="colSet">1/19/2019</td>
-          <td id="colSet">buttercup2000</td>
-        </tr>
-      </table>
-    </div>
-    <div class="buttonRow">
-      <button class="continue" onclick="popConfirm()">Continue</button>
-    </div>
-    <div class="buttonRow">
-      <form action="middlewareHere" method="POST" enctype="multipart/form-data">
-        <input type="file" class="browse" name="browse">
-        <button type="submit" class="addTemplate" value="Add Template">Add Template</button>
-      </form>
-      <button class="closeButton"  onclick="closeSetup()">Close</button>
-    </div>
-  </div>
+				</tbody>
+			</table>
+		</div>
+		<div style="width: 100%; margin-top: 5px;">
+			<button class="template" onclick="popSetup()">Select Template</button>
+			<button style="margin-left: 20%" class="excel" onclick="">Export to Excel</button>
+		</div>
+		<div class="setup" id="setup">
+			<div class="topRow">
+				<img src="superior_logo.jpg" style="max-height: 100%">
+				<img src="logo.jpg" style="max-height: 100%">
+			</div>
+			<div class="searchRow">
+				<form action="middlewareHere">
+					<div>
+						<input type="text" style="width: 80%">
+						<input type="submit" value="search" style="width: 15%">
+					</div>
+				</form>
+			</div>
+			<div class="resultRow">
+				<table id="poptable">
+					<tr>
+						<th>&nbsp;</th>
+						<th>Name</th>
+						<th>Date modified</th>
+						<th>Uploaded by</th>
+					</tr>
+					<tr>
+						<td id="radioSet"><input type="radio" name="template"></td>
+						<td id="colSet">ParkingPassTemplate</td>
+						<td id="colSet">9/9/9999</td>
+						<td id="colSet">username1</td>
+					</tr>
+					<tr>
+						<td id="radioSet"><input type="radio" name="template"></td>
+						<td id="colSet">LetterTemplate</td>
+						<td id="colSet">8/8/8888</td>
+						<td id="colSet">thatOneGuy17</td>
+					</tr>
+					<tr>
+						<td id="radioSet"><input type="radio" name="template"></td>
+						<td id="colSet">HolidayCardTemplate</td>
+						<td id="colSet">1/19/2019</td>
+						<td id="colSet">buttercup2000</td>
+					</tr>
+				</table>
+			</div>
+			<div class="buttonRow">
+				<button class="continue" onclick="popConfirm()">Continue</button>
+			</div>
+			<div class="buttonRow">
+				<form action="middlewareHere" method="POST" enctype="multipart/form-data">
+					<input type="file" class="browse" name="browse" style="width: 500px;">
+					<button type="submit" class="addTemplate" value="Add Template">Add Template</button>
+				</form>
+				<button class="closeButton" onclick="closeSetup()">Close</button>
+			</div>
+		</div>
 
-  <div class="confirmation" id="confirmation">
-    <div class="topRow">
-      <img src="superior_logo.jpg" style="max-height: 100%">
-      <img src="logo.jpg" style="max-height: 100%">
-    </div>
-    <div class="resultRow">
-      <table id="poptable">
-        <tr>
-          <th>Result</th>
-        </tr>
-        <tr>
-          <td id="colSet">Generated 17 parking permits.</td>
-        </tr>
-      </table>
-    </div>
-    <div class="buttonRow">
-      <form action="middlewareHere">
-        <button type="submit" class="continue">Generate Output</button>
-      </form>
-    </div>
-    <div class="buttonRow">
-      <a href="middlewareHere" download>
-        <button class="browse">Download Output</button>
-      </a>
-      <button class="addTemplate" onclick="closeConfirm()">Go Back</button>
+		<div class="confirmation" id="confirmation">
+			<div class="topRow">
+				<img src="superior_logo.jpg" style="max-height: 100%">
+				<img src="logo.jpg" style="max-height: 100%">
+			</div>
+			<div class="resultRow">
+				<table id="poptable">
+					<tr>
+						<th>Result</th>
+					</tr>
+					<tr>
+						<td id="colSet">Generated 17 parking permits.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="buttonRow">
+				<form action="middlewareHere">
+					<button type="submit" class="continue">Generate Output</button>
+				</form>
+			</div>
+			<div class="buttonRow">
+				<a href="middlewareHere" download>
+					<button class="browse">Download Output</button>
+				</a>
+				<button class="addTemplate" onclick="closeConfirm()">Go Back</button>
 
-      <button class="closeButton"  onclick="closeConfirm(), closeSetup()">Return to Search</button>
-    </div>
-  </div>
-    </div>
+				<button class="closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
