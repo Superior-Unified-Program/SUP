@@ -341,11 +341,9 @@ namespace SUP_Library
 
                     // Send request for getClientByIdFull. 
 
-                    var data = connection.Query<Client, Organization, Address, EmailAddress, PhoneNumber, Client>(sql, (client, org, address, email, phone) =>
+                    var data = connection.Query<Client, Address, Organization, EmailAddress, PhoneNumber, Client>(sql, (client, address, org, email, phone) =>
                     { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
                                new { Client_ID = clientId }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).SingleOrDefault();
-
-                    //var data = connection.Query<Client>(sql, new { Client_Id = clientId }, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
                     return data;
                 }
