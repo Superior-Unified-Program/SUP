@@ -13,7 +13,10 @@
             margin-top: 0px;
             margin-right: 0px;
             margin-bottom: 0px;
+            background: rgb(255,255,255);
+            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(244,245,237,1) 80%, rgba(229,218,217,1) 100%);
         }
+
         .organize {
             width: 100%;
             height: 100%;
@@ -52,8 +55,8 @@
 
         .auto_hidden {
             width: 200px;
-            border:#E0E0E0;
-            border-top: 1px solid ;
+            border: #E0E0E0;
+            border-top: 1px solid;
             border-bottom: 1px solid;
             border-left: 1px solid;
             border-right: 1px solid;
@@ -63,7 +66,7 @@
 
         .auto_show {
             width: 200px;
-            border:#E0E0E0;
+            border: #E0E0E0;
             border-top: 1px solid;
             border-bottom: 1px solid;
             border-left: 1px solid;
@@ -84,10 +87,257 @@
             width: 100%;
             background-color: #ffffff;
         }
-    </style>
+
+        .templateTable {
+            background-color: #808080;
+        }
+
+        .yellowizedButton {
+            box-shadow: inset 0px 1px 0px 0px #fcf6cf;
+            background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
+            background-color: #edf035;
+            border: 1px solid #241e19;
+            display: inline-block;
+            cursor: pointer;
+            color: #2e1813;
+            font-family: Arial;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 6px 12px;
+            text-decoration: none;
+        }
+
+        .yellowizedButton:hover {
+            background: linear-gradient(to bottom, #d1c060 5%, #edf035 100%);
+            background-color: #d1c060;
+        }
+
+        .yellowizedButton:active {
+            position: relative;
+            top: 1px;
+        }
+
+        .yellowizedTextField {
+            display: inline-block;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            padding: 13px 0 0 13px;
+            border: 1.5px solid rgba(28,13,10,1);
+            -webkit-border-radius: 2px;
+            border-radius: 2px;
+            font: normal 16px/normal Arial, Helvetica, sans-serif;
+            color: rgba(38,23,17,1);
+            -o-text-overflow: clip;
+            text-overflow: clip;
+            background: rgba(226,224,199,1);
+            -webkit-box-shadow: 2px 1px 1px 1px rgba(0,0,0,0.2) inset;
+            box-shadow: 2px 1px 1px 1px rgba(0,0,0,0.2) inset;
+        }
+
+        ::-webkit-scrollbar {
+            width: 13px;
+            height: 13px;
+        }
+
+        ::-webkit-scrollbar-button {
+            width: 0px;
+            height: 0px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e0e93d;
+            border: 0px none #24211e;
+            border-radius: 50px;
+        }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #f5fcc5;
+            }
+
+            ::-webkit-scrollbar-thumb:active {
+                background: #c07645;
+            }
+
+        ::-webkit-scrollbar-track {
+            background: #4b4234;
+            border: 1px solid #000000;
+            border-radius: 50px;
+        }
+
+            ::-webkit-scrollbar-track:hover {
+                background: #b08460;
+            }
+
+            ::-webkit-scrollbar-track:active {
+                background: #302723;
+            }
+
+        ::-webkit-scrollbar-corner {
+            background: transparent;
+        }
+
+        .custom-select {
+          position: relative;
+          font-family: Arial;
+        }
+
+        .custom-select select {
+          display: none; /*hide original SELECT element:*/
+        }
+
+        .select-selected {
+          background-color: yellow;
+        }
+
+        /*style the arrow inside the select element:*/
+        .select-selected:after {
+          position: absolute;
+          content: "";
+          top: 14px;
+          right: 10px;
+          width: 0;
+          height: 0;
+          border: 6px solid transparent;
+          border-color: #fff transparent transparent transparent;
+        }
+
+        /*point the arrow upwards when the select box is open (active):*/
+        .select-selected.select-arrow-active:after {
+          border-color: transparent transparent #fff transparent;
+          top: 7px;
+        }
+
+        /*style the items (options), including the selected item:*/
+        .select-items div,.select-selected {
+          color: #ffffff;
+          padding: 8px 16px;
+          border: 1px solid transparent;
+          border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+          cursor: pointer;
+          user-select: none;
+        }
+
+        /*style items (options):*/
+        .select-items {
+          position: absolute;
+          background-color: yellow;
+          top: 100%;
+          left: 0;
+          right: 0;
+          z-index: 99;
+        }
+
+        /*hide the items when the select box is closed:*/
+        .select-hide {
+          display: none;
+        }
+
+        .select-items div:hover, .same-as-selected {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .customInput {
+          -webkit-box-sizing: content-box;
+          -moz-box-sizing: content-box;
+          box-sizing: content-box;
+          padding: 8px 8px 8px 8px;
+          border-top: 1px solid #b7b7b7;
+          border-right: 2px solid #b7b7b7;
+          border-bottom: 1px solid #b7b7b7;
+          border-left: 2px solid #b7b7b7;
+          -webkit-border-radius: 5px / 40px;
+          border-radius: 5px / 40px;
+          font: normal 16px/normal Arial, Helvetica, sans-serif;
+          color: rgba(0,0,0,1);
+          -o-text-overflow: clip;
+          text-overflow: clip;
+          background: rgba(255,255,224,1);
+          -webkit-box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+          box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+          text-shadow: 1px 1px 0 rgba(254,255,242,1) ;
+        }
+
+            </style>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
+    //CUSTOM SELECT BOX
+        var x, i, j, selElmnt, a, b, c;
+        /*look for any elements with the class "custom-select":*/
+        x = document.getElementsByClassName("custom-select");
+        for (i = 0; i < x.length; i++) {
+          selElmnt = x[i].getElementsByTagName("select")[0];
+          /*for each element, create a new DIV that will act as the selected item:*/
+          a = document.createElement("DIV");
+          a.setAttribute("class", "select-selected");
+          a.innerHTML = selElmnt.options[selElmnt.selectedIndex].innerHTML;
+          x[i].appendChild(a);
+          /*for each element, create a new DIV that will contain the option list:*/
+          b = document.createElement("DIV");
+          b.setAttribute("class", "select-items select-hide");
+          for (j = 1; j < selElmnt.length; j++) {
+            /*for each option in the original select element,
+            create a new DIV that will act as an option item:*/
+            c = document.createElement("DIV");
+            c.innerHTML = selElmnt.options[j].innerHTML;
+            c.addEventListener("click", function(e) {
+                /*when an item is clicked, update the original select box,
+                and the selected item:*/
+                var y, i, k, s, h;
+                s = this.parentNode.parentNode.getElementsByTagName("select")[0];
+                h = this.parentNode.previousSibling;
+                for (i = 0; i < s.length; i++) {
+                  if (s.options[i].innerHTML == this.innerHTML) {
+                    s.selectedIndex = i;
+                    h.innerHTML = this.innerHTML;
+                    y = this.parentNode.getElementsByClassName("same-as-selected");
+                    for (k = 0; k < y.length; k++) {
+                      y[k].removeAttribute("class");
+                    }
+                    this.setAttribute("class", "same-as-selected");
+                    break;
+                  }
+                }
+                h.click();
+            });
+            b.appendChild(c);
+          }
+          x[i].appendChild(b);
+          a.addEventListener("click", function(e) {
+              /*when the select box is clicked, close any other select boxes,
+              and open/close the current select box:*/
+              e.stopPropagation();
+              closeAllSelect(this);
+              this.nextSibling.classList.toggle("select-hide");
+              this.classList.toggle("select-arrow-active");
+            });
+        }
+        function closeAllSelect(elmnt) {
+          /*a function that will close all select boxes in the document,
+          except the current select box:*/
+          var x, y, i, arrNo = [];
+          x = document.getElementsByClassName("select-items");
+          y = document.getElementsByClassName("select-selected");
+          for (i = 0; i < y.length; i++) {
+            if (elmnt == y[i]) {
+              arrNo.push(i)
+            } else {
+              y[i].classList.remove("select-arrow-active");
+            }
+          }
+          for (i = 0; i < x.length; i++) {
+            if (arrNo.indexOf(i)) {
+              x[i].classList.add("select-hide");
+            }
+          }
+        }
+        /*if the user clicks anywhere outside the select box,
+        then close all select boxes:*/
+        document.addEventListener("click", closeAllSelect);
+
+    //_________________________
+
 		$(document).ready(function () {
 			Search();
 
@@ -478,17 +728,17 @@
 					<tr>
 						<td>
 
-							<input class="searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+							<input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
 							<div class="auto_hidden" id="auto"></div>
 							<script>
                                 var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
 							</script>
 						</td>
 						<td>
-							<input class="searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
+							<input class="customInput yellowizedTextField searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
 						</td>
 						<td>
-							<select class="searchOrganization" onKeyUp="Search()" name="category">
+							<select class="custom-select searchOrganization" onKeyUp="Search()" name="category">
 								<!--We need to keep an empty option to allow searches that do not include organization-->
 								<option value=""></option>
 								<option value="business">Business</option>
@@ -513,7 +763,7 @@
 			</form>
 			<div style="float:left; margin-left: calc(10% + 180px);">
 				<p style="float:left;">Display Inactive: </p>
-				<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="displayOnlyActiveClientsInput" />
+				<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
 			</div>
 		</div>
 		<table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
@@ -552,46 +802,46 @@
 						<p><b>Phone #</b></p>
 					</td>
 					<td>
-						<input class="checkAll" type="checkbox" name="choice" id="choice">
+						<input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
 					</td>
 				</tr>
 			</tbody>
 		</table>
 		<div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 1210px; margin-left: calc(10% - 95px);" align="right">
-			<table class="templateTable" style="position:relative;" >
-				<tbody>
-					<tr class="templateRow" style="">
+			<table class="templateTable" style="position:relative; border-collapse:collapse; width:100%;" cellpadding="0px">
+				<tbody style="width:100%">
+					<tr class="templateRow" style="width:100%">
 						<td>
-							<button class="rowViewButton tableCell" value="0">View</button>
+							<button class="yellowizedButton rowViewButton tableCell" size="5" value="0">View</button>
 						</td>
 						<td>
-							<input class="rowFirstName tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowFirstName tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowLastName tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowLastName tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowJobTitle tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowJobTitle tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowOrganization tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowOrganization tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowEmailAddress tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowEmailAddress tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowPhoneNumber tableCell" type="text" value="" disabled>
+							<input class="yellowizedTextField rowPhoneNumber tableCell" size="17" type="text" value="" disabled>
 						</td>
 						<td>
-							<input class="rowSelected tableCell" type="checkbox" name="choice" id="choice" />
+							<input class="yellowizedTextField rowSelected tableCell"  type="checkbox" name="choice" id="choice" />
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		<div style="width: 100%; margin-top: 5px;">
-			<button class="template" onclick="popSetup()">Select Template</button>
-			<button style="margin-left: 20%" class="excel" onclick="">Export to Excel</button>
+			<button class="yellowizedButton template" onclick="popSetup()">Select Template</button>
+			<button style="margin-left: 20%" class="yellowizedButton excel" onclick="">Export to Excel</button>
 		</div>
 		<div class="setup" id="setup">
 			<div class="topRow">
@@ -635,14 +885,14 @@
 				</table>
 			</div>
 			<div class="buttonRow">
-				<button class="continue" onclick="popConfirm()">Continue</button>
+				<button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
 			</div>
 			<div class="buttonRow">
 				<form action="middlewareHere" method="POST" enctype="multipart/form-data">
 					<input type="file" class="browse" name="browse" style="width: 500px;">
-					<button type="submit" class="addTemplate" value="Add Template">Add Template</button>
+					<button type="submit" class="yellowizedButton addTemplate" value="Add Template">Add Template</button>
 				</form>
-				<button class="closeButton" onclick="closeSetup()">Close</button>
+				<button class="yellowizedButton closeButton" onclick="closeSetup()">Close</button>
 			</div>
 		</div>
 
@@ -663,16 +913,16 @@
 			</div>
 			<div class="buttonRow">
 				<form action="middlewareHere">
-					<button type="submit" class="continue">Generate Output</button>
+					<button type="submit" class="yellowizedButton continue">Generate Output</button>
 				</form>
 			</div>
 			<div class="buttonRow">
 				<a href="middlewareHere" download>
-					<button class="browse">Download Output</button>
+					<button class="yellowizedButton browse">Download Output</button>
 				</a>
-				<button class="addTemplate" onclick="closeConfirm()">Go Back</button>
+				<button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
 
-				<button class="closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
+				<button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
 			</div>
 		</div>
 	</div>
