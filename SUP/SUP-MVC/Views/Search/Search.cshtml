@@ -53,6 +53,38 @@
             right: 10%;
         }
 
+        .flex-container {
+            display: flex;
+            width: 100%;
+            height: 100px;
+            align-items: center;
+            flex-direction: row;    
+            justify-content: center;
+        }
+
+        .sidebar-left {
+         align-self:center;
+            width: 33.3%;
+            margin: 5px;
+            padding:10px;
+
+        }
+        .sidebar-middle {
+            align-self:center;
+            width:33.3%;
+            margin: 5px;
+            padding:10px;
+
+
+        } 
+           .sidebar-right{
+            align-self:center;
+            width: 33.3%;
+            margin: 5px;
+            padding:10px;
+
+        }
+                 
         .auto_hidden {
             width: 200px;
             border: #E0E0E0;
@@ -412,6 +444,12 @@
                         firstNameRow.text(currentRow['First_Name']);
                         $('.firstNamesList').append(firstNameRow);
 
+                        var lastNameRow = $('.lastNameTemplate').clone();
+                        lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
+                        lastNameRow.text(currentRow['Last_Name']);
+                        $('.lastNamesList').append(lastNameRow);
+
+
                         $('.checkedId').each(function (index)
                         {
                             if ($(this).text() == clientId)
@@ -692,6 +730,62 @@
                 }
                 this.pressKey(event);
                 window.onresize = combine(this, function () { this.initialize(); });
+            },
+            startLast: function (event)
+            {
+                if (event.keyCode == 8) {
+                    this.initialize();
+                    this.deleteDiv();
+                }
+                else if (event.keyCode != 13 && event.keyCode != 38 && event.keyCode != 40)
+                {
+                    this.initialize();
+                    this.deleteDiv();
+                    this.searchValue = this.input.value;
+
+                    var arrV = [""];
+                    $('.lastNamesList').find('.lastName').each(
+                        function () {
+                            var theText = $(this).text().toLowerCase();
+                            var searchedText = $('.searchLastName').val().toLowerCase();
+
+                            if (theText.match("^" + searchedText)) {
+                                var capFirst = theText.charAt(0).toUpperCase()
+                                theText = capFirst + theText.substr(1, theText.length);
+                                arrV.push(theText);
+                            }
+                        });
+                    if (arrV != undefined && arrV != null)
+                    {
+
+                        arrV.sort();
+                    }
+
+                    if (this.input.value.replace(/(^\s*)|(\s*$)/g, '') == "") { return; }
+                    try { var reg = new RegExp("(" + this.input.value + ")", "i"); }
+                    catch (e) { return; }
+                    var index = 0;
+                    for (var i = 0; i < arrV.length; i++)
+                    {
+                        if (reg.test(arrV[i]))
+                        {
+                            var div = document.createElement("div");
+                            div.className = "auto_onmouseout";
+                            div.seq = arrV[i];
+                            div.onclick = this.setValue(this);
+                            $(div).click(function () {
+                                Search();
+                            })
+                            div.onmouseover = this.autoOnmouseover(this, index);
+                            div.innerHTML = arrV[i].replace(reg, "<strong>$1</strong>");
+                            this.node_Div.appendChild(div);
+                            this.node_Div.className = "auto_show";
+                            index++;
+                        }
+                    }
+                }
+                this.pressKey(event);
+                window.onresize = combine(this, function () { this.initialize(); });
             }
 		}
 
@@ -702,229 +796,223 @@
 
 
 <body class="organize">
-	<div class="checkedIdsDiv" style="display:none;">
-		<p class="checkedIdTemplate"></p>
-	</div>
-	<div class="firstNamesList" style="display:none;">
-		<p class="firstNameTemplate"></p>
-	</div>
-	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-		<div style="position:relative; margin-left: 25%; width: 650px;" align="right">
-			<form>
-				<table style="position:relative; left: -90px">
-					<tr>
-						<td>
-							<p align="center">First Name</p>
-						</td>
-						<td>
-							<p align="center">Last Name</p>
-						</td>
-						<td>
-							<p align="center">Organization Type</p>
-						</td>
-					</tr>
+    <div class="checkedIdsDiv" style="display:none;">
+        <p class="checkedIdTemplate"></p>
+    </div>
+    <div class="firstNamesList" style="display:none;">
+        <p class="firstNameTemplate"></p>
+    </div>
+    <div class="lastNamesList" style="display:none;">
+        <p class="lastNameTemplate"></p>
+    </div>
+    <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+        <div style="position:relative; margin-left: 25%; width: 650px;" align="right">
+            <form>
+                <div class="flex-container">
+                    <div class="sidebar-left">
+                        <a>First Name</a><br />
+                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+                        <div class="auto_hidden" id="auto"></div>
+                        <script>
+                            var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
+                        </script>
+                    </div>
+                    <div class="sidebar-middle">
+                        <a>Last Name</a><br />
+                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name">
+                        <div class="auto_hidden" id="autoLastName"></div>
+                        <script>
+                            var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
+                        </script>
+                    </div>
 
+                    <div class="sidebar-right">
+                        <a>Organization Type</a><br />
+                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category">
+                            <!--We need to keep an empty option to allow searches that do not include organization-->
+                            <option value=""></option>
+                            <option value="business">Business</option>
+                            <option value="electedOfficial">Elected Official</option>
+                            <option value="educationAll">Education - All</option>
+                            <option value="elementary">Elementary</option>
+                            <option value="middle">Middle</option>
+                            <option value="highSchool">High School</option>
+                            <option value="higherEd">Higher Ed.</option>
+                            <option value="nonProfit">Non-profit</option>
+                            <option value="UWSystem">UW-System</option>
+                            <option value="boardOfRegent">Board of Regent</option>
+                            <option value="advancement">Advancement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
 
-					<tr>
-						<td>
+                </div>
 
-							<input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
-							<div class="auto_hidden" id="auto"></div>
-							<script>
-                                var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
-							</script>
-						</td>
-						<td>
-							<input class="customInput yellowizedTextField searchLastName" type="text" onKeyUp="Search()" placeholder="Last Name">
-						</td>
-						<td>
-							<select class="custom-select searchOrganization" onKeyUp="Search()" name="category">
-								<!--We need to keep an empty option to allow searches that do not include organization-->
-								<option value=""></option>
-								<option value="business">Business</option>
-								<option value="electedOfficial">Elected Official</option>
-								<option value="educationAll">Education - All</option>
-								<option value="elementary">Elementary</option>
-								<option value="middle">Middle</option>
-								<option value="highSchool">High School</option>
-								<option value="higherEd">Higher Ed.</option>
-								<option value="nonProfit">Non-profit</option>
-								<option value="UWSystem">UW-System</option>
-								<option value="boardOfRegent">Board of Regent</option>
-								<option value="advancement">Advancement</option>
-								<option value="other">Other</option>
-							</select>
-						</td>
-					</tr>
-					<tr><td height="10px"></td></tr>
+            </form>
+            <div style="float:left; margin-left: calc(10% + 180px);">
+                <p style="float:left;">Display Inactive: </p>
+                <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
+            </div>
+        </div>
+        <table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td colspan="2">
+                        <a href="javascript:allCheck('choice',true)">Select</a>
+                        <a href="javascript:allCheck('choice',false)">No select</a>
+                        <a href="javascript:reserveCheck('choice')"> Inverse</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="width: 183px">
+                        <p><b>First Name</b></p>
+                    </td>
+                    <td style="width: 186px">
+                        <p><b>Last Name</b></p>
+                    </td>
+                    <td style="width: 185px">
+                        <p><b>Job Title</b></p>
+                    </td>
+                    <td style="width: 182px">
+                        <p><b>Organization Name</b></p>
+                    </td>
+                    <td style="width: 182px">
+                        <p><b>Email</b></p>
+                    </td>
+                    <td style="width: 188px">
+                        <p><b>Phone #</b></p>
+                    </td>
+                    <td>
+                        <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 1210px; margin-left: calc(10% - 95px);" align="right">
+            <table class="templateTable" style="position:relative; border-collapse:collapse; width:100%;" cellpadding="0px">
+                <tbody style="width:100%">
+                    <tr class="templateRow" style="width:100%">
+                        <td>
+                            <button class="yellowizedButton rowViewButton tableCell" size="5" value="0">View</button>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowFirstName tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowLastName tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowJobTitle tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowOrganization tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowEmailAddress tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowPhoneNumber tableCell" size="17" type="text" value="" disabled>
+                        </td>
+                        <td>
+                            <input class="yellowizedTextField rowSelected tableCell" type="checkbox" name="choice" id="choice" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div style="width: 100%; margin-top: 5px;">
+            <button class="yellowizedButton template" onclick="popSetup()">Select Template</button>
+            <button style="margin-left: 20%" class="yellowizedButton excel" onclick="">Export to Excel</button>
+        </div>
+        <div class="setup" id="setup">
+            <div class="topRow">
+                <img src="superior_logo.jpg" style="max-height: 100%">
+                <img src="logo.jpg" style="max-height: 100%">
+            </div>
+            <div class="searchRow">
+                <form action="middlewareHere">
+                    <div>
+                        <input type="text" style="width: 80%">
+                        <input type="submit" value="search" style="width: 15%">
+                    </div>
+                </form>
+            </div>
+            <div class="resultRow">
+                <table id="poptable">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Name</th>
+                        <th>Date modified</th>
+                        <th>Uploaded by</th>
+                    </tr>
+                    <tr>
+                        <td id="radioSet"><input type="radio" name="template"></td>
+                        <td id="colSet">ParkingPassTemplate</td>
+                        <td id="colSet">9/9/9999</td>
+                        <td id="colSet">username1</td>
+                    </tr>
+                    <tr>
+                        <td id="radioSet"><input type="radio" name="template"></td>
+                        <td id="colSet">LetterTemplate</td>
+                        <td id="colSet">8/8/8888</td>
+                        <td id="colSet">thatOneGuy17</td>
+                    </tr>
+                    <tr>
+                        <td id="radioSet"><input type="radio" name="template"></td>
+                        <td id="colSet">HolidayCardTemplate</td>
+                        <td id="colSet">1/19/2019</td>
+                        <td id="colSet">buttercup2000</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="buttonRow">
+                <button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
+            </div>
+            <div class="buttonRow">
+                <form action="middlewareHere" method="POST" enctype="multipart/form-data">
+                    <input type="file" class="browse" name="browse" style="width: 500px;">
+                    <button type="submit" class="yellowizedButton addTemplate" value="Add Template">Add Template</button>
+                </form>
+                <button class="yellowizedButton closeButton" onclick="closeSetup()">Close</button>
+            </div>
+        </div>
 
+        <div class="confirmation" id="confirmation">
+            <div class="topRow">
+                <img src="superior_logo.jpg" style="max-height: 100%">
+                <img src="logo.jpg" style="max-height: 100%">
+            </div>
+            <div class="resultRow">
+                <table id="poptable">
+                    <tr>
+                        <th>Result</th>
+                    </tr>
+                    <tr>
+                        <td id="colSet">Generated 17 parking permits.</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="buttonRow">
+                <form action="middlewareHere">
+                    <button type="submit" class="yellowizedButton continue">Generate Output</button>
+                </form>
+            </div>
+            <div class="buttonRow">
+                <a href="middlewareHere" download>
+                    <button class="yellowizedButton browse">Download Output</button>
+                </a>
+                <button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
 
-				</table>
-			</form>
-			<div style="float:left; margin-left: calc(10% + 180px);">
-				<p style="float:left;">Display Inactive: </p>
-				<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
-			</div>
-		</div>
-		<table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
-			<tbody>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td colspan="2">
-						<a href="javascript:allCheck('choice',true)">Select</a>
-						<a href="javascript:allCheck('choice',false)">No select</a>
-						<a href="javascript:reserveCheck('choice')"> Inverse</a>
-					</td>
-				</tr>
-				<tr>
-					<td></td>
-					<td style="width: 183px">
-						<p><b>First Name</b></p>
-					</td>
-					<td style="width: 186px">
-						<p><b>Last Name</b></p>
-					</td>
-					<td style="width: 185px">
-						<p><b>Job Title</b></p>
-					</td>
-					<td style="width: 182px">
-						<p><b>Organization Name</b></p>
-					</td>
-					<td style="width: 182px">
-						<p><b>Email</b></p>
-					</td>
-					<td style="width: 188px">
-						<p><b>Phone #</b></p>
-					</td>
-					<td>
-						<input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
-					</td>
-				</tr>
-			</tbody>
-		</table>
-		<div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 1210px; margin-left: calc(10% - 95px);" align="right">
-			<table class="templateTable" style="position:relative; border-collapse:collapse; width:100%;" cellpadding="0px">
-				<tbody style="width:100%">
-					<tr class="templateRow" style="width:100%">
-						<td>
-							<button class="yellowizedButton rowViewButton tableCell" size="5" value="0">View</button>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowFirstName tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowLastName tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowJobTitle tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowOrganization tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowEmailAddress tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowPhoneNumber tableCell" size="17" type="text" value="" disabled>
-						</td>
-						<td>
-							<input class="yellowizedTextField rowSelected tableCell"  type="checkbox" name="choice" id="choice" />
-						</td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-		<div style="width: 100%; margin-top: 5px;">
-			<button class="yellowizedButton template" onclick="popSetup()">Select Template</button>
-			<button style="margin-left: 20%" class="yellowizedButton excel" onclick="">Export to Excel</button>
-		</div>
-		<div class="setup" id="setup">
-			<div class="topRow">
-				<img src="superior_logo.jpg" style="max-height: 100%">
-				<img src="logo.jpg" style="max-height: 100%">
-			</div>
-			<div class="searchRow">
-				<form action="middlewareHere">
-					<div>
-						<input type="text" style="width: 80%">
-						<input type="submit" value="search" style="width: 15%">
-					</div>
-				</form>
-			</div>
-			<div class="resultRow">
-				<table id="poptable">
-					<tr>
-						<th>&nbsp;</th>
-						<th>Name</th>
-						<th>Date modified</th>
-						<th>Uploaded by</th>
-					</tr>
-					<tr>
-						<td id="radioSet"><input type="radio" name="template"></td>
-						<td id="colSet">ParkingPassTemplate</td>
-						<td id="colSet">9/9/9999</td>
-						<td id="colSet">username1</td>
-					</tr>
-					<tr>
-						<td id="radioSet"><input type="radio" name="template"></td>
-						<td id="colSet">LetterTemplate</td>
-						<td id="colSet">8/8/8888</td>
-						<td id="colSet">thatOneGuy17</td>
-					</tr>
-					<tr>
-						<td id="radioSet"><input type="radio" name="template"></td>
-						<td id="colSet">HolidayCardTemplate</td>
-						<td id="colSet">1/19/2019</td>
-						<td id="colSet">buttercup2000</td>
-					</tr>
-				</table>
-			</div>
-			<div class="buttonRow">
-				<button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
-			</div>
-			<div class="buttonRow">
-				<form action="middlewareHere" method="POST" enctype="multipart/form-data">
-					<input type="file" class="browse" name="browse" style="width: 500px;">
-					<button type="submit" class="yellowizedButton addTemplate" value="Add Template">Add Template</button>
-				</form>
-				<button class="yellowizedButton closeButton" onclick="closeSetup()">Close</button>
-			</div>
-		</div>
-
-		<div class="confirmation" id="confirmation">
-			<div class="topRow">
-				<img src="superior_logo.jpg" style="max-height: 100%">
-				<img src="logo.jpg" style="max-height: 100%">
-			</div>
-			<div class="resultRow">
-				<table id="poptable">
-					<tr>
-						<th>Result</th>
-					</tr>
-					<tr>
-						<td id="colSet">Generated 17 parking permits.</td>
-					</tr>
-				</table>
-			</div>
-			<div class="buttonRow">
-				<form action="middlewareHere">
-					<button type="submit" class="yellowizedButton continue">Generate Output</button>
-				</form>
-			</div>
-			<div class="buttonRow">
-				<a href="middlewareHere" download>
-					<button class="yellowizedButton browse">Download Output</button>
-				</a>
-				<button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
-
-				<button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
-			</div>
-		</div>
-	</div>
+                <button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
