@@ -387,6 +387,27 @@
             })
         })
 
+        function Export() {
+            var dataPost = "";
+            $('.rowViewButton').each(function () {
+                dataPost += $(this).val() + " ";
+            });
+            console.log(dataPost);
+            $.ajax({
+                url: '/Search/ExportSearch',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    returnedData = JSON.parse(result);
+                },
+                async: true,
+                processData: false
+            });
+        }
 
         var returnedData;
 		function Search() {
@@ -929,7 +950,7 @@
         </div>
         <div style="width: 100%; margin-top: 5px;">
             <button class="yellowizedButton template" onclick="popSetup()">Select Template</button>
-            <button style="margin-left: 20%" class="yellowizedButton excel" onclick="">Export to Excel</button>
+            <button style="margin-left: 20%" class="yellowizedButton excel" onclick="Export()">Export to Excel</button>
         </div>
         <div class="setup" id="setup">
             <div class="topRow">
