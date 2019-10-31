@@ -429,7 +429,8 @@
                      
                      
                     $('.removableRow').remove();
-                    $('.firstName').remove();
+					$('.firstName').remove();
+					$('.lastName').remove();
                     $('.templateRow').hide();
                     if (returnedData.length == 0)
                     {
@@ -592,7 +593,7 @@
             initialize: function ()
             {
                 this.node_Div.style.left = this.input.offsetLeft + "px";
-                this.node_Div.style.top = this.input.offsetTop + this.input.offsetHeight +35 + "px";
+                this.node_Div.style.top = this.input.offsetTop + this.input.offsetHeight + "px";
                 this.node_Div.style.width = this.input.offsetWidth - 2 + "px";
             },
 
@@ -827,7 +828,7 @@
         <p class="lastNameTemplate"></p>
     </div>
     <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-        <div style="position:relative; margin-left: 25%; width: 650px;" align="right">
+        <div style="position:relative; margin-left: 25%; width: 650px;" align="left">
             <form>
                 <div class="flex-container">
                     <div class="sidebar-left">
