@@ -12,7 +12,7 @@ namespace SUP_Library
 {
     public class ExportFile
     {
-        public static void crerateExcel(/* this will get the list of client in here*/)
+        public static void CreateExcelFile(List<Client> clientList)
         {
             #region Setup new Excel File
 
@@ -25,12 +25,8 @@ namespace SUP_Library
             #endregion
 
             #region Input data into Excel File
-
-            List<Client> clientList = new List<Client>();
-            clientList.Add(new Client { First_Name = "Duy", Last_Name = "Nguyen", Org = new Organization(), Email = new EmailAddress(), Phone = new PhoneNumber() });
-
             eWorkSheet.Name = "Client Information";             //Name of the work sheet here
-            writeExcelFile(clientList, eWorkSheet);
+            WriteExcelFile(clientList, eWorkSheet);
 
             #endregion
 
@@ -48,7 +44,7 @@ namespace SUP_Library
             #endregion
         }
 
-        private static void writeExcelFile(List<Client> clientList, Excel.Worksheet eWorkSheet)
+        private static void WriteExcelFile(List<Client> clientList, Excel.Worksheet eWorkSheet)
         {
             eWorkSheet.Cells[1, 1] = "First Name";  //Excel SpreadSheet's index start at 1 instead of 0
             eWorkSheet.Cells[1, 2] = "Last Name";
