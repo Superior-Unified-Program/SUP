@@ -14,7 +14,7 @@
 			font-size: large;
 			font-weight: 900;
 			margin-left: -50px;
-			height: 50px;
+			height: 45px;
 			padding-top: 20px;
 		}
 		.row {
@@ -25,11 +25,11 @@
 			text-align: left;
 		}
 		.noteCell {
-			width: 95%;
+			width: 50%;
 			text-align: left;
 		}
 		.activeCell {
-			width: 5%;
+			width: 25%;
 			text-align: left;
 		}
 		.saveEditCell {
@@ -43,6 +43,10 @@
 		}
 		.breakLine {
 			margin-left: -10%;
+			padding-top: 0px;
+			padding-top: 0px;
+			margin-top: 5px;
+			margin-bottom: 0px;
 		}
 	</style>
 	<script language="javascript">
@@ -82,21 +86,41 @@
                     alert('Error: ' + xhr.statusText);
                 },
                 success: function (result) {
-                    console.log('Yeay!')
                     var returnedData = JSON.parse(result);
                     var currentClient = returnedData;
                     var firstName = currentClient["First_Name"];
                     var lastName = currentClient["Last_Name"];
                     var middleinitial = currentClient["Middle_initial"];
                     var organization = currentClient["Org"];
+                    if (currentClient['Email'] != null)
+                        $('.emailInput').val(currentClient['Email']['Email']);
+                    if (currentClient['Phone'] != null)
+                        $('.phoneInput').val(currentClient['Phone']['Number']);
+                    if (currentClient['Org'] != null) {
+                        $('.companyInput').val(currentClient['Org']['Org_Name']);
+                    }
+
+                    if (currentClient['Address'] != null) {
+                        $('.addressLineOneInput').val(currentClient['Address']['Line1']);
+                    }
+                    if (currentClient['Address'] != null) {
+                        $('.addressLineTwoInput').val(currentClient['Address']['Line2']);
+                    }
+                    if (currentClient['Address'] != null) {
+                        $('.cityInput').val(currentClient['Address']['City']);
+                    }
+                    if (currentClient['Address'] != null) {
+                        $('.stateInput').val(currentClient['Address']['State']);
+                    }
+                    if (currentClient['Address'] != null) {
+                        $('.zipInput').val(currentClient['Address']['Zip']);
+                    }
                     var company = currentClient["Company"];
                     var isActive = currentClient["Active"];
                     var note = currentClient["Notes"];
                     $('.firstNameInput').val(firstName);
                     $('.middleInitialInput').val(middleinitial);
                     $('.lastNameInput').val(lastName);
-                    $('.organizationInput').val(organization);
-                    $('.companyInput').val(company);
                     if (isActive) {
                         console.log(isActive);
                         $(".activeInput").prop( "checked", true );
@@ -109,11 +133,38 @@
         }
 
         function saveClientData() {
+            var args = location.href.split('?');
+            console.log(args);
+            var params = "";
+            if (args.length > 1) {
+                params = args[1].split('=');
+                console.log(params);
+            }
+            var clientId = "";
+            if (params.length > 1) {
+                clientId = params[1];
+                console.log(clientId);
+            }
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
-            var organization = $('.lastNameInput').text();
+            var middleInitial = $('.middleInitialInput').val();
+            var company = $('.companyInput').text();
+            var organization = $('.organizationInput').text();
+            var title = $('.titleInput').val();
+            var Line1 = $('.addressLineOneInput').val();
+            var Line2 = $('.addressLineTwoInput').val();
+            var City = $('.cityInput').val();
+            var State = $('.stateInput').val();
+            var Zip = $('.zipInput').val();
+            var Email = $('.emailInput').val();
+            var Note = $('.noteInput').val();
+            var Phone = $(".phoneInput").val();
+            var Active = $(".activeInput").prop( "checked");
 
-            var dataPost = firstName + ',' + lastName + ',' + organization;
+            var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
+                organization + ',' + company + ',' + title +
+                ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip + 
+                ',' + Email + ',' + Note + ',' + Phone + ',' + Active;
             $.ajax({
                 url: '/AddClient/UpdateClient',
                 type: 'POST',
@@ -124,7 +175,7 @@
                 },
                 success: function (result) {
                     console.log('Yeay!')
-                    console(JSON.parse(result));
+                    console.log(JSON.parse(result));
                 },
                 async: true,
                 processData: false
@@ -146,10 +197,15 @@
 					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
 					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
 				</div>
+				<div class="row">
+					<div class="cell"></div>
+					<div class="cell">Assistant's First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
+					<div class="cell">Assistant's Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+				</div>
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">
-						Company*<br />
+						Organization Type*<br />
 						<select name="Organization" class="organizationInput" size="1" required tabindex="5">
 
 							<option placeholder="">School</option>
@@ -158,14 +214,15 @@
 						</select>
 					</div>
 					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
-					<div class="cell">Job title<br /><input type="text" tabindex="7"></div>
+					<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
 				</div>
 				<div class="tableHeader">Contact Information</div>
 				<div class="row">
-					<div class="cell">Address Line1*<br /><input type="text" placeholder="Address Line 1" required tabindex="8"></div>
-					<div class="cell">City*<br /><input type="text" placeholder="City" required tabindex="10"></div>
+					<div class="cell">Address Line1*<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" required tabindex="8"></div>
+					<div class="cell">City*<br /><input class="cityInput" type="text" placeholder="City" required tabindex="10"></div>
 					<div class="cell">
-						State<br /><select name="state" tabindex="11">
+						State<br /><select class="stateInput" name="state" tabindex="11">
+							<option value=""></option>
 							<option value="AL">Alabama</option>
 							<option value="AK">Alaska</option>
 							<option value="AZ">Arizona</option>
@@ -219,25 +276,35 @@
 							<option value="WY">Wyoming</option>
 						</select>
 					</div>
-					<div class="cell">Zipcode *<br /><input type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
+					<div class="cell">Zipcode *<br /><input class="zipInput" type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
 				</div>
 				<div class="row">
-					<div class="cell">Address Line2<br /><input type="text" placeholder="Address Line 2" tabindex="9"></div>
+					<div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="9"></div>
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
-					<div class="cell">Email address*<br /><input type="email" id="email" placeholder="Email" required tabindex="14"></div>
-					<div class="cell">Phone Number<br /><input type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="14"></div>
+					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="16"></div>
+					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+				</div>
+				<div class="row">
+					<div class="cell">Assistant's Email*<br /><input type="text" class="firstNameInput" placeholder="" required tabindex="2"></div>
+					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="lastNameInput" placeholder="" required tabindex="3"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div>Active<br /><input class="activeInput" type="checkbox" tabindex="16"></div>
-					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="17"></textArea><div>
-				</div>
-				<div class="row">
-					<div class="saveEditCell"><input type="submit" value="Save" id="button" tabindex="18"></div>
-				</div>
-			</div>
-		</form>
+					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18"></div>
+					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+					<div class="noteCell">
+						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
+						</div>
+						<div class="row">
+							<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="21"></div>
+						</div>
+					</div>
+                </div>
+            </div>
+</form>
 	</div>
 </body>

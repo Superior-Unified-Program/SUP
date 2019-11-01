@@ -131,6 +131,39 @@ namespace SUP_MVC.Controllers
                 return "FAAAAAILLL";
             }
         }
+
+        // POST: Search/SearchClients
+        [HttpPost]
+        public string ExportSearch([FromBody] string args)
+        {
+            try
+            {
+                string[] separatedArgs = args.Split(' ');
+
+                if (separatedArgs.Length <= 0)
+                {
+                    throw (new Exception("Oopsie"));
+                }
+
+                var clientArray = new List<SUP_Library.DBComponent.Client>();
+                foreach(var ID in separatedArgs)
+                {
+                    var currentClient = DatabaseConnection.GetClientByIdFull(ID);
+                    if (currentClient != null)
+                        clientArray.Add(currentClient);
+                }
+                SUP_Library.ExportFile.CreateExcelFile(clientArray);
+
+                //TODO: return value should describe whether or not the process worked to the client.
+                //  The below line is meaningless until then.
+                var json = JsonConvert.SerializeObject("");
+                return json;
+            }
+            catch (Exception e)
+            {
+                return "FAAAAAILLL";
+            }
+        }
         public ActionResult Search()
 		{
 

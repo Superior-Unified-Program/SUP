@@ -7,23 +7,19 @@ IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'S
 GO
 
 /* create User If possible */
-USE [master];
-
 --CREATE LOGIN teamRADGSHAUser
+USE [master]
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
    exec('CREATE LOGIN SUPuser WITH PASSWORD = ''abc123'';')
 GO
 
-USE [SUPdb]
-
 --create user
+USE [SUPdb]
 IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
 --update roles
-CREATE ROLE executeSP
-GRANT EXECUTE TO executeSP
-ALTER ROLE [executeSP] ADD MEMBER [SUPuser]
+GRANT EXECUTE TO SUPuser
 GO
 
 --create tables
@@ -32,20 +28,20 @@ CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Typ
 CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10) Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
-CONSTRAINT PK_Address PRIMARY KEY ( Client_ID, Line1, Line2, City, State, Zip ), 
+CONSTRAINT PK_Address PRIMARY KEY ( Client_ID ), 
 CONSTRAINT FK_Address_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Phone')
-CREATE TABLE Phone ( Client_ID int, [Number] varchar(11), CONSTRAINT PK_Phone PRIMARY KEY ( Client_ID, Number ),
-CONSTRAINT FK_Phone_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Phone ( Client_ID int, Type varchar(10), [Number] varchar(11), CONSTRAINT PK_Phone_TEST PRIMARY KEY ( Client_ID, [Type]),
+CONSTRAINT FK_Phone_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Email')
-CREATE TABLE Email ( Client_ID int, [Email] varchar(30), CONSTRAINT PK_Email PRIMARY KEY ( Client_ID, Email ), 
-CONSTRAINT FK_Email_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
+CREATE TABLE Email ( Client_ID int, Type varchar(10), [Email] varchar(30), CONSTRAINT PK_Email_TEST PRIMARY KEY ( Client_ID, [Type]), 
+CONSTRAINT FK_Email_Client_TEST FOREIGN KEY (Client_ID) REFERENCES Client (ID)  )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Organization')
 CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20), 
@@ -57,39 +53,104 @@ CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ),
 CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
 CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
-IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assists')
-CREATE TABLE Assists ( Boss_ID int, Assistant_ID int, Notes varchar(30), 
-CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID, Assistant_ID ), 
-CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID), 
-CONSTRAINT FK_Assists_Assustant_Client FOREIGN KEY (Assistant_ID) REFERENCES Client (ID) )
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assistant')
+CREATE TABLE Assistant ( Boss_ID int, First_Name varchar(50), Last_Name varchar(50), 
+CONSTRAINT PK_Assists PRIMARY KEY ( Boss_ID ), 
+CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID) )
 
 GO
 
-/*CREATE PROCEDURE Verify_Login @username nvarchar(25), @password varchar(50) AS BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username AND Password = @password) BEGIN SELECT User_Name, User_Type, Failed_Login FROM Account WHERE User_Name = @username AND Password = @password END ELSE BEGIN IF EXISTS (SELECT User_Name, User_Type FROM Account WHERE User_Name = @username) BEGIN UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @username END END END
+--creation of any views
+-----------------------------------------------------------------------------------------------------------------------------
+--creates a view that is used in the queryClientFull SP
+CREATE OR ALTER VIEW viewAll
+AS
+SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
+		FULL JOIN [Address] ON ID = Address.Client_ID
+		FULL JOIN Works_For ON ID = Works_For.Client_ID
+		FULL JOIN Assistant ON ID = Assistant.Boss_ID
 
-GO*/
+GO
+
+--creation of any stored Procedures
+-------------------------------------------------------------------------------------------------------------------------------
+
 
 -- =============================================
--- Create date: 10/7/2019
--- Description:	verifies login
+-- Create date: 10/24/2019
+-- Description:	validates log in information with hash and salt
 -- =============================================
 
 CREATE OR ALTER PROCEDURE validateLogin
 
 	-- Add the parameters for the stored procedure here
-	@userName varchar(50), @givenPW varchar(64)
+	@userName nvarchar(50), @givenPW varchar(100)
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
+    -- Insert statements for procedure here
 
+	DECLARE @dateTimeNow DATETIME
+	DECLARE @dateTimeFailed DATETIME
+	DECLARE @isLocked BIT = 0
 	DECLARE @isValid BIT
-	IF EXISTS(SELECT * FROM Account WHERE @userName = [User_Name] AND @givenPW = [Password]) SET @isValid = 1
+	DECLARE @Salt VARCHAR(25)
+	DECLARE @PwdWithSalt VARCHAR(125)
+	DECLARE @PwdHash binary(64)
+	DECLARE @hashPass binary(64)
+	DECLARE @cnt INT = 0
+
+	-- reset failed login if time since last attempt is >= 15 minutes 
+	SET @dateTimeNow = GETDATE()
+	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE User_Name = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
+	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
+
+
+	-- get salt and hashed password
+	SELECT @Salt = Salt, @PwdHash = [Password] FROM Account WHERE User_Name = @userName
+
+	-- apply salt to password parameter
+	SET @PwdWithSalt = @Salt + @givenPW
+
+	-- hash once
+	SET @hashPass = HASHBYTES('SHA2_512', @PwdWithSalt)
+
+	-- hash 500101 more times
+	WHILE @cnt < '500101'
+	BEGIN
+		SET @hashPass = HASHBYTES('SHA2_512', @hashPass) 
+		SET @cnt = @cnt + 1;
+	END
+
+	-- check for validity of password
+	IF (@hashPass = @PwdHash) SET @isValid = 1
 	ELSE SET @isValid = 0
-	SELECT @isValid
+
+	-- check for lockout and revoke validity if too many failed logins
+	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) > 5)
+	BEGIN
+		SET @isValid = 0
+		SET @isLocked = 1
+	END
+
+	-- update failed logins
+	IF @isValid = 0
+	BEGIN
+		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL OR (SELECT Failed_login FROM Account WHERE User_Name = @userName) = 0) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
+		ELSE UPDATE Account SET Failed_Login = 1
+	END
+	ELSE UPDATE ACCOUNT SET Failed_Login = 0 WHERE User_Name = @userName
+
+	-- create temp table to return to middleware
+	CREATE TABLE #results (Valid_Login bit, Account_Locked bit, Failed_Attempts int)
+	INSERT INTO #results (Valid_Login, Account_Locked, Failed_Attempts) VALUES(@isValid, @isLocked, (SELECT Failed_login FROM Account WHERE User_Name = @userName))
+	SELECT * FROM #results
+
+	-- drop temp table
+	DROP TABLE #results
 
 END
 GO
@@ -98,10 +159,10 @@ GO
 -- Create date: 10/7/2019
 -- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
 -- =============================================
-CREATE OR ALTER PROCEDURE queryClient
+CREATE OR ALTER PROCEDURE queryClientFull
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
-	@orgType varchar(30) = ''
+	@orgType varchar(30) = '', @title varchar(20) = ''
 
 AS
 BEGIN
@@ -110,14 +171,38 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	BEGIN
-	IF @orgType = ''
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') ORDER BY Last_Name, First_Name, Middle_initial
-	else
-		SELECT * FROM Client LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID WHERE First_Name LIKE (@firstName + '%') AND Last_Name LIKE (@lastName + '%') AND Org_type LIKE (@orgType + '%') ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
-	END
+	IF @orgType IS NULL SET @orgType = ''
+	IF @lastName IS NULL SET @lastName = ''
+	IF @firstName IS NULL SET @firstName = ''
+	IF @title IS NULL SET @title = ''
+
+
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit, Notes varchar(30),
+		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+
+	INSERT INTO #searchResults SELECT * FROM [viewAll]
+
+	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
+
+	UPDATE #searchResults SET Personal_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+	UPDATE #searchResults SET Personal_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
+
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
+	WHERE First_Name LIKE (@firstName + '%') 
+		AND Last_Name LIKE (@lastName + '%') 
+		AND Org_type LIKE (@orgType + '%')
+		AND Title LIKE (@title + '%') OR Title IS NULL
+	ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
+
+	DROP TABLE #searchResults
 
 END
+GO
 
 -- =============================================
 -- Create date: 10/7/2019
@@ -160,36 +245,7 @@ BEGIN
 
     -- Insert statements for procedure here
 
-	DECLARE @nearMatch BIT
-	IF ((SELECT COUNT(First_Name) FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2) > 0) SET @nearMatch = 1
-	ELSE SET @nearMatch = 0
-
-	SELECT @nearMatch AS nearMatch
-
-	SELECT First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
-
-END
-
-
--- =============================================
--- Create date: 10/9/2019
--- Description:	adds an Organization
--- =============================================
-
-CREATE OR ALTER PROCEDURE addOrganization
-
-	-- Add the parameters for the stored procedure here
-	@name varchar(30) = null, 
-	@type varchar(10) = null
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    	-- Insert statements for procedure here
-	INSERT INTO Organization (Name,Type) VALUES (@name, @type)
-	
+	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
 
 END
 GO
@@ -198,9 +254,9 @@ GO
 -- Create date: 10/10/2019
 -- Description:	Adds a user to the Account table
 -- =============================================
-CREATE OR ALTER PROCEDURE addAccount 
+CREATE OR ALTER PROCEDURE addAccount
 	-- Add the parameters for the stored procedure here
-	@userName varchar(25), @password varchar(64) null,
+	@userName varchar(25), @password varchar(64),
 	@userType char(1) = null, @office varchar(50) = null
 AS
 BEGIN
@@ -209,15 +265,156 @@ BEGIN
 	SET NOCOUNT ON;
 
     	-- Insert statements for procedure here
-	INSERT INTO Account(User_Name, Password, User_Type, Office) VALUES (@userName, @password, @userType, @office)
+	DECLARE @Salt VARCHAR(25)
+	DECLARE @cnt INT = 0
+	DECLARE @PwdWithSalt VARCHAR(125)
+	DECLARE @seed int
+	DECLARE @count tinyint
+	DECLARE @currentTime DATETIME
+	DECLARE @hashedPass binary(64)
+
+	-- build salt w/ seed
+	SET @currentTime = GETDATE()
+	SET @seed = (DATEPART(hh, @currentTime) * 10000000) + (DATEPART(n, @currentTime) * 100000) + (DATEPART(s, @currentTime) * 1000) + DATEPART(ms, @currentTime)
+	SET @count = 1
+	SET @salt = CHAR(ROUND((RAND(@seed) * 90) + 12, 3))
+
+	-- build salt to 25 random characters
+	WHILE (@count < 25)
+	BEGIN
+		SET @Salt = @Salt + CHAR(ROUND((RAND() * 90) + 12, 3))
+		SET @count = @count + 1
+	END
+
+	-- combine salt with password
+	SET @PwdWithSalt = @Salt + @password
+
+	-- initial hash
+	SET @hashedPass = HASHBYTES('SHA2_512', @PwdWithSalt)
+
+	-- hash 500101 more times
+	WHILE @cnt < '500101'
+	BEGIN
+		SET @hashedPass = HASHBYTES('SHA2_512', @hashedPass) 
+		SET @cnt = @cnt + 1;
+	END
+	
+	--insert values in Account table
+	INSERT INTO Account (User_Name, Salt, Password, User_Type, Office) VALUES (@userName, @Salt, @hashedPass, @userType, @office)
+
+END
+GO
+
+-- =============================================
+-- Create date: 10/25/2019
+-- Description:	updates tables based on parameters given
+-- =============================================
+CREATE OR ALTER PROCEDURE updateClient
+	-- Add the parameters for the stored procedure here
+	@ID int, @prefix varchar(10) = null, @firstName varchar(50),
+	@lastName varchar(50), @middleInitial varchar(1) = null,
+	@permitNum varchar(50) = null,
+	@active bit = 1, @notes varchar(30) = '',
+	@orgName varchar(30), @orgType varchar(20),
+	@title varchar(20) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
+	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
+	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
+	@line2 varchar(35) = null, @city varchar(25) = null,
+	@state varchar(2) = null, @zipCode varchar(5) = null,
+	@assistantFirstName varchar(50) = null, @assistantLastName varchar(50) = null
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- update values in the tables.
+	IF @prefix IS NOT NULL
+		UPDATE Client SET Prefix = @prefix WHERE ID = @ID
+	IF @firstName IS NOT NULL 
+		UPDATE Client SET First_Name = @firstName WHERE ID = @ID
+	IF @lastName IS NOT NULL 
+		UPDATE Client SET Last_Name = @lastName WHERE ID = @ID
+	IF @middleInitial IS NOT NULL 
+		UPDATE Client SET Middle_initial = @middleInitial WHERE ID = @ID
+	IF @permitNum IS NOT NULL 
+		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
+	IF @active IS NOT NULL 
+		UPDATE Client SET Active = @active WHERE ID = @ID
+	IF @notes IS NOT NULL 
+		UPDATE Client SET Notes = @notes WHERE ID = @ID
+	-- 
+	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 AND (@orgName IS NOT NULL OR @orgType IS NOT NULL )
+		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
+	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
+		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
+			WHERE [Name] = @orgName AND [Type] = @orgType
+	IF @title IS NOT NULL 
+		UPDATE Works_For SET Title = @title 
+			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+
+
+	--------------------------------------------------------------------------------------------
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'business') = 0 AND @Business_phoneNumber IS NOT NULL 
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'business', @Business_phoneNumber)
+	IF @Business_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Business_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND [Type] = 'personal') = 0 AND @Personal_phoneNumber IS NOT NULL 
+		INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'personal', @Personal_phoneNumber)
+	IF @Personal_phoneNumber IS NOT NULL 
+		UPDATE Phone SET Number = @Personal_phoneNumber 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
+	--
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'business') = 0 AND @Business_email IS NOT NULL 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'business', @Business_email)
+	IF @Business_email IS NOT NULL 
+		UPDATE Email SET Email = @Business_email 
+			WHERE Client_ID = @ID AND [Type] = 'business'
+
+	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND [Type] = 'personal') = 0 AND @Personal_email IS NOT NULL 
+		INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'personal', @Personal_email)
+	IF @Personal_email IS NOT NULL 
+		UPDATE Email SET Email = @Personal_email 
+			WHERE Client_ID = @ID AND [Type] = 'personal'
+	
+	---------------------------------------------------------------------------------------------
+	--
+	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID) = 0 AND (@line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL )
+		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
+	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
+		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
+			WHERE Client_ID = @ID 
+	
+	---------------------------------------------------------------------------------------------
+
+	IF ((SELECT COUNT(*) FROM Assistant WHERE Boss_ID = @ID) = 0) AND (@assistantFirstName IS NOT NULL OR @assistantLastName IS NOT NULL OR @Assistant_Email IS NOT NULL OR @Assistant_phoneNumber IS NOT NULL)
+		Begin	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES(@ID, @assistantFirstName, @assistantLastName) 
+				INSERT INTO Phone(Client_ID, [Type], Number) VALUES(@ID, 'assistant', @Assistant_phoneNumber)
+				INSERT INTO Email(Client_ID, [Type], Email) VALUES(@ID, 'assistant', @Assistant_Email)
+		END
+	IF (@assistantFirstName IS NOT NULL OR @assistantLastName IS NOT NULL OR @Assistant_Email IS NOT NULL OR @Assistant_phoneNumber IS NOT NULL)
+		Begin	UPDATE Assistant SET First_Name = @assistantFirstName, Last_Name = @assistantLastName 
+					WHERE Boss_ID = @ID
+				UPDATE Phone SET Number = @Assistant_phoneNumber 
+					WHERE Client_ID = @ID AND [Type] = 'assistant'
+				UPDATE Email SET Email = @Assistant_Email 
+					WHERE Client_ID = @ID AND [Type] = 'assistant'
+		END
+
+	return @ID
+
 END
 GO
 
 -- =============================================
 -- Create date: 10/12/2019
--- Description:	Returns a single client by searching for the ID
+-- Description:	Returns all data for a single client by searching for the ID
 -- =============================================
-CREATE OR ALTER   PROCEDURE getClientByID
+CREATE OR ALTER PROCEDURE getClientByIdFull
 	-- Add the parameters for the stored procedure here
     @Client_Id int
 
@@ -228,104 +425,27 @@ BEGIN
 	SET NOCOUNT ON;
 
 	-- Insert statements for procedure here
-	SELECT * FROM Client WHERE ID = @Client_Id 
+
+	
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit, Notes varchar(30),
+		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+
+	INSERT INTO #searchResults SELECT * FROM [viewAll]
+
+	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
+
+	UPDATE #searchResults SET Personal_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Email = (SELECT Email FROM Email WHERE Client_ID = ID AND Type = 'assistant')
+	UPDATE #searchResults SET Personal_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'personal')
+	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
+	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
+
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
+	WHERE ID = @Client_Id
+
+	DROP TABLE #searchResults
 
 END
 GO
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
--- =============================================
--- Create date: 10/12/2019
--- Description:	updates tables based on parameters given
--- =============================================
-
-ALTER   PROCEDURE [dbo].[updateClient]
-	-- Add the parameters for the stored procedure here
-	@ID int, @firstName varchar(50) = null, 
-	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
-	@permitNum varchar(50) = null, @active bit = null, 
-	@notes varchar(30) = null, @orgName varchar(30), 
-	@orgType varchar(10), @title varchar(20) = null, 
-	@phoneNumber varchar(11) = null, @email varchar(30), 
-	@line1 varchar(35) = null, @line2 varchar(35) = null, 
-	@city varchar(25) = null, @state varchar(2) = null, 
-	@zipCode varchar(5) = null, @boss int = null, 
-	@assistant int = null
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-	-- update values in the tables.
-	IF @firstName IS NOT NULL 
-		UPDATE Client SET First_Name = @firstName WHERE ID = @ID
-	IF @lastName IS NOT NULL 
-		UPDATE Client SET Last_Name = @lastName WHERE ID = @ID
-	IF @middleInitial IS NOT NULL 
-		UPDATE Client SET Middle_initial = @middleInitial WHERE ID = @ID
-	IF @permitNum IS NOT NULL 
-		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
-	IF @active IS NOT NULL 
-		UPDATE Client SET Permit_Num = @active WHERE ID = @ID
-	IF @notes IS NOT NULL 
-		UPDATE Client SET Notes = @notes WHERE ID = @ID
-	-- 
-	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 
-		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
-	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
-		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
-			WHERE [Name] = @orgName AND [Type] = @orgType
-	IF @title IS NOT NULL 
-		UPDATE Works_For SET Title = @title 
-			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
-	--
-	IF (SELECT COUNT(*) FROM Phone WHERE Client_ID = @ID AND Number = @phoneNumber) = 0 
-		INSERT INTO Phone(Client_ID, Number) VALUES(@ID, @phoneNumber)
-	IF @phoneNumber IS NOT NULL 
-		UPDATE Phone SET Number = @phoneNumber 
-			WHERE Client_ID = @ID AND Number = @phoneNumber
-	--
-	IF (SELECT COUNT(*) FROM Email WHERE Client_ID = @ID AND Email = @email) = 0 
-		INSERT INTO Email(Client_ID, Email) VALUES(@ID, @email)
-	IF @email IS NOT NULL 
-		UPDATE Email SET Email = @email 
-			WHERE Client_ID = @ID AND Email = @email
-	--
-	IF (SELECT COUNT(*) FROM [Address] WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode) = 0 
-		INSERT INTO Address(Client_ID, Line1, Line2, City, [State], Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
-	IF @line1 IS NOT NULL OR @line2 IS NOT NULL OR @city IS NOT NULL OR @state IS NOT NULL OR @zipCode IS NOT NULL 
-		UPDATE [Address] SET Line1 = @line1, Line2 = @line2, City = @city, [State] = @state, Zip = @zipCode
-			WHERE Client_ID = @ID AND Line1 = @line1 AND Line2 = @line2 AND City = @city AND [State] = @state AND Zip = @zipCode
-	-- 
-	IF (SELECT COUNT(*) FROM Assists WHERE Boss_ID = @boss AND Assistant_ID = @assistant) = 0 
-		INSERT INTO Assists(Boss_ID, Assistant_ID) VALUES(@boss, @assistant)
-	IF @boss IS NOT NULL OR @assistant IS NOT NULL 
-		Update Assists SET Boss_ID = @boss, Assistant_ID = @assistant 
-			WHERE Boss_ID = @boss AND Assistant_ID = @assistant
-
-END
-
--- =============================================
--- Create date: 10/16/2019
--- Description:	Updates active status
--- =============================================
-
-CREATE OR ALTER PROCEDURE updateActiveStatus
-
-	-- Add the parameters for the stored procedure here
-	@ID int
-AS
-BEGIN
-	-- SET NOCOUNT ON added to prevent extra result sets from
-	-- interfering with SELECT statements.
-	SET NOCOUNT ON;
-
-    -- Insert statements for procedure here
-
-	IF ((SELECT Active FROM Client Client WHERE @ID = ID) = 1) UPDATE Client SET Active = 0 WHERE @ID = ID
-	ELSE UPDATE Client SET Active = 1
-
-END
