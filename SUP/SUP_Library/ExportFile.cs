@@ -60,6 +60,8 @@ namespace SUP_Library
                 eWorkSheet.Cells[i + 2, 4] = clientList[i].Email.Email;
                 eWorkSheet.Cells[i + 2, 5] = clientList[i].Phone.Number;
             }
+
+            eWorkSheet.Columns.AutoFit();
         }
     }
 }

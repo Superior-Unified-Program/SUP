@@ -390,7 +390,13 @@
         function Export() {
             var dataPost = "";
             $('.rowViewButton').each(function () {
-                dataPost += $(this).val() + " ";
+                var curParent = $(this).parent().parent();
+
+                console.log(curParent);
+                console.log(curParent.find(':checkbox'))
+                console.log(curParent.find(':checkbox').prop('checked'));
+                if (curParent.find(':checkbox').prop('checked') == true)
+                    dataPost += $(this).val() + " ";
             });
             console.log(dataPost);
             $.ajax({
