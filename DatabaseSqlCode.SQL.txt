@@ -10,7 +10,7 @@ GO
 --CREATE LOGIN teamRADGSHAUser
 USE [master]
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
-   exec('CREATE LOGIN SUPuser WITH PASSWORD = ''abc123'';')
+   exec('CREATE LOGIN SUPuser WITH PASSWORD = ''abc123''')
 GO
 
 --create user
@@ -24,8 +24,33 @@ GO
 
 --create tables
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Account')
-CREATE TABLE Account ( [User_Name] varchar(25), [Password] varchar(64), User_Type char, Failed_Login int, Office varchar(50), 
-CONSTRAINT PK_Staff PRIMARY KEY ([User_Name]) )
+CREATE TABLE Account (
+  User_Name varchar(25),
+  Salt CHAR(25),
+  Password binary(64),
+  User_Type char(1),
+  Failed_Login int,
+  Office varchar(50)
+  CONSTRAINT PK_SecurityAccounts PRIMARY KEY (User_Name)
+)
+
+IF NOT EXISTS (SELECT *  FROM sys.indexes  WHERE name='Index_SecurityAccounts' 
+    AND object_id = OBJECT_ID('Account'))
+CREATE UNIQUE INDEX Index_SecurityAccounts
+    ON dbo.Account (User_Name) INCLUDE (Salt, Password)
+GO
+
+IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'AccountAudits')
+CREATE TABLE AccountAudits(
+    ChangeID INT IDENTITY PRIMARY KEY,
+    User_Name varchar(25) NOT NULL,
+	User_Type CHAR(1) NOT NULL,
+    Failed_Login INT NULL,
+    office varchar(50) NULL,
+    updated_at DATETIME NOT NULL,
+    operation varchar(20) NOT NULL
+)
+GO
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
 CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
@@ -60,16 +85,96 @@ CONSTRAINT FK_Assists_Boss_Client FOREIGN KEY (Boss_ID) REFERENCES Client (ID) )
 
 GO
 
+---creation of any triggers
+-----------------------------------------------------------------------------------------------------------------------------
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trgAccountAuditInsDel')
+EXEC('CREATE TRIGGER trgAccountAuditInsDel
+ON Account
+AFTER INSERT, DELETE
+AS
+BEGIN
+SET NOCOUNT ON;
+INSERT INTO AccountAudits(
+        User_Name, 
+        User_Type,
+        Failed_Login,
+        office,
+        updated_at, 
+        operation
+    )
+    SELECT
+        d.User_Name,
+        User_Type,
+        Failed_Login,
+        office,
+        GETDATE(),
+        ''delete''
+    FROM
+        deleted d
+    UNION ALL
+	SELECT
+        i.User_Name,
+        User_Type,
+        Failed_Login,
+        office,
+        GETDATE(),
+        ''insert''
+    FROM
+        inserted i
+END
+GO')
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trgAccountAuditUpdate')
+EXEC('CREATE TRIGGER trgAccountAuditUpdate
+ON Account
+AFTER UPDATE
+AS
+BEGIN
+SET NOCOUNT ON;
+INSERT INTO AccountAudits(
+        User_Name, 
+        User_Type,
+        Failed_Login,
+        office,
+        updated_at, 
+        operation
+    )
+    SELECT
+        d.User_Name,
+        User_Type,
+        Failed_Login,
+        office,
+        GETDATE(),
+        ''update-old''
+    FROM
+        deleted d
+    UNION ALL
+	SELECT
+        i.User_Name,
+        User_Type,
+        Failed_Login,
+        office,
+        GETDATE(),
+        ''update-new''
+    FROM
+        inserted i
+END
+GO')
+
 --creation of any views
 -----------------------------------------------------------------------------------------------------------------------------
 --creates a view that is used in the queryClientFull SP
-CREATE OR ALTER VIEW viewAll
+USE [SUPdb]
+IF OBJECT_ID('viewall', 'V') IS NOT NULL
+DROP VIEW viewAll
+GO
+
+CREATE VIEW viewAll
 AS
-SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
+	SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
 		FULL JOIN [Address] ON ID = Address.Client_ID
 		FULL JOIN Works_For ON ID = Works_For.Client_ID
 		FULL JOIN Assistant ON ID = Assistant.Boss_ID
-
 GO
 
 --creation of any stored Procedures
@@ -80,8 +185,10 @@ GO
 -- Create date: 10/24/2019
 -- Description:	validates log in information with hash and salt
 -- =============================================
-
-CREATE OR ALTER PROCEDURE validateLogin
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('validateLogin'))
+   exec('CREATE PROCEDURE validateLogin AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE validateLogin
 
 	-- Add the parameters for the stored procedure here
 	@userName nvarchar(50), @givenPW varchar(100)
@@ -159,7 +266,10 @@ GO
 -- Create date: 10/7/2019
 -- Description:	Takes 3 variables and returns clients that begin with the given variables. Input variables are allowed to be nulled.
 -- =============================================
-CREATE OR ALTER PROCEDURE queryClientFull
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('queryClientFull'))
+   exec('CREATE PROCEDURE queryClientFull AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE queryClientFull
 	-- Add the parameters for the stored procedure here
 	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
 	@orgType varchar(30) = '', @title varchar(20) = ''
@@ -208,22 +318,51 @@ GO
 -- Create date: 10/7/2019
 -- Description:	adds a client into the client table
 -- =============================================
-
-CREATE OR ALTER PROCEDURE addCLient
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('addClient'))
+   exec('CREATE PROCEDURE addClient AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE addClient
 
 	-- Add the parameters for the stored procedure here
-	@firstName varchar(50) = null, @lastName varchar(50) = null,
-	@middleInitial varchar(1) = null, @permitNum varchar(50) = null,
-	@active bit = 1, @notes varchar(30) = null
+	@prefix varchar(10) = null, @firstName varchar(50),
+	@lastName varchar(50), @middleInitial varchar(1) = null,
+	@permitNum varchar(50) = null,
+	@active bit = 1, @notes varchar(30) = '',
+	@orgName varchar(30), @orgType varchar(20),
+	@title varchar(20) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
+	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
+	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
+	@line2 varchar(35) = null, @city varchar(25) = null,
+	@state varchar(2) = null, @zipCode varchar(5) = null,
+	@assistantFirstName varchar(50) = null, @assistantLastName varchar(50) = null
 AS
 BEGIN
 	-- SET NOCOUNT ON added to prevent extra result sets from
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
-	INSERT INTO Client (First_Name, Last_Name, Middle_initial, Permit_Num, Active, Notes) VALUES (@firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
+    -- Insert statements for procedure here
+	INSERT INTO Client (First_Name, Last_Name, Middle_initial, Permit_Num, Client.Active, Notes) VALUES (@firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
 	
+	-- declare an int and set its value based on the auto generated ID from inserting into the client table in the previous line
+	DECLARE @ID int
+	SET @ID = SCOPE_IDENTITY()
+
+	-- set values into the tables. dont repeat adding to organization table in the case that the organization and type already exist in the database
+	IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
+	INSERT INTO Works_For(Client_ID, Org_Name, Org_Type, Title) VALUES (@ID, @orgName, @orgType, @title)
+	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
+
+	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'business', @Business_phoneNumber)
+	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'personal', @Personal_phoneNumber)
+	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'assistant', @Assistant_phoneNumber)
+
+	INSERT INTO Email(Client_ID, Type, Email) VALUES (@ID, 'business', @Business_Email)
+	INSERT INTO Email(Client_ID, Type, Email) VALUES (@ID, 'personal', @Personal_Email)
+	INSERT INTO Email(Client_ID, Type, Email) VALUES (@ID, 'assistant', @Assistant_Email)
+
+	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES (@ID, @assistantFirstName, @assistantLastName)
 
 END
 GO
@@ -232,8 +371,10 @@ GO
 -- Create date: 10/7/2019
 -- Description:	checks for a near match and sends the match if difference is >=3. Also reports the client where the difference function is >=3
 -- =============================================
-
-CREATE OR ALTER PROCEDURE checkForNearMatch
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('checkForNearMatch'))
+   exec('CREATE PROCEDURE checkForNearMatch AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE checkForNearMatch
 
 	-- Add the parameters for the stored procedure here
 	@firstName varchar(50) = null, @lastName varchar(50) = null
@@ -254,7 +395,10 @@ GO
 -- Create date: 10/10/2019
 -- Description:	Adds a user to the Account table
 -- =============================================
-CREATE OR ALTER PROCEDURE addAccount
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('addAccount'))
+   exec('CREATE PROCEDURE addAccount AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE addAccount
 	-- Add the parameters for the stored procedure here
 	@userName varchar(25), @password varchar(64),
 	@userType char(1) = null, @office varchar(50) = null
@@ -309,7 +453,10 @@ GO
 -- Create date: 10/25/2019
 -- Description:	updates tables based on parameters given
 -- =============================================
-CREATE OR ALTER PROCEDURE updateClient
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('updateClient'))
+   exec('CREATE PROCEDURE updateClient AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE updateClient
 	-- Add the parameters for the stored procedure here
 	@ID int, @prefix varchar(10) = null, @firstName varchar(50),
 	@lastName varchar(50), @middleInitial varchar(1) = null,
@@ -414,7 +561,10 @@ GO
 -- Create date: 10/12/2019
 -- Description:	Returns all data for a single client by searching for the ID
 -- =============================================
-CREATE OR ALTER PROCEDURE getClientByIdFull
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('getClientByIdFull'))
+   exec('CREATE PROCEDURE getClientByIdFull AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE getClientByIdFull
 	-- Add the parameters for the stored procedure here
     @Client_Id int
 
@@ -446,6 +596,472 @@ BEGIN
 	WHERE ID = @Client_Id
 
 	DROP TABLE #searchResults
+
+END
+GO
+
+-- =============================================
+-- Create date: 11/1/2019
+-- Description: adds dummy
+-- =============================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('addDummyData'))
+   exec('CREATE PROCEDURE addDummyData AS BEGIN SET NOCOUNT ON END')
+GO
+ALTER PROCEDURE addDummyData
+	-- Add the parameters for the stored procedure here
+
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+EXEC	addCLient
+		@Prefix = 'Mr.',
+		@firstName = N'Matt',
+		@lastName = N'Holcomb',
+		@middleInitial = N'J',
+		@permitNum = NULL,
+		@notes = N'VIP',
+		@orgName = N'Foresty Dept',
+		@orgType = N'County',
+		@title = N'park worker',
+		@Personal_phoneNumber = N'1234564132',
+		@Business_phoneNumber = N'2132165466',
+		@Personal_Email = N'email@server.com',
+		@Business_Email = 'businessEmail@server.com',
+		@line1 = N'123 ThatStreet',
+		@line2 = N'apt 102',
+		@city = N'superior',
+		@state = N'WI',
+		@zipCode = N'54880',
+		@Assistant_phoneNumber = '123456779',
+		@Assistant_Email = 'assistantEmail@server.com',
+		@assistantFirstName = 'Billy',
+		@assistantLastName = 'Joe'
+
+EXEC	addCLient
+		@firstName = N'Jim',
+		@lastName = N'Holcomb',
+		@permitNum = NULL,
+		@notes = N'notes and such',
+		@orgName = N'FBI',
+		@orgType = N'Government',
+		@title = N'lead banker',
+		@Business_phoneNumber = N'1231475646',
+		@Personal_Email = N'thatOneGuy@server.com',
+		@line1 = N'149 Cranberry Lane',
+		@line2 = N'apt 508',
+		@city = N'superior',
+		@state = N'WI',
+		@zipCode = N'54880'
+
+EXEC	addCLient
+		@firstName = N'Alen',
+		@lastName = N'Johnson',
+		@middleInitial = N'Z',
+		@permitNum = N'Z699',
+		@notes = N'notes and other stuff',
+		@orgName = N'UW-super',
+		@orgType = N'UW-super',
+		@title = N'Professor',
+		@Business_phoneNumber = N'1231321459',
+		@Personal_Email = N'thatOneGuy@server.com',
+		@line1 = N'149 Dillingham Road',
+		@line2 = null,
+		@city = N'Duluth',
+		@state = N'MN',
+		@zipCode = N'14285'
+
+EXEC	addCLient
+		@firstName = N'Jimmy',
+		@lastName = N'John',
+		@middleInitial = N'U',
+		@permitNum = NULL,
+		@notes = N'things and such',
+		@orgName = N'FBI',
+		@orgType = N'Government',
+		@title = N'Inspector General',
+		@Personal_phoneNumber = N'1121588745',
+		@Personal_Email = N'MyAwsomeEmail@server.com',
+		@line1 = N'1258 West King Road',
+		@line2 = null,
+		@city = N'Canada',
+		@state = N'MN',
+		@zipCode = N'14458'
+
+EXEC	addCLient
+		@prefix = 'Miss',
+		@firstName = N'Timmy',
+		@lastName = N'Stark',
+		@middleInitial = NULL,
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Microsoft',
+		@orgType = N'Non-profit',
+		@title = N'Grunt',
+		@Personal_phoneNumber = N'5463151654',
+		@Business_phoneNumber = N'5454651654',
+		@Business_Email = N'BarbieGirl@server.com',
+		@line1 = N'1894 WestBrook drive',
+		@line2 = null,
+		@city = N'Lakeshore',
+		@state = N'TX',
+		@zipCode = N'97841'
+
+EXEC	addCLient
+		@firstName = N'Larson',
+		@lastName = N'Kitty',
+		@middleInitial = N'C',
+		@permitNum = N'H123',
+		@notes = NULL,
+		@orgName = N'Sears',
+		@orgType = N'Non-profit',
+		@title = N'Worker of somekind',
+		@Business_phoneNumber = N'6573541245',
+		@Personal_Email = N'KingSlayer@server.com',
+		@line1 = N'18456 Darkshore road',
+		@line2 = null,
+		@city = N'Los Angeles',
+		@state = N'CA',
+		@zipCode = N'91458'
+
+EXEC	addCLient
+		@firstName = N'Timmmy',
+		@lastName = N'Slim',
+		@middleInitial = N'Y',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Org.net',
+		@orgType = N'For-Profit',
+		@title = N'Head Of Sales',
+		@Business_phoneNumber = N'0123948547',
+		@Personal_Email = N'ForTheHorde@server.com',
+		@Personal_phoneNumber = N'2314564654',
+		@Business_Email = N'ForTheAlliance@server.com',
+		@line1 = N'14578 Nameless street',
+		@line2 = null,
+		@city = N'Superior',
+		@state = N'CA',
+		@zipCode = N'41547'
+
+EXEC	addCLient
+		@firstName = N'Izuku',
+		@lastName = N'Midoria',
+		@middleInitial = N'V',
+		@permitNum = N'P000',
+		@notes = NULL,
+		@orgName = N'UA',
+		@orgType = N'Non-profit',
+		@title = N'Hero',
+		@Personal_phoneNumber = N'4724561324',
+		@Business_Email = N'AllmightFanboy@server.com',
+		@line1 = N'18525 Noname road',
+		@line2 = null,
+		@city = N'Cityname',
+		@state = N'WA',
+		@zipCode = N'64564'
+
+EXEC	addCLient
+		@Prefix = 'Lt Coln.',
+		@firstName = N'John',
+		@lastName = N'Johnson',
+		@middleInitial = N'Q',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'PlaceTheyWorkFor',
+		@orgType = N'Non-profit',
+		@title = N'TitleTheyEarned',
+		@Business_phoneNumber = N'5643617845',
+		@Personal_Email = N'ILikeToWin@server.com',
+		@line1 = N'454 Streetname road',
+		@line2 = null,
+		@city = N'ThisPlace',
+		@state = N'KS',
+		@zipCode = N'54654'
+
+EXEC	addCLient
+		@firstName = N'Johnson',
+		@lastName = N'Johnnyboy',
+		@middleInitial = N'O',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Principal''s Office',
+		@orgType = N'High School',
+		@title = N'Cheif Executive Officer',
+		@Personal_phoneNumber = N'6543123216',
+		@Business_Email = N'IDontLikePie@server.com',
+		@line1 = N'4546 Slingshot road',
+		@line2 = null,
+		@city = N'Niles',
+		@state = N'MI',
+		@zipCode = N'79873'
+
+EXEC	addCLient
+		@firstName = N'Bo',
+		@lastName = N'Jangles',
+		@middleInitial = N'X',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Snapple',
+		@orgType = N'distributor',
+		@Personal_phoneNumber = N'5442135646',
+		@Business_Email = N'IDontLikePi@server.com',
+		@line1 = N'4546 Orange road',
+		@line2 = null,
+		@city = N'Spoontown',
+		@state = N'WI',
+		@zipCode = N'64461'
+
+EXEC	addCLient
+		@Prefix = 'Mr.',
+		@firstName = N'Apple',
+		@lastName = N'Orange',
+		@permitNum = N'W432',
+		@notes = NULL,
+		@orgName = N'Superior DMV',
+		@orgType = N'State',
+		@title = NULL,
+		@Business_phoneNumber = N'7463215645',
+		@Personal_Email = N'single@server.com',
+		@line1 = N'1 Springbrook dr.',
+		@line2 = null,
+		@city = N'Place',
+		@state = N'WI',
+		@zipCode = N'46489'
+
+EXEC	addCLient
+		@Prefix = 'Private',
+		@firstName = N'Airbourne',
+		@lastName = N'Ranger',
+		@middleInitial = N'P',
+		@permitNum = NULL,
+		@notes = N'Very cool person',
+		@orgName = N'Army',
+		@orgType = N'Business',
+		@title = N'BA',
+		@Personal_phoneNumber = N'1691584511',
+		@Personal_Email = N'coolGuy@server.com',
+		@line1 = N'123 Awsome Stree',
+		@line2 =  NULL,
+		@city = N'superior',
+		@state = N'WI',
+		@zipCode = N'54880'
+
+EXEC	addCLient
+		@firstName = N'TickleMe',
+		@lastName = N'Elmo',
+		@middleInitial = N'Y',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Sesame Street',
+		@orgType = N'Elected Official',
+		@title = N'Tickleree',
+		@Business_phoneNumber = N'1234561846',
+		@Business_Email = N'tickleMeElmo@server.com',
+		@line1 = N'895 Sesame Street',
+		@line2 = NULL,
+		@city = N'Milkwaukee',
+		@state = N'TN',
+		@zipCode = N'78445'
+
+EXEC	addCLient
+		@firstName = N'Cloud',
+		@lastName = N'Strife',
+		@middleInitial = N'J',
+		@permitNum = NULL,
+		@notes = N'Winner',
+		@orgName = N'SOLDIER',
+		@orgType = N'High School',
+		@title = N'soldier',
+		@Business_phoneNumber = N'7695851425',
+		@Personal_Email = N'cloudStife@server.com',
+		@line1 = N'855 Anywhere Dr.',
+		@line2 = NULL,
+		@city = N'Anywhere',
+		@state = N'WA',
+		@zipCode = N'58945'
+
+EXEC	addCLient
+		@firstName = N'Peter',
+		@lastName = N'Griffin',
+		@middleInitial = N'J',
+		@permitNum = NULL,
+		@notes = N'Cool guy',
+		@orgName = N'Pawtucket Brewery',
+		@orgType = N'High School',
+		@title = N'line man',
+		@Personal_phoneNumber = N'7395811448',
+		@Personal_Email = N'birdIsTheWord@server.com',
+		@line1 = N'31 Spooner Street',
+		@line2 = NULL,
+		@city = N'Quahog',
+		@state = N'RI',
+		@zipCode = N'45589',
+		@Assistant_phoneNumber = '561654684',
+		@Assistant_Email = 'assistantEmail2020@server.com',
+		@assistantFirstName = 'Meg',
+		@assistantLastName = 'Griffin'
+
+EXEC	addCLient
+		@firstName = N'Louis',
+		@lastName = N'Griffin',
+		@middleInitial = N'E',
+		@permitNum = NULL,
+		@notes = N'Wifey',
+		@orgName = N'StayAtHome',
+		@orgType = N'Foundation',
+		@title = N'MOM',
+		@Personal_phoneNumber = N'6982341584',
+		@Personal_Email = N'birdIsTheWord2@server.com',
+		@line1 = N'31 Spooner Street',
+		@line2 = NULL,
+		@city = N'Quahog',
+		@state = N'RI',
+		@zipCode = N'45589'
+
+EXEC	addCLient
+		@firstName = N'Stewie',
+		@lastName = N'Griffin',
+		@middleInitial = N'E',
+		@permitNum = NULL,
+		@notes = N'very smart',
+		@orgName = N'TS Goverment Facility',
+		@orgType = N'Elementry',
+		@title = NULL,
+		@Business_phoneNumber = N'1253651452',
+		@Business_Email = N'birdIsTheWord3@server.com',
+		@line1 = N'31 Spooner Street',
+		@line2 = NULL,
+		@city = N'Quahog',
+		@state = N'RI',
+		@zipCode = N'45589',
+		@Assistant_phoneNumber = '151564548',
+		@Assistant_Email = 'assistantEmail2012@server.com',
+		@assistantFirstName = 'Yarez',
+		@assistantLastName = 'Rain'
+
+EXEC	addCLient
+		@firstName = N'Stew',
+		@lastName = N'Griffin',
+		@middleInitial = N'E',
+		@permitNum = NULL,
+		@notes =  NULL,
+		@orgName = N'TS Goverment Facility',
+		@orgType = N'Elementry',
+		@title = NULL,
+		@Personal_phoneNumber = N'9872131321',
+		@Personal_Email = N'birdIsTheWord4@server.com',
+		@line1 = N'31 Spooner Street',
+		@line2 = NULL,
+		@city = N'Quahog',
+		@state = N'RI',
+		@zipCode = N'45589'
+
+EXEC	addCLient
+		@firstName = N'Sally',
+		@lastName = N'Sue',
+		@middleInitial = N'I',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'LocalCompany',
+		@orgType = N'Business',
+		@title = NULL,
+		@Personal_phoneNumber = N'6455645648',
+		@Personal_Email = N'mai1_1231@server.com',
+		@line1 = N'5646 Farangton Rd.',
+		@line2 = NULL,
+		@city = N'ThisCity',
+		@state = N'OH',
+		@zipCode = N'56465'
+
+EXEC	addCLient
+		@firstName = N'Sally',
+		@lastName = N'Stone',
+		@middleInitial = NULL,
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Hayward',
+		@orgType = N'High School',
+		@title = NULL,
+		@Personal_phoneNumber = N'9876581544',
+		@Personal_Email = N'mail_6546@server.com',
+		@line1 = NULL,
+		@line2 = NULL,
+		@city = NULL,
+		@state = NULL,
+		@zipCode = NULL
+
+EXEC	addCLient
+		@firstName = N'Xion',
+		@lastName = N'Angler',
+		@middleInitial = N'E',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'LocalBusiness2',
+		@orgType = N'Business',
+		@title = NULL,
+		@Business_phoneNumber = N'7853541654',
+		@Personal_Email = N'mail_123@server.com',
+		@line1 = N'1211 Elementy Road',
+		@line2 = NULL,
+		@city = N'Ontario',
+		@state = N'OH',
+		@zipCode = N'45614'
+
+EXEC	addCLient
+		@firstName = N'Steven',
+		@lastName = N'Stone',
+		@middleInitial = N'Y',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Spoontown',
+		@orgType = N'High School',
+		@title = NULL,
+		@Personal_phoneNumber = N'5641211312',
+		@Personal_Email = N'mailbox@server.com',
+		@line1 = NULL,
+		@line2 = NULL,
+		@city = NULL,
+		@state = NULL,
+		@zipCode = NULL
+
+EXEC	addCLient
+		@firstName = N'Steven',
+		@lastName = N'Stoney',
+		@middleInitial = N'Q',
+		@permitNum = NULL,
+		@notes = NULL,
+		@orgName = N'Superior',
+		@orgType = N'High School',
+		@title = NULL,
+		@Business_phoneNumber = N'4841215466',
+		@Business_Email = N'FRIDAY@server.com',
+		@line1 = N'124 Spring Street',
+		@line2 = NULL,
+		@city = N'Sincinaty',
+		@state = N'WA',
+		@zipCode = N'54656',
+		@Assistant_phoneNumber = '2451245121',
+		@Assistant_Email = 'assistantEmail95@server.com',
+		@assistantFirstName = 'Jim',
+		@assistantLastName = 'Bob'
+
+
+UPDATE Client SET Active = 0 WHERE Last_Name = 'Stoney'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Xion'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Stew'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Airbourne'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Matt'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Bo'
+
+UPDATE Client SET Active = 0 WHERE First_Name = 'Sally'
 
 END
 GO

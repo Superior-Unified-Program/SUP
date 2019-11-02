@@ -124,6 +124,10 @@
             background-color: #808080;
         }
 
+        .dataCell {
+            width: 100%;
+        }
+
         .yellowizedButton {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
             background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
@@ -390,7 +394,13 @@
         function Export() {
             var dataPost = "";
             $('.rowViewButton').each(function () {
-                dataPost += $(this).val() + " ";
+                var curParent = $(this).parent().parent();
+
+                console.log(curParent);
+                console.log(curParent.find(':checkbox'))
+                console.log(curParent.find(':checkbox').prop('checked'));
+                if (curParent.find(':checkbox').prop('checked') == true)
+                    dataPost += $(this).val() + " ";
             });
             console.log(dataPost);
             $.ajax({
@@ -917,33 +927,33 @@
                 </tr>
             </tbody>
         </table>
-        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 1210px; margin-left: calc(10% - 95px);" align="right">
+        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 90%; margin-left: calc(10% - 95px);" align="right">
             <table class="templateTable" style="position:relative; border-collapse:collapse; width:100%;" cellpadding="0px">
                 <tbody style="width:100%">
                     <tr class="templateRow" style="width:100%">
                         <td>
-                            <button class="yellowizedButton rowViewButton tableCell" size="5" value="0">View</button>
+                            <button class="yellowizedButton rowViewButton dataCell" value="0">View</button>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowFirstName tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowFirstName dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowLastName tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowLastName dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowJobTitle tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowJobTitle dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowOrganization tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowOrganization dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowEmailAddress tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowEmailAddress dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowPhoneNumber tableCell" size="17" type="text" value="" disabled>
+                            <input class="yellowizedTextField rowPhoneNumber dataCell" type="text" value="" disabled>
                         </td>
                         <td>
-                            <input class="yellowizedTextField rowSelected tableCell" type="checkbox" name="choice" id="choice" />
+                            <input class="rowSelected selectionCell" type="checkbox" name="choice" id="choice" />
                         </td>
                     </tr>
                 </tbody>
