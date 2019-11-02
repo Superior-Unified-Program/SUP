@@ -14,7 +14,6 @@ namespace SUP_MVC
 	{
 		public static void Main(string[] args)
         {
-            ExportFile.crerateExcel();
             CreateHostBuilder(args).Build().Run();
 		}
 
