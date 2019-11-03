@@ -8,6 +8,23 @@
     <meta charset="utf-8">
     <title>Search</title>
     <style>
+		@@media only screen and (max-width: 600px) {
+			#ribbonDiv {
+				margin-left: -25%;
+			}
+			#mainWindow {
+				left: -15%;
+				position: absolute;
+			}
+		}
+
+		#mainWindow {
+			 position: absolute;
+			 left: 15%;
+			 top: 10%;
+			 width: 85%;
+		}
+
         body {
             margin-left: 0px;
             margin-top: 0px;
@@ -16,6 +33,10 @@
             background: rgb(255,255,255);
             background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(244,245,237,1) 80%, rgba(229,218,217,1) 100%);
         }
+
+		.templateTable {
+			width: 100%;
+		}
 
         .organize {
             width: 100%;
@@ -837,8 +858,8 @@
     <div class="lastNamesList" style="display:none;">
         <p class="lastNameTemplate"></p>
     </div>
-    <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-        <div style="position:relative; margin-left: 25%; width: 650px;" align="left">
+    <div id="mainWindow">
+        <div style="position:relative; margin-left: 25%; width: 75%;" align="left">
             <form>
                 <div class="flex-container">
                     <div class="sidebar-left">
@@ -927,8 +948,8 @@
                 </tr>
             </tbody>
         </table>
-        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 90%; margin-left: calc(10% - 95px);" align="right">
-            <table class="templateTable" style="position:relative; border-collapse:collapse; width:100%;" cellpadding="0px">
+        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
+            <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
                 <tbody style="width:100%">
                     <tr class="templateRow" style="width:100%">
                         <td>
