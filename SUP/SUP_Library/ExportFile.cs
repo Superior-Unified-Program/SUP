@@ -38,7 +38,6 @@ namespace SUP_Library
             eWorkbook.SaveAs(savePath + eFileName + ".xlsx");
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
-            % USERPROFILE %
             Marshal.ReleaseComObject(eWorkSheet);
             Marshal.ReleaseComObject(eWorkbook);
             Marshal.ReleaseComObject(eApp);
