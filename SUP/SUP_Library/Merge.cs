@@ -19,7 +19,6 @@ namespace SUP_Library
             {
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"DocumentTemplate.Docx"))      //check for the DocumentTemplate.Docx file in computer
                 {
-
                     #region Open Template
 
                     Word.Document template = null;
@@ -91,7 +90,7 @@ namespace SUP_Library
         {
             #region Replace Options
 
-            object matchCase = false;
+            object matchCase = true;
             object matchWholeWord = true;
             object matchWildCards = false;
             object matchSoundsLike = false;
