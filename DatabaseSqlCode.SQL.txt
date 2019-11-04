@@ -363,6 +363,8 @@ BEGIN
 	INSERT INTO Email(Client_ID, Type, Email) VALUES (@ID, 'assistant', @Assistant_Email)
 
 	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES (@ID, @assistantFirstName, @assistantLastName)
+	
+	RETURN @ID
 
 END
 GO
