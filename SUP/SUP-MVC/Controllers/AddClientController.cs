@@ -114,7 +114,7 @@ namespace SUP_MVC.Controllers
 
         // POST: AddClient/UpdateClient
         [HttpPost]
-        public bool UpdateClient([FromBody] string args)
+        public int UpdateClient([FromBody] string args)
         {
             try
             {
@@ -140,7 +140,7 @@ namespace SUP_MVC.Controllers
                 var Note = separatedArgs[13];
                 var Phone = separatedArgs[14];
                 var Active = separatedArgs[15];
-                var Client = DatabaseConnection.GetClientById(clientId);
+                var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
 
@@ -170,7 +170,7 @@ namespace SUP_MVC.Controllers
                     };*/
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
-                    DatabaseConnection.updateClient(Client);
+                    return DatabaseConnection.updateClient(Client);
                 }
                 else
                 {
@@ -194,15 +194,12 @@ namespace SUP_MVC.Controllers
                         Number = Phone
                     };
                     Client.Notes = Note;
-                    DatabaseConnection.addClient(Client);
+                    return DatabaseConnection.addClient(Client);
                 }
-
-
-                return true;
             }
             catch (Exception e)
             {
-                return false;
+                return -1;
             }
         }
 
