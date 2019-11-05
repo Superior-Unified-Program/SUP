@@ -18,3 +18,5 @@ As a shortened version here are the steps described prior:
   6. Execute the script.
 
 NOTE: This script creates a user that has limited access to the database tables and stored procedures. It doesn't have a secure password and would need to be changed in a real implementation of the database and this change would also require a change in the SQL connection string on the middleware.
+
+There is a stored procedure to add multiple dummy data call addDummyData. Go to the server drop down the programmability and drop down stored procedures. Find addDummyData and right click on it and click execute.

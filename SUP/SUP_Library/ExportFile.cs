@@ -25,6 +25,7 @@ namespace SUP_Library
             #endregion
 
             #region Input data into Excel File
+
             eWorkSheet.Name = "Client Information";             //Name of the work sheet here
             WriteExcelFile(clientList, eWorkSheet);
 
@@ -32,11 +33,11 @@ namespace SUP_Library
 
             #region Save and clean up Excel File
 
-            string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss tt") + ".xlsm";
-            eWorkbook.SaveAs(@"" + eFileName + ".xlsx");
+            string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
+            string savePath = @"C:\Users\dnguye14\Source\Repos\Superior - Unified - Program\SUP\SUP\SUP_Library\ExportFileFolder";
+            eWorkbook.SaveAs(savePath + eFileName + ".xlsx");
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
-
             Marshal.ReleaseComObject(eWorkSheet);
             Marshal.ReleaseComObject(eWorkbook);
             Marshal.ReleaseComObject(eApp);
