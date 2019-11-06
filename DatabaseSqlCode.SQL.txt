@@ -340,6 +340,8 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
+       IF @middleInitial IS NULL SET @middleInitial = ''
+
     -- Insert statements for procedure here
 	INSERT INTO Client (First_Name, Last_Name, Middle_initial, Permit_Num, Client.Active, Notes) VALUES (@firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
 	
