@@ -130,6 +130,11 @@
                 async: true,
                 processData: false
             });
+		}
+
+		function editClient(clientId)
+        {
+            location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
 
         function saveClientData() {
@@ -159,7 +164,9 @@
             var Email = $('.emailInput').val();
             var Note = $('.noteInput').val();
             var Phone = $(".phoneInput").val();
-            var Active = $(".activeInput").prop( "checked");
+			var Active = $(".activeInput").prop("checked");
+
+			var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
             var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
                 organization + ',' + company + ',' + title +
@@ -173,9 +180,9 @@
                 error: function (xhr) {
                     alert('Error: ' + xhr.statusText);
                 },
-                success: function (result) {
-                    console.log('Yeay!')
-                    console.log(JSON.parse(result));
+				success: function (result) {
+					alert(successString);
+					editClient(result);
                 },
                 async: true,
                 processData: false

@@ -121,8 +121,7 @@ INSERT INTO AccountAudits(
         ''insert''
     FROM
         inserted i
-END
-GO')
+END')
 
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE [name] = 'trgAccountAuditUpdate')
 EXEC('CREATE TRIGGER trgAccountAuditUpdate
@@ -158,8 +157,7 @@ INSERT INTO AccountAudits(
         ''update-new''
     FROM
         inserted i
-END
-GO')
+END')
 
 --creation of any views
 -----------------------------------------------------------------------------------------------------------------------------
@@ -226,11 +224,11 @@ BEGIN
 	SET @hashPass = HASHBYTES('SHA2_512', @PwdWithSalt)
 
 	-- hash 500101 more times
-	WHILE @cnt < '500101'
+	/*WHILE @cnt < '500101'
 	BEGIN
 		SET @hashPass = HASHBYTES('SHA2_512', @hashPass) 
 		SET @cnt = @cnt + 1;
-	END
+	END*/
 
 	-- check for validity of password
 	IF (@hashPass = @PwdHash) SET @isValid = 1
@@ -363,6 +361,8 @@ BEGIN
 	INSERT INTO Email(Client_ID, Type, Email) VALUES (@ID, 'assistant', @Assistant_Email)
 
 	INSERT INTO Assistant(Boss_ID, First_Name, Last_Name) VALUES (@ID, @assistantFirstName, @assistantLastName)
+	
+	RETURN @ID
 
 END
 GO
@@ -437,11 +437,11 @@ BEGIN
 	SET @hashedPass = HASHBYTES('SHA2_512', @PwdWithSalt)
 
 	-- hash 500101 more times
-	WHILE @cnt < '500101'
+	/*WHILE @cnt < '500101'
 	BEGIN
 		SET @hashedPass = HASHBYTES('SHA2_512', @hashedPass) 
 		SET @cnt = @cnt + 1;
-	END
+	END*/
 	
 	--insert values in Account table
 	INSERT INTO Account (User_Name, Salt, Password, User_Type, Office) VALUES (@userName, @Salt, @hashedPass, @userType, @office)
