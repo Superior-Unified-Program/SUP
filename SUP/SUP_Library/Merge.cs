@@ -63,6 +63,7 @@ namespace SUP_Library
                     document = wordApp.Documents.Open(ref saveFileName);
                     document.Activate();
 
+                    //Word.MailMerge.CreateDataSource();
                     /*
                      * Find text in template in here
                      */

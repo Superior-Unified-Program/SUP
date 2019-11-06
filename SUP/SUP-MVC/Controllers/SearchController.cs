@@ -154,13 +154,14 @@ namespace SUP_MVC.Controllers
                         clientArray.Add(currentClient);
                 }
                 ExportFile.CreateExcelFile(clientArray);
-
+                /*
                 using (WebClient client = new WebClient())
                 {
                     string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
                     client.DownloadFile("http://sup.simple-url.com/",
                                         @"C:\Users\Public\Documents\" + eFileName + ".xlsx");
                 }
+                */
 
                 //TODO: return value should describe whether or not the process worked to the client.
                 //  The below line is meaningless until then.
@@ -169,7 +170,8 @@ namespace SUP_MVC.Controllers
             }
             catch (Exception e)
             {
-                return "FAAAAAILLL";
+                throw e;
+                //return "FAAAAAILLL";
             }
         }
         public ActionResult Search()
