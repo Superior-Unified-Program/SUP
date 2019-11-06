@@ -14,7 +14,7 @@
 			font-size: large;
 			font-weight: 900;
 			margin-left: -50px;
-			height: 50px;
+			height: 45px;
 			padding-top: 20px;
 		}
 		.row {
@@ -43,6 +43,10 @@
 		}
 		.breakLine {
 			margin-left: -10%;
+			padding-top: 0px;
+			padding-top: 0px;
+			margin-top: 5px;
+			margin-bottom: 0px;
 		}
 	</style>
 	<script language="javascript">
@@ -126,6 +130,11 @@
                 async: true,
                 processData: false
             });
+		}
+
+		function editClient(clientId)
+        {
+            location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
 
         function saveClientData() {
@@ -155,7 +164,9 @@
             var Email = $('.emailInput').val();
             var Note = $('.noteInput').val();
             var Phone = $(".phoneInput").val();
-            var Active = $(".activeInput").prop( "checked");
+			var Active = $(".activeInput").prop("checked");
+
+			var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
             var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
                 organization + ',' + company + ',' + title +
@@ -169,9 +180,9 @@
                 error: function (xhr) {
                     alert('Error: ' + xhr.statusText);
                 },
-                success: function (result) {
-                    console.log('Yeay!')
-                    console.log(JSON.parse(result));
+				success: function (result) {
+					alert(successString);
+					editClient(result);
                 },
                 async: true,
                 processData: false
@@ -193,15 +204,29 @@
 					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
 					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
 				</div>
+				<div class="row">
+					<div class="cell"></div>
+					<div class="cell">Assistant's First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
+					<div class="cell">Assistant's Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+				</div>
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">
 						Organization Type*<br />
 						<select name="Organization" class="organizationInput" size="1" required tabindex="5">
-
-							<option placeholder="">School</option>
-							<option placeholder="">Government</option>
-							<option> </option>
+							<option value=""></option>
+							<option value="business">Business</option>
+							<option value="electedOfficial">Elected Official</option>
+							<option value="educationAll">Education - All</option>
+							<option value="elementary">Elementary</option>
+							<option value="middle">Middle</option>
+							<option value="highSchool">High School</option>
+							<option value="higherEd">Higher Ed.</option>
+							<option value="nonProfit">Non-profit</option>
+							<option value="UWSystem">UW-System</option>
+							<option value="boardOfRegent">Board of Regent</option>
+							<option value="advancement">Advancement</option>
+							<option value="other">Other</option>
 						</select>
 					</div>
 					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
@@ -213,6 +238,7 @@
 					<div class="cell">City*<br /><input class="cityInput" type="text" placeholder="City" required tabindex="10"></div>
 					<div class="cell">
 						State<br /><select class="stateInput" name="state" tabindex="11">
+							<option value=""></option>
 							<option value="AL">Alabama</option>
 							<option value="AK">Alaska</option>
 							<option value="AZ">Arizona</option>
@@ -274,20 +300,27 @@
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="14"></div>
-					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
 					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="16"></div>
-					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="999-999-999" pattern="[0-9 -]{12}" tabindex="17"></div>
+					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+				</div>
+				<div class="row">
+					<div class="cell">Assistant's Email*<br /><input type="text" class="firstNameInput" placeholder="" required tabindex="2"></div>
+					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="lastNameInput" placeholder="" required tabindex="3"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18"></div>
 					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
-					<div class="noteCell">Note<br /><textarea name="Note" class="noteInput" rows="3" cols="125" tabindex="20"></textArea><div>
-				</div>
-				<div class="row">
-					<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="21"></div>
-				</div>
-			</div>
-		</form>
+					<div class="noteCell">
+						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
+						</div>
+						<div class="row">
+							<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="21"></div>
+						</div>
+					</div>
+                </div>
+            </div>
+</form>
 	</div>
 </body>

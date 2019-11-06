@@ -7,12 +7,13 @@ using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
 using SUP_Library.DBComponent;
+using System.IO;
 
 namespace SUP_Library
 {
     public class ExportFile
     {
-        public static void crerateExcel(/* this will get the list of client in here*/)
+        public static void CreateExcelFile(List<Client> clientList)
         {
             #region Setup new Excel File
 
@@ -26,21 +27,23 @@ namespace SUP_Library
 
             #region Input data into Excel File
 
-            List<Client> clientList = new List<Client>();
-            clientList.Add(new Client { First_Name = "Duy", Last_Name = "Nguyen", Org = new Organization(), Email = new EmailAddress(), Phone = new PhoneNumber() });
-
             eWorkSheet.Name = "Client Information";             //Name of the work sheet here
-            writeExcelFile(clientList, eWorkSheet);
+            WriteExcelFile(clientList, eWorkSheet);
 
             #endregion
 
             #region Save and clean up Excel File
 
-            string eFileName = "ExcelFile" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + ".xlsx";
-            eWorkbook.SaveAs(@"C:\Users\hoang\Desktop\" + eFileName);
+            string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
+            //string savePath = @"C:\Users\%USERPROFILE%\source\repos\Superior - Unified - Program\SUP\SUP\SUP_Library\ExportFileFolder";
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            if (!Directory.Exists(savePath))
+            {
+                Directory.CreateDirectory(savePath);
+            }
+            eWorkbook.SaveAs(savePath + "\\" + eFileName + ".xlsx");
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
-
             Marshal.ReleaseComObject(eWorkSheet);
             Marshal.ReleaseComObject(eWorkbook);
             Marshal.ReleaseComObject(eApp);
@@ -48,9 +51,9 @@ namespace SUP_Library
             #endregion
         }
 
-        private static void writeExcelFile(List<Client> clientList, Excel.Worksheet eWorkSheet)
+        private static void WriteExcelFile(List<Client> clientList, Excel.Worksheet eWorkSheet)
         {
-            eWorkSheet.Cells[1, 1] = "First Name";                      //Excel SpreadSheet's index start at 1 instead of 0
+            eWorkSheet.Cells[1, 1] = "First Name";  //Excel SpreadSheet's index start at 1 instead of 0
             eWorkSheet.Cells[1, 2] = "Last Name";
             eWorkSheet.Cells[1, 3] = "Category";
             eWorkSheet.Cells[1, 4] = "Email";
@@ -64,6 +67,7 @@ namespace SUP_Library
                 eWorkSheet.Cells[i + 2, 4] = clientList[i].Email.Email;
                 eWorkSheet.Cells[i + 2, 5] = clientList[i].Phone.Number;
             }
+            eWorkSheet.Columns.AutoFit();
         }
     }
 }

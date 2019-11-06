@@ -10,7 +10,22 @@ namespace SUP_Library.DBComponent
     {
         
             public int Client_ID { get; set; }
-            public string Email { get; set; }
+            public string Personal_Email { get; set; }
+            public string Assistant_Email { get; set; }
+
+            public string Business_Email { get; set; }
+
+            public string Email // deprecated 
+            {
+                get
+                {
+                    return Business_Email;
+                }
+                set
+                {
+                     Business_Email = value;
+                }
+            }
                    
     }
 }

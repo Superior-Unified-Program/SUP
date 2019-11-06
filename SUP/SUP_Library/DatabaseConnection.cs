@@ -161,6 +161,8 @@ namespace SUP_Library
                     // Parameters to send to addClient/updateClient stored proedure
                     var par = new DynamicParameters();
 
+
+
                     // Client base class parameters
                     if (!newClient) 
                         par.Add("@ID", client.ID); // updateClient needs the client ID
@@ -177,18 +179,23 @@ namespace SUP_Library
                     par.Add("@orgType", client.Org?.Org_Type);
                     par.Add("@title", client.Org?.Title);
                     // Phone
-                    par.Add("@Business_phoneNumber", client.Phone?.Number);
-                    par.Add("@Personal_phoneNumber", client.Phone?.Number);
+                    par.Add("@Business_phoneNumber", client.Phone?.Business_Phone);
+                    par.Add("@Personal_phoneNumber", client.Phone?.Personal_Phone);
                     // Email
                     //par.Add("@email", client.Email.Email);
-                    par.Add("@Business_email", client.Email?.Email);
-                    par.Add("@Personal_email", client.Email?.Email);
+                    par.Add("@Business_email", client.Email?.Business_Email);
+                    par.Add("@Personal_email", client.Email?.Personal_Email);
                     // Address
                     par.Add("@line1",client.Address.Line1);
                     par.Add("@line2",client.Address.Line2);
                     par.Add("@city",client.Address.City);
                     par.Add("@state",client.Address.State);
                     par.Add("@zipCode",client.Address.Zip);
+                    // Assistant information
+                    par.Add("@assistantFirstName", client?.Assistant_First_Name);
+                    par.Add("@assistantLastName", client?.Assistant_Last_Name);
+                    par.Add("@assistant_phoneNumber", client.Phone?.Assistant_Phone);
+                    par.Add("@assistant_Email", client.Email?.Assistant_Email);
 
                     par.Add("result", 0, direction: ParameterDirection.ReturnValue);
                     
@@ -273,12 +280,7 @@ namespace SUP_Library
         }
         public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType, string qTitle="")
         {
-            /* 
-             * LEFT JOIN Works_For ON Client.ID = Works_For.Client_ID 
-							LEFT JOIN Address ON Client.ID = Address.Client_ID
-							LEFT JOIN Email ON Client.ID = Email.Client_ID
-							LEFT JOIN Phone ON Client.ID = Phone.Client_ID
-            */
+            
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
@@ -289,9 +291,12 @@ namespace SUP_Library
                     // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
                     // Stored procedure joins five tables, so we have Dapper put first table values into Client class and into classes found within Client
                     // The joined tables are split at the Client_ID column
-                    var data = connection.Query<Client, Organization,Address,EmailAddress,PhoneNumber, Client>(sql, (client, org,address,email,phone) => 
-                               { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
+                    var data = connection.Query<Client, Address,Organization,EmailAddress,PhoneNumber, Client>(sql, (client, address,organization,email,phone) => 
+                               { client.Org = organization; client.Address = address; client.Email = email; client.Phone = phone; return client; },
                                new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType, title = qTitle }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+
+
+                    System.Diagnostics.Debug.WriteLine("Client 0: " + data[0].Org.Org_Name + " " + data[0].Org.Org_Type + " " + data[0].Org.Title);
 
                     return data; // return (client) list of results;
                 }
@@ -336,11 +341,9 @@ namespace SUP_Library
 
                     // Send request for getClientByIdFull. 
 
-                    var data = connection.Query<Client, Organization, Address, EmailAddress, PhoneNumber, Client>(sql, (client, org, address, email, phone) =>
+                    var data = connection.Query<Client, Address, Organization, EmailAddress, PhoneNumber, Client>(sql, (client, address, org, email, phone) =>
                     { client.Org = org; client.Address = address; client.Email = email; client.Phone = phone; return client; },
                                new { Client_ID = clientId }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).SingleOrDefault();
-
-                    //var data = connection.Query<Client>(sql, new { Client_Id = clientId }, commandType: CommandType.StoredProcedure).SingleOrDefault();
 
                     return data;
                 }
@@ -369,3 +372,4 @@ namespace SUP_Library
         #endregion
     }
 }
+ 

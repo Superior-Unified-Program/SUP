@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SUP_Library;
 using SUP_MVC.Models.Search;
+using System.Net;
 
 namespace SUP_MVC.Controllers
 {
@@ -129,6 +130,48 @@ namespace SUP_MVC.Controllers
             catch(Exception e)
             {
                 return "FAAAAAILLL";
+            }
+        }
+
+        // POST: Search/SearchClients
+        [HttpPost]
+        public string ExportSearch([FromBody] string args)
+        {
+            try
+            {
+                string[] separatedArgs = args.Split(' ');
+
+                if (separatedArgs.Length <= 0)
+                {
+                    throw (new Exception("Oopsie"));
+                }
+
+                var clientArray = new List<SUP_Library.DBComponent.Client>();
+                foreach(var ID in separatedArgs)
+                {
+                    var currentClient = DatabaseConnection.GetClientByIdFull(ID);
+                    if (currentClient != null)
+                        clientArray.Add(currentClient);
+                }
+                ExportFile.CreateExcelFile(clientArray);
+                /*
+                using (WebClient client = new WebClient())
+                {
+                    string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
+                    client.DownloadFile("http://sup.simple-url.com/",
+                                        @"C:\Users\Public\Documents\" + eFileName + ".xlsx");
+                }
+                */
+
+                //TODO: return value should describe whether or not the process worked to the client.
+                //  The below line is meaningless until then.
+                var json = JsonConvert.SerializeObject("");
+                return json;
+            }
+            catch (Exception e)
+            {
+                throw e;
+                //return "FAAAAAILLL";
             }
         }
         public ActionResult Search()

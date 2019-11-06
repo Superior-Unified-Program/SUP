@@ -20,8 +20,6 @@ namespace SUP_Library
             {
                 //if (File.Exists(@"C:\Users\hoang\Desktop\" + templateName + ".docx"))      //check for the DocumentTemplate.Docx file in computer
                 {
-                    
-
                     #region Open Template
 
                     Word.Document template = null;
@@ -66,6 +64,10 @@ namespace SUP_Library
                     document = wordApp.Documents.Open(Properties.Resources.Guest_Parking_Letter_Template);
                     document.Activate();
 
+                    //Word.MailMerge.CreateDataSource();
+                    /*
+                     * Find text in template in here
+                     */
                     List<Client> clientList = new List<Client>();
                     //Edit file here
 
@@ -95,7 +97,7 @@ namespace SUP_Library
         {
             #region Replace Options
 
-            object matchCase = false;
+            object matchCase = true;
             object matchWholeWord = true;
             object matchWildCards = false;
             object matchSoundsLike = false;
