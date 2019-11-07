@@ -35,8 +35,13 @@ namespace SUP_Library
             #region Save and clean up Excel File
 
             string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
-            string savePath = @"C:\Users\dnguye14\Source\Repos\Superior - Unified - Program\SUP\SUP\SUP_Library\ExportFileFolder";
-            eWorkbook.SaveAs(savePath + eFileName + ".xlsx");
+            //string savePath = @"C:\Users\%USERPROFILE%\source\repos\Superior - Unified - Program\SUP\SUP\SUP_Library\ExportFileFolder";
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            if (!Directory.Exists(savePath))
+            {
+                Directory.CreateDirectory(savePath);
+            }
+            eWorkbook.SaveAs(savePath + "\\" + eFileName + ".xlsx");
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
             Marshal.ReleaseComObject(eWorkSheet);
