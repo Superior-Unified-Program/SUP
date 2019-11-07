@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using Excel = Microsoft.Office.Interop.Excel;
 using System.Runtime.InteropServices;
@@ -36,7 +33,7 @@ namespace SUP_Library
 
             #region Save and clean up Excel File
 
-            string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
+            string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsx";
             //string savePath = @"C:\Users\%USERPROFILE%\source\repos\Superior - Unified - Program\SUP\SUP\SUP_Library\ExportFileFolder";
             //string savePath = @"\Export\";
             string savePath = @"C:\Users\Public\Documents\SUPExport";
@@ -44,7 +41,7 @@ namespace SUP_Library
             {
                 Directory.CreateDirectory(savePath);
             }
-            eWorkbook.SaveAs(savePath + "\\" + eFileName + ".xlsx");
+            eWorkbook.SaveAs(savePath + "\\" + eFileName);
             eWorkbook.Close(true, eFileName, misValue);
             eApp.Quit();
             Marshal.ReleaseComObject(eWorkSheet);
@@ -97,15 +94,16 @@ namespace SUP_Library
             eWorkSheet.Columns.AutoFit();
         }
 
-        public static void CreateExcelFile2(List<Client> clientList)
+        public static void CreateExcelFile2(List<Client> clientList, out string fileName)
         {
-            //string savePath = @"C:\Users\Public\Documents\SUPExport";
-            string savePath = @"C:\Users\%USERNAME%\Documents\SUPExport";
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            //string savePath = @"C:\Users\%USERNAME%\Documents\SUPExport";
+            fileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsx";
             if (!Directory.Exists(savePath))
             {
                 Directory.CreateDirectory(savePath);
             }
-            using (SpreadsheetDocument spreadDoc = SpreadsheetDocument.Create(savePath, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
+            using (SpreadsheetDocument spreadDoc = SpreadsheetDocument.Create(savePath + "\\" + fileName, DocumentFormat.OpenXml.SpreadsheetDocumentType.Workbook))
             {
                 WorkbookPart wbPart = spreadDoc.WorkbookPart;
                 if (wbPart == null)
@@ -132,8 +130,9 @@ namespace SUP_Library
                 };
 
                 var workingSheet = ((WorksheetPart)wbPart.GetPartById(sheet.Id)).Worksheet;
-
+                /*
                 int rowindex = 1;
+
                 foreach (var client in clientList)
                 {
                     Row row = new Row();
@@ -158,14 +157,76 @@ namespace SUP_Library
                     sheetData.AppendChild(row);
                     rowindex++;
                 }
+                */
+
+                /* Auto Fit Part
+                Columns colList = worksheetPart.Worksheet.GetFirstChild<Columns>();
+                Column c = new Column();
+                c.BestFit = true;
+                colList.Append(c);
+                worksheetPart.Worksheet.Append(colList);
+                */
+
+                Row row = new Row();
+                row.RowIndex = 1;
+                row.AppendChild(AddCellWithText("First Name"));
+                row.AppendChild(AddCellWithText("Last Name"));
+                row.AppendChild(AddCellWithText("Category"));
+                row.AppendChild(AddCellWithText("Email"));
+                row.AppendChild(AddCellWithText("Phone#"));
+                sheetData.AppendChild(row);
+
+                for (int i = 2; i < clientList.Count; i++)
+                {
+                    Row newRow = new Row();
+                    newRow.RowIndex = (UInt32)i;
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].First_Name));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Last_Name));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Org.Org_Name));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Email.Email));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Number));
+                    sheetData.AppendChild(newRow);
+                }
+
                 wbPart.Workbook.Sheets.AppendChild(sheet);
+                
+                /* Auto Fit Part
+                Row r1 = new Row
+                {
+                    RowIndex = 1,
+                    CustomHeight = true,
+                    Height = 71.25 //change height based on info
+                };
+                sheetData.Append(r1);
+                Cell refCell = null;
+                foreach (Cell cell in r1.Elements<Cell>())
+                {
+                    if (string.Compare(cell.CellReference.Value, "A1", true) > 0)
+                    {
+                        refCell = cell;
+                        break;
+                    }
+                }
+
+                // Add the cell to the cell table at A1.
+                Cell newCell = new Cell()
+                {
+                    CellReference = "A1",
+                };
+                r1.InsertBefore(newCell, refCell);
+
+                // Set the cell value to be a numeric value of 100.
+                newCell.CellValue = new CellValue("100");
 
                 //Set Border
                 //wbPark
+                */
 
                 wbPart.Workbook.Save();
+                spreadDoc.Close();
             }
         }
+
         private static Cell AddCellWithText(string text)
         {
             Cell c1 = new Cell();
@@ -177,7 +238,7 @@ namespace SUP_Library
             inlineString.AppendChild(t);
 
             c1.AppendChild(inlineString);
-
+           
             return c1;
         }
     }

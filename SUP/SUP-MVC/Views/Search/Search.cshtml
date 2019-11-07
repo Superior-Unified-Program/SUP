@@ -319,6 +319,8 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
+    
+       
     //CUSTOM SELECT BOX
         var x, i, j, selElmnt, a, b, c;
         /*look for any elements with the class "custom-select":*/
@@ -434,6 +436,10 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
+                    if (returnedData != "") {
+                //use window.location.href for redirect to download action for download the file
+                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "Download" })/?fileName=" + returnedData;
+            }
                 },
                 async: true,
                 processData: false
