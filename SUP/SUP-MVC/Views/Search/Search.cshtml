@@ -859,12 +859,12 @@
         <p class="lastNameTemplate"></p>
     </div>
     <div id="mainWindow">
-        <div style="position:relative; margin-left: 25%; width: 75%;" align="left">
+        <div style="width: 80%; margin-left: 10%;" align="right">
             <form>
                 <div class="flex-container">
                     <div class="sidebar-left">
                         <a>First Name</a><br />
-                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
                         <div class="auto_hidden" id="auto"></div>
                         <script>
                             var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
@@ -872,7 +872,7 @@
                     </div>
                     <div class="sidebar-middle">
                         <a>Last Name</a><br />
-                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name">
+                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
                         <div class="auto_hidden" id="autoLastName"></div>
                         <script>
                             var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
@@ -881,7 +881,7 @@
 
                     <div class="sidebar-right">
                         <a>Organization Type</a><br />
-                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category">
+                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category" style="width:100%">
                             <!--We need to keep an empty option to allow searches that do not include organization-->
                             <option value=""></option>
                             <option value="business">Business</option>
@@ -907,47 +907,49 @@
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
             </div>
         </div>
-        <table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td colspan="2">
-                        <a href="javascript:allCheck('choice',true)">Select</a>
-                        <a href="javascript:allCheck('choice',false)">No select</a>
-                        <a href="javascript:reserveCheck('choice')"> Inverse</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="width: 183px">
-                        <p><b>First Name</b></p>
-                    </td>
-                    <td style="width: 186px">
-                        <p><b>Last Name</b></p>
-                    </td>
-                    <td style="width: 185px">
-                        <p><b>Job Title</b></p>
-                    </td>
-                    <td style="width: 182px">
-                        <p><b>Organization Name</b></p>
-                    </td>
-                    <td style="width: 182px">
-                        <p><b>Email</b></p>
-                    </td>
-                    <td style="width: 188px">
-                        <p><b>Phone #</b></p>
-                    </td>
-                    <td>
-                        <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+		<div style="width: 80%; margin-left: 10%;" align="right">
+			<table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
+				<tbody>
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td colspan="2">
+							<a href="javascript:allCheck('choice',true)">Select</a>
+							<a href="javascript:allCheck('choice',false)">No select</a>
+							<a href="javascript:reserveCheck('choice')"> Inverse</a>
+						</td>
+					</tr>
+					<tr>
+						<td><button class="yellowizedButton rowViewButton dataCell" value="0" style="visibility: hidden;" disabled>View</button></td>
+						<td>
+							<p class="dataCell"><b>First Name</b></p>
+						</td>
+						<td>
+							<p class="dataCell"><b>Last Name</b></p>
+						</td>
+						<td>
+							<p class="dataCell"><b>Job Title</b></p>
+						</td>
+						<td>
+							<p class="dataCell"><b>Organization Name</b></p>
+						</td>
+						<td>
+							<p class="dataCell"><b>Email</b></p>
+						</td>
+						<td>
+							<p class="dataCell"><b>Phone #</b></p>
+						</td>
+						<td>
+							<input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
         <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
             <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
                 <tbody style="width:100%">
