@@ -193,7 +193,8 @@ namespace SUP_MVC.Controllers
                         Number = Phone
                     };
                     Client.Notes = Note;
-                    return DatabaseConnection.addClient(Client);
+					Client.Active = (Active == "true");
+					return DatabaseConnection.addClient(Client);
                 }
             }
             catch (Exception e)
