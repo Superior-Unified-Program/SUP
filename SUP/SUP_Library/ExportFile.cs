@@ -74,7 +74,8 @@ namespace SUP_Library
 
         public static void CreateExcelFile2(List<Client> clientList)
         {
-            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            //string savePath = @"C:\Users\Public\Documents\SUPExport";
+            string savePath = @"C:\Users\%USERNAME%\Documents\SUPExport";
             if (!Directory.Exists(savePath))
             {
                 Directory.CreateDirectory(savePath);

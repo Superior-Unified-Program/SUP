@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using SUP_Library;
 using SUP_MVC.Models.Search;
 using System.Net;
+using SUP_Library.DBComponent;
 
 namespace SUP_MVC.Controllers
 {
@@ -146,7 +147,7 @@ namespace SUP_MVC.Controllers
                     throw (new Exception("Oopsie"));
                 }
 
-                var clientArray = new List<SUP_Library.DBComponent.Client>();
+                var clientArray = new List<Client>();
                 foreach(var ID in separatedArgs)
                 {
                     var currentClient = DatabaseConnection.GetClientByIdFull(ID);
