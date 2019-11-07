@@ -153,7 +153,7 @@ namespace SUP_MVC.Controllers
                     if (currentClient != null)
                         clientArray.Add(currentClient);
                 }
-                ExportFile.CreateExcelFile(clientArray);
+                ExportFile.CreateExcelFile2(clientArray);
                 /*
                 using (WebClient client = new WebClient())
                 {

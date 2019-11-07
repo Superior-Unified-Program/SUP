@@ -14,8 +14,6 @@ namespace SUP_MVC
 	{
 		public static void Main(string[] args)
         {
-            Merge.merge("Guest_Parking_Letter_Permit");
-            ExportFile.crerateExcel();
             CreateHostBuilder(args).Build().Run();
 		}
 
