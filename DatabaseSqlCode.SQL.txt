@@ -621,7 +621,7 @@ BEGIN
 		-- store Org_Name for later use
 		SET @org_name = (SELECT Org_Name From Works_For Where Client_ID = @ID)
 		-- store Org_Type for later use
-		SET @org_Name = (SELECT Org_Type From Works_For Where Client_ID = @ID)
+		SET @org_type = (SELECT Org_Type From Works_For Where Client_ID = @ID)
 		DELETE from Works_For Where Client_ID = @ID
 	END
 
