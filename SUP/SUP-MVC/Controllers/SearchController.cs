@@ -8,6 +8,8 @@ using Newtonsoft.Json;
 using SUP_Library;
 using SUP_MVC.Models.Search;
 using System.Net;
+using SUP_Library.DBComponent;
+using System.IO;
 
 namespace SUP_MVC.Controllers
 {
@@ -146,14 +148,16 @@ namespace SUP_MVC.Controllers
                     throw (new Exception("Oopsie"));
                 }
 
-                var clientArray = new List<SUP_Library.DBComponent.Client>();
+                var clientArray = new List<Client>();
                 foreach(var ID in separatedArgs)
                 {
                     var currentClient = DatabaseConnection.GetClientByIdFull(ID);
                     if (currentClient != null)
                         clientArray.Add(currentClient);
                 }
-                ExportFile.CreateExcelFile(clientArray);
+
+                string fileName;
+                ExportFile.CreateExcelFile2(clientArray, out fileName);
                 /*
                 using (WebClient client = new WebClient())
                 {
@@ -165,8 +169,9 @@ namespace SUP_MVC.Controllers
 
                 //TODO: return value should describe whether or not the process worked to the client.
                 //  The below line is meaningless until then.
-                var json = JsonConvert.SerializeObject("");
+                var json = JsonConvert.SerializeObject(fileName);
                 return json;
+                
             }
             catch (Exception e)
             {
@@ -179,5 +184,16 @@ namespace SUP_MVC.Controllers
 
 			return View();
 		}
+
+        [HttpGet]
+        public ActionResult Download(string fileName)
+        {
+            //Get the temp folder and file path in server
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            string fullPath = Path.Combine(savePath, fileName);
+            byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
+            System.IO.File.Delete(fullPath);    // detele the excel file
+            return File(fileByteArray, "application/vnd.ms-excel", fileName);
+        }
     }
 }

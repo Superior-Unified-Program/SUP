@@ -143,7 +143,6 @@ namespace SUP_MVC.Controllers
                 var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
-
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
@@ -194,7 +193,8 @@ namespace SUP_MVC.Controllers
                         Number = Phone
                     };
                     Client.Notes = Note;
-                    return DatabaseConnection.addClient(Client);
+					Client.Active = (Active == "true");
+					return DatabaseConnection.addClient(Client);
                 }
             }
             catch (Exception e)

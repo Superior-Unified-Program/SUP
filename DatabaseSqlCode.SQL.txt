@@ -598,6 +598,48 @@ BEGIN
 	DROP TABLE #searchResults
 
 END
+
+GO
+/****** Object:  StoredProcedure [dbo].[deleteClient]    Script Date: 11/6/2019 7:21:08 PM ******/
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('deleteClient'))
+   exec('CREATE PROCEDURE deleteClient AS BEGIN SET NOCOUNT ON END')
+GO
+
+ALTER PROCEDURE deleteClient
+
+	@ID int
+
+AS
+BEGIN
+
+	DECLARE @org_name varchar(30) = null
+	DECLARE @org_type varchar(30) = null
+
+	-- check if they are in Works_For
+	if (SELECT COUNT(*) from Works_For Where Client_ID = @ID) = 1
+	BEGIN
+		-- store Org_Name for later use
+		SET @org_name = (SELECT Org_Name From Works_For Where Client_ID = @ID)
+		-- store Org_Type for later use
+		SET @org_type = (SELECT Org_Type From Works_For Where Client_ID = @ID)
+		DELETE from Works_For Where Client_ID = @ID
+	END
+
+	DELETE from [Address] Where Client_ID = @ID
+
+	DELETE from Assistant Where Boss_ID = @ID
+
+	DELETE from Email Where Client_ID = @ID
+
+	DELETE from Phone Where Client_ID = @ID
+
+	DELETE from Client Where ID = @ID
+
+	-- if no other client work for that orginization delete it
+	if (SELECT COUNT(*) from Works_For Where Org_Name = @org_name AND Org_Type = @org_type) = 0
+		DELETE from Organization Where [Name] = @org_name AND [Type] = @org_type
+END
+
 GO
 
 -- =============================================
