@@ -50,12 +50,56 @@
 		}
 	</style>
 	<script language="javascript">
+
+        function toggleEdit() {
+            console.log($("input[type='text']"))
+            $("input[type='text']").each(function () {
+                console.log(this)
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                    $(".saveButton").prop('value', "Save");
+                    $(".saveButton").unbind('click').click(function () {
+                        saveClientData();
+                    });
+                }
+                else {
+                    $(this).prop('disabled', true);
+                    $(".saveButton").prop('value', "Edit");
+                    $(".saveButton").unbind('click').click(function () {
+                        toggleEdit();
+                    });
+                }
+            });
+            $("textarea").each(function () {
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
+            });
+            $("select").each(function () {
+                console.log(this)
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
+            });
+        }
+        setTimeout(function () {
+            if (getClientIdFromURL()) {
+                toggleEdit();
+            }
+        }, 100);
+
 		function check() {
 			var email = document.getElementbyid("email");
 			if (!email.checkValidity())
 				email.setCustomvalidity("Please enter the right email format!");
         }
-        getClientIdFromURL();
+
         function getClientIdFromURL() {
             var args = location.href.split('?');
             console.log(args);
@@ -72,7 +116,12 @@
 
             if (clientId != "") {
                 loadClientData(clientId);
+                return true;
             }
+            $(".saveButton").unbind('click').click(function () {
+                saveClientData();
+            });
+            return false;
         }
         function loadClientData(clientId) {
             console.log(clientId);
@@ -299,10 +348,10 @@
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
-					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="14"></div>
-					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
-					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="email" id="email" placeholder="Email" required tabindex="16"></div>
-					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="tel" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="14"></div>
+					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
+					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
+					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
 				</div>
 				<div class="row">
 					<div class="cell">Assistant's Email*<br /><input type="text" class="firstNameInput" placeholder="" required tabindex="2"></div>
@@ -316,7 +365,7 @@
 						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
 						</div>
 						<div class="row">
-							<div class="saveEditCell"><input type="button" onclick="saveClientData()" value="Save" id="button" tabindex="21"></div>
+							<div class="saveEditCell"><input type="button" class="saveButton" value="Save" id="button" tabindex="21"></div>
 						</div>
 					</div>
                 </div>

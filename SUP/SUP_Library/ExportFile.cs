@@ -31,7 +31,7 @@ namespace SUP_Library
 
             eWorkSheet.Name = "Client Information";             //Name of the work sheet here
             WriteExcelFile(clientList, eWorkSheet);
-
+           
             #endregion
 
             #region Save and clean up Excel File
@@ -52,6 +52,31 @@ namespace SUP_Library
             Marshal.ReleaseComObject(eApp);
 
             #endregion
+        }
+        private static void WriteCSV(List<Client> clientList)
+        {
+            const char DELIM = ','; // CSVs can technically have a different delimiter such as tab
+
+            using (TextWriter output = File.CreateText("test.csv"))
+            {
+                
+                output.Write("First Name" + DELIM);
+                output.Write("Last Name" + DELIM);
+                output.Write("Category" + DELIM);
+                output.Write("Email" + DELIM);
+                output.Write("Phone Number");
+                output.WriteLine();
+
+                for (int i = 0; i < clientList.Count; i++)
+                {
+                    output.Write(clientList[i].First_Name + DELIM);
+                    output.Write(clientList[i].Last_Name + DELIM);
+                    output.Write(clientList[i].Org.Org_Name + DELIM);
+                    output.Write(clientList[i].Email.Email + DELIM);
+                    output.Write(clientList[i].Phone.Number);
+                    output.WriteLine();
+                }
+            }
         }
         private static void WriteExcelFile(List<Client> clientList, Excel.Worksheet eWorkSheet)
         {
