@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Word = Microsoft.Office.Interop.Word;
+using SUP_Library.DBComponent;
 
 namespace SUP_Library
 {
@@ -13,11 +14,11 @@ namespace SUP_Library
         /// <summary>
         /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
         /// </summary>
-        public static void merge()
+        public static void merge(string templateName)
         {
             try
             {
-                if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"DocumentTemplate.Docx"))      //check for the DocumentTemplate.Docx file in computer
+                //if (File.Exists(@"C:\Users\hoang\Desktop\" + templateName + ".docx"))      //check for the DocumentTemplate.Docx file in computer
                 {
                     #region Open Template
 
@@ -30,8 +31,8 @@ namespace SUP_Library
 
                     #region Create Document
 
-                    Word.Document document = null;
                     Word.Application wordApp = new Word.Application();
+                    Word.Document document = wordApp.Documents.Open(Properties.Resources.Guest_Parking_Letter_Template);
                     wordApp.ShowAnimation = false;
                     wordApp.Visible = false;
 
@@ -60,19 +61,24 @@ namespace SUP_Library
 
                     #endregion
 
-                    document = wordApp.Documents.Open(ref saveFileName);
+                    document = wordApp.Documents.Open(Properties.Resources.Guest_Parking_Letter_Template);
                     document.Activate();
 
                     //Word.MailMerge.CreateDataSource();
                     /*
                      * Find text in template in here
                      */
+                    List<Client> clientList = new List<Client>();
+                    //Edit file here
+
+
 
                     document.Save();
                     document.Close();
 
                     wordApp.Quit();
                 }
+                //else throw new Exception();
             }
             catch (Exception exc)
             {
