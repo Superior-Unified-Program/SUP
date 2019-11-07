@@ -143,7 +143,6 @@ namespace SUP_MVC.Controllers
                 var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
-
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
