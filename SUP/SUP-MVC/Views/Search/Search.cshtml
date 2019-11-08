@@ -110,13 +110,14 @@
 		align-content:center;
 		overflow: auto;
 		width: 10.5%;
-		margin: 5px;
+        overflow: hidden; 
 		}
 
 		.flex-email {
+        align-content:center;
+		overflow: auto;
 		width: 15.7%;
-		margin: 5px;
-		height: 10px;
+        overflow: hidden; 
 		}
 
         .yellowizedSelect {
@@ -933,37 +934,41 @@
                 </div>
 
             </form>
-            <div style="float:left; margin-left: calc(10% + 180px);">
+            <div style="float:left; margin-left: 45%;">
                 <p style="float:left;">Display Inactive: </p>
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
             </div>
         </div>
-		<div class="flex-colum" style="float: right; margin-right: 10.5%;margin-left: 79%;">
-		<a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
-		<a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
-		<a href="javascript:reserveCheck('choice')" class="yellowizedSelect"> Inverse</a>
-		</div>
-		<div class="flex-colum" style="float: left; margin-left: 10.5%;">
-		<p><b>First Name</b></p>
-		</div>
-		<div class="flex-colum" style="float: left;">
-		<p><b>Last Name</b></p>
-		</div>
-		<div class="flex-colum" style="float: left;">
-		<p><b>Job Title</b></p>
-		</div>
-		<div class="flex-colum" style="float: left;">
-		<p><b>Organization Name</b></p>
-		</div>
-		<div class="flex-email" style="float: left;">
-		<p><b>Email</b></p>
-		</div>
-		<div class="flex-colum" style="float: left;">
-		<p><b>Phone #</b></p>
-		</div>
-		<div class="flex-colum" style="float: left;">
-		<input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
-		</div>
+        <div class="flex-colum" style="width: 14.3%; float: right; margin-right: 9.8%;margin-left: 75.9%;">
+            <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
+            <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
+            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect"> Inverse</a>
+        </div>
+        <div class="flex-colum" style="width: 3.4%; float: left; margin-left: 10%; border: 1px solid black; visibility:hidden;">
+            <p></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%; float: left;">
+            <p><b>First Name</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%; float: left;">
+            <p><b>Last Name</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%;float: left;">
+            <p><b>Job Title</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%;float: left;">
+            <p><b>Organization Name</b></p>
+        </div>
+        <div class="flex-email" style="width: 12.5%;float: left;">
+            <p><b>Email</b></p>
+        </div>
+        <div class="flex-colum" style="float:right; width: 11.5%;float: left;">
+            <p><b>Phone #</b></p>
+        </div>
+        <div class="flex-colum" style="float:right; width: 2.8%;float: left;">
+            <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
+        </div>
+
         <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
             <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
                 <tbody style="width:100%">
