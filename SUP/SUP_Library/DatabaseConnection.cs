@@ -57,10 +57,15 @@ namespace SUP_Library
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
-                    var currentAccount = connection.Query<Account>("dbo.SP_Account_RetrieveAccountByUsernameAndPassword @username @password", new { username = theUsername, password = thePassword }).ToList();
-                    if (currentAccount.Count != 0)
+                    var sql = "validateLogin";
+                    var par = new DynamicParameters();
+                    par.Add("@userName", theUsername);
+                    par.Add("@givenPW", thePassword);
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                    int cnt = par.Get<int>("result");
+                    if (cnt > 0)
                     {
-                        if (thePassword != currentAccount[0].password) return false;
                         return true;
                     }
                     return false;
