@@ -70,6 +70,14 @@
                     });
                 }
             });
+            $(".activeInput").each(function () {
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
+            });
             $("textarea").each(function () {
                 if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
@@ -368,7 +376,7 @@
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+					<div class="cell">Permit*<br /><input type="text" class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
 					<div class="noteCell">
 						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
 						</div>
