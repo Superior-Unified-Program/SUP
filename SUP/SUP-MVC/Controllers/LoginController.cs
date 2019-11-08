@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using SUP_Library;
 
 namespace SUP_MVC.Controllers
 {
@@ -90,7 +92,36 @@ namespace SUP_MVC.Controllers
             }
         }
 
-		public ActionResult Login()
+        [HttpPost]
+        public ActionResult AuthenticateUser([FromBody] string args)
+        {
+            try
+            {
+                string[] separatedArgs = args.Split(',');
+                if (separatedArgs.Length != 2)
+                {
+                    throw (new Exception("Oopsie"));
+                }
+                var userName = separatedArgs[0];
+                var password = separatedArgs[1];
+
+                //TODO: HASH HERE
+                var hashedPassword = separatedArgs[1];
+                
+                var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, hashedPassword);
+
+                // if searching for active clients only, remove inactive clients.
+                var json = JsonConvert.SerializeObject(LoginSuccessful);
+
+                return RedirectToAction("Search", "Search");
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public ActionResult Login()
 		{
 			return View();
 		}

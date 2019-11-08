@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -128,7 +129,7 @@ namespace SUP_MVC.Controllers
                 var firstName = separatedArgs[1];
                 var lastName = separatedArgs[2];
                 var MiddleInitial = separatedArgs[3];
-                var organization = separatedArgs[4];
+                var organization = (separatedArgs[4]?.Length > 1) ? Regex.Replace(separatedArgs[4], @"\s+", "") : "";
                 var companyName = separatedArgs[5];
                 var title = separatedArgs[6];
                 var Line1 = separatedArgs[7];
@@ -145,11 +146,8 @@ namespace SUP_MVC.Controllers
                 {
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
+                    Client.Middle_initial = (MiddleInitial?.Length >= 1) ? MiddleInitial.Substring(0, 1) : " ";
                     Client.Last_Name = lastName;
-                    if (MiddleInitial?.Length >= 1)
-                    {
-                        Client.Middle_initial = MiddleInitial[0];
-                    }
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
                         Client_ID = intClientId,
@@ -157,16 +155,15 @@ namespace SUP_MVC.Controllers
                         Org_Type = organization,
                         Title = title
                     };
-                    /*Client.Email = new SUP_Library.DBComponent.EmailAddress
+                    Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
+                    Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        Client_ID = intClientId,
                         Email = Email
-                    };*/
-                    /*Client.Phone = new SUP_Library.DBComponent.PhoneNumber
+                    };
+                    Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        Client_ID = intClientId,
                         Number = Phone
-                    };*/
+                    };
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
                     return DatabaseConnection.updateClient(Client);
@@ -176,6 +173,7 @@ namespace SUP_MVC.Controllers
                     Client = new SUP_Library.DBComponent.Client();
 
                     Client.First_Name = firstName;
+                    Client.Middle_initial = (MiddleInitial?.Length >= 1) ? MiddleInitial.Substring(0, 1) : " ";
                     Client.Last_Name = lastName;
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
