@@ -146,10 +146,11 @@ namespace SUP_MVC.Controllers
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    if (MiddleInitial?.Length >= 1)
+                    /*if (MiddleInitial?.Length >= 1)
                     {
-                        Client.Middle_initial = MiddleInitial[0];
-                    }
+                        Client.Middle_initial = MiddleInitial;
+                    }*/
+                    Client.Middle_initial = MiddleInitial;
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
                         Client_ID = intClientId,

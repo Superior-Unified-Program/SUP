@@ -142,9 +142,17 @@
                     var middleinitial = currentClient["Middle_initial"];
                     var organization = currentClient["Org"];
                     if (currentClient['Email'] != null)
-                        $('.emailInput').val(currentClient['Email']['Email']);
+                        $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
+                    if (currentClient['Email'] != null)
+                        $('.businessEmailInput').val(currentClient['Email']['Business_Email']);
+                    if (currentClient['Email'] != null)
+                        $('.assistantEmailInput').val(currentClient['Email']['Assistant_Email']);
                     if (currentClient['Phone'] != null)
-                        $('.phoneInput').val(currentClient['Phone']['Number']);
+                        $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone']);
+                    if (currentClient['Phone'] != null)
+                        $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone']);
+                    if (currentClient['Phone'] != null)
+                        $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
                     if (currentClient['Org'] != null) {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
@@ -350,12 +358,12 @@
 				<div class="row">
 					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="14"></div>
 					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
-					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
-					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+					<div class="cell">Business Email address*<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
+					<div class="cell">Business Phone Number<br /><input class="businessPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
 				</div>
 				<div class="row">
-					<div class="cell">Assistant's Email*<br /><input type="text" class="firstNameInput" placeholder="" required tabindex="2"></div>
-					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="lastNameInput" placeholder="" required tabindex="3"></div>
+					<div class="cell">Assistant's Email*<br /><input type="text" class="assistantEmailInput" placeholder="" required tabindex="2"></div>
+					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="assistantPhoneInput" placeholder="" required tabindex="3"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">

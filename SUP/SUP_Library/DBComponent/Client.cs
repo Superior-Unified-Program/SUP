@@ -29,7 +29,7 @@ namespace SUP_Library.DBComponent
         //public string EmailAddress { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
-        public char Middle_initial { get; set; }
+        public string Middle_initial { get; set; }
 
         public Organization Org { get; set; }
         public Address Address { get; set; }
