@@ -171,6 +171,7 @@ namespace SUP_Library
                 row.RowIndex = 1;
                 row.AppendChild(AddCellWithText("First Name"));
                 row.AppendChild(AddCellWithText("Last Name"));
+                row.AppendChild(AddCellWithText("Middle Initial"));
                 row.AppendChild(AddCellWithText("Category"));
                 row.AppendChild(AddCellWithText("Email"));
                 row.AppendChild(AddCellWithText("Phone#"));
@@ -182,6 +183,7 @@ namespace SUP_Library
                     newRow.RowIndex = (UInt32)i;
                     newRow.AppendChild(AddCellWithText(clientList[i-2].First_Name));
                     newRow.AppendChild(AddCellWithText(clientList[i-2].Last_Name));
+                    newRow.AppendChild(AddCellWithText(clientList[i - 2].Middle_initial));
                     newRow.AppendChild(AddCellWithText(clientList[i-2].Org.Org_Name));
                     newRow.AppendChild(AddCellWithText(clientList[i-2].Email.Email));
                     newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Number));

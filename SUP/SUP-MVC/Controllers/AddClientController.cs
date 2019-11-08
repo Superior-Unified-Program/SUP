@@ -148,9 +148,8 @@ namespace SUP_MVC.Controllers
                     Client.Last_Name = lastName;
                     /*if (MiddleInitial?.Length >= 1)
                     {
-                        Client.Middle_initial = MiddleInitial;
-                    }*/
-                    Client.Middle_initial = MiddleInitial;
+                        Client.Middle_initial = MiddleInitial.Substring(0,1);
+                    }
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
                         Client_ID = intClientId,

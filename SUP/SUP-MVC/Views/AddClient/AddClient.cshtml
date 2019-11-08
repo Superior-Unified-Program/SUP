@@ -70,6 +70,14 @@
                     });
                 }
             });
+            $(".activeInput").each(function () {
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
+            });
             $("textarea").each(function () {
                 if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
@@ -123,6 +131,12 @@
             });
             return false;
         }
+
+        function selectElement(id, valueToSelect) {    
+            let element = document.getElementById(id);
+            element.value = valueToSelect;
+        }
+
         function loadClientData(clientId) {
             console.log(clientId);
             var dataPost = clientId;
@@ -139,7 +153,10 @@
                     var currentClient = returnedData;
                     var firstName = currentClient["First_Name"];
                     var lastName = currentClient["Last_Name"];
+                    var assistantsFirstName = currentClient["Assistant_First_Name"];
+                    var assistantsLastName = currentClient["Assistant_Last_Name"];
                     var middleinitial = currentClient["Middle_initial"];
+                    var prefix = currentClient["Prefix"];
                     var organization = currentClient["Org"];
                     if (currentClient['Email'] != null)
                         $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
@@ -178,6 +195,13 @@
                     $('.firstNameInput').val(firstName);
                     $('.middleInitialInput').val(middleinitial);
                     $('.lastNameInput').val(lastName);
+                    $('.assistantFirstNameInput').val(assistantsFirstName);
+                    $('.assistantLastNameInput').val(assistantsLastName);
+                    $('.prefixInput').val(prefix);
+
+                    //selectElement('leaveCode', '11')
+
+
                     if (isActive) {
                         console.log(isActive);
                         $(".activeInput").prop( "checked", true );
@@ -256,21 +280,21 @@
 			<div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
 				<div class="tableHeader">Client Information</div>
 				<div class="row">
-					<div class="cell">Prefix<br /><input type="text" placeholder="" style="width: 45px" tabindex="1"></div>
+					<div class="cell">Prefix<br /><input class="prefixInput" type="text" placeholder="" style="width: 45px" tabindex="1"></div>
 					<div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
 					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
 					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
 				</div>
 				<div class="row">
 					<div class="cell"></div>
-					<div class="cell">Assistant's First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
-					<div class="cell">Assistant's Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+					<div class="cell">Assistant's First Name*<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" required tabindex="2"></div>
+					<div class="cell">Assistant's Last Name*<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" required tabindex="3"></div>
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">
 						Organization Type*<br />
-						<select name="Organization" class="organizationInput" size="1" required tabindex="5">
+						<select id="organizationInput" name="Organization" class="organizationInput" size="1" required tabindex="5">
 							<option value=""></option>
 							<option value="business">Business</option>
 							<option value="electedOfficial">Elected Official</option>
@@ -368,7 +392,7 @@
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+					<div class="cell">Permit*<br /><input type="text" class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
 					<div class="noteCell">
 						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
 						</div>

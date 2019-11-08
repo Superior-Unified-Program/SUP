@@ -53,7 +53,7 @@ CREATE TABLE AccountAudits(
 GO
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial char, Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Notes varchar(30))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
@@ -340,7 +340,26 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    -- Insert statements for procedure here
+    	-- Insert statements for procedure here
+    	IF @Business_Email IS NULL SET @Business_Email = ''
+	IF @Assistant_Email IS NULL SET @Assistant_Email = ''
+	IF @Personal_Email IS NULL SET @Personal_Email = ''
+	IF @Business_phoneNumber IS NULL SET @Business_Email = ''
+	IF @Assistant_phoneNumber IS NULL SET @Assistant_phoneNumber = ''
+	IF @Personal_phoneNumber IS NULL SET @Personal_phoneNumber = ''
+	IF @middleInitial IS NULL SET @middleInitial = ''
+	IF @permitNum IS NULL SET @permitNum = ''
+	IF @notes IS NULL SET @notes = ''
+	IF @orgName IS NULL SET @orgName = ''
+	IF @orgType IS NULL SET @orgType = ''
+	IF @title IS NULL SET @title = ''
+	IF @line1 IS NULL SET @line1 = ''
+	IF @line2 IS NULL SET @line2 = ''
+	IF @state IS NULL SET @state = ''
+	IF @zipCode IS NULL SET @zipCode = ''
+	IF @assistantFirstName IS NULL SET @assistantFirstName = ''
+	IF @assistantLastName IS NULL SET @assistantLastName = ''
+    
 	INSERT INTO Client (Prefix, First_Name, Last_Name, Middle_initial, Permit_Num, Client.Active, Notes) VALUES (@prefix, @firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
 	
 	-- declare an int and set its value based on the auto generated ID from inserting into the client table in the previous line
