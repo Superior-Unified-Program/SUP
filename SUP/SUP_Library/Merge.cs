@@ -13,7 +13,7 @@ using System.Text.RegularExpressions;
 
 namespace SUP_Library
 {
-
+   
     /// <summary>
     /// Class to store search results in
     /// </summary>
@@ -26,6 +26,17 @@ namespace SUP_Library
     }
     public class Merge
     {
+        private struct token
+        {
+            public string open;
+            public string close;
+        }
+        private static token mergeToken;
+        public Merge()
+        {
+            mergeToken.open = "<";
+            mergeToken.close = ">";
+        }
         /// <summary>
         /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
         /// </summary>
@@ -227,8 +238,9 @@ namespace SUP_Library
                    
                     if (!searched)
                     {
-                        Regex regex = new Regex("&lt;(.)*?&gt;", RegexOptions.Compiled);
-                        
+                        //Regex regex = new Regex("&lt;(.)*?&gt;", RegexOptions.Compiled);
+                        Regex regex = new Regex(  mergeToken.open + "(.)*?" + mergeToken.close, RegexOptions.Compiled);
+
                         mc = regex.Matches(docText);
 
                         for (int i = 0; i < mc.Count; i++)
