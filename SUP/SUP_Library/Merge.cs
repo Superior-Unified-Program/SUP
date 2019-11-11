@@ -34,8 +34,7 @@ namespace SUP_Library
         private static token mergeToken;
         public Merge()
         {
-            mergeToken.open = "<";
-            mergeToken.close = ">";
+            
         }
         /// <summary>
         /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
@@ -221,6 +220,9 @@ namespace SUP_Library
             bool searched = false;
             MatchCollection mc;
             List<MergeResult> matches=new List<MergeResult>();
+            mergeToken = new token();
+            mergeToken.open = "&lt;";
+            mergeToken.close = "&gt;";
             foreach (Client client in clientList)
             {
                 //string newFile = client.First_Name + client.Last_Name + documentLocation;
@@ -249,7 +251,8 @@ namespace SUP_Library
                            // Console.WriteLine("\tat: " + mc[i].Index);
                            // Console.WriteLine("\tvalue: " + mc[i].Value);
                             Regex r = new Regex("<(.)*?>", RegexOptions.Compiled);
-                            string p = mc[i].Value.Substring(mergeToken.open.Length, mc[i].Length - mergeToken.open.Length+mergeToken.close.Length);
+                           // string p = mc[i].Value.Substring(4, mc[i].Length - 8);
+                           string p = mc[i].Value.Substring(mergeToken.open.Length, (mc[i].Length - (mergeToken.open.Length + mergeToken.close.Length)));
 
                             MergeResult mr = new MergeResult();
                             mr.Result = r.Replace(p, "");
