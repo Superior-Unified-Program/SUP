@@ -249,7 +249,7 @@ namespace SUP_Library
                            // Console.WriteLine("\tat: " + mc[i].Index);
                            // Console.WriteLine("\tvalue: " + mc[i].Value);
                             Regex r = new Regex("<(.)*?>", RegexOptions.Compiled);
-                            string p = mc[i].Value.Substring(4, mc[i].Length - 8);
+                            string p = mc[i].Value.Substring(mergeToken.open.Length, mc[i].Length - mergeToken.open.Length+mergeToken.close.Length);
 
                             MergeResult mr = new MergeResult();
                             mr.Result = r.Replace(p, "");
