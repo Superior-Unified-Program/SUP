@@ -10,8 +10,23 @@ using System.IO;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Packaging;
 
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Text.RegularExpressions;
+
 namespace SUP_Library
 {
+
+    /// <summary>
+    /// Class to store search results in
+    /// </summary>
+    class MergeResult
+    {
+        public string Result { get; set; }
+        public int Start { get; set; }
+        public int End { get; set; }
+        // public int length { get; set; }
+    }
     public class Merge
     {
 
@@ -19,7 +34,7 @@ namespace SUP_Library
         /// <summary>
         /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
         /// </summary>
-        public static void oldMerge(string templateName)
+        public static void mergeold(string templateName)
         {
             try
             {
@@ -124,66 +139,136 @@ namespace SUP_Library
                 ref matchSoundsLike, ref matchAllWordForms, ref forward, ref wrap, ref format, ref replaceText,
                 ref replace, ref matchKashida, ref matchDiacritics, ref matchAlefHamza, ref matchControl);
         }
-        #endregion
 
-
-        public static void newMerge()
+        private static string replaceValue(Client client, string match)
         {
-            string templatePath = @"C:\Users\Public\Documents";
-            string templateName = "TestTemplateDuy.docx";
-            string saveName = "MergeComplete.docx";
-
-            /*
-            using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(templatePath, true))
+            string r;
+            switch (match)
             {
-                string docText = null;
-                using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
-                {
-                    docText = sr.ReadToEnd();
-                }
+                case "firstname":
+                    r = client.First_Name;
+                    Console.WriteLine("Attempting to replace first name..");
+                    break;
+                case "lastname":
+                    r = client.Last_Name;
+                    break;
+                case "organization":
+                    r = client.Org.Org_Name;
+                    break;
+                case "permit":
+                    r = client?.Permit_Num;
+                    break;
+                case "address1":
+                    r = client.Address.Line1;
+                    break;
+                case "address2":
+                    r = client.Address.Line2;
+                    break;
+                case "city":
+                    r = client.Address.City;
+                    break;
+                case "state":
+                    r = client.Address.State;
+                    break;
+                case "zipcode":
+                    r = client.Address.Zip;
+                    break;
+                case "email":
+                    r = client.Email?.Business_Email;
+                    break;
+                case "phone":
+                    r = client.Phone?.Business_Phone;
+                    break;
+                default:
+                    r = "";
+                    break;
 
-                Regex regexText = new Regex("<<FirstName>>");
-                docText = regexText.Replace(docText, "Duy");
-
-                Regex regexText2 = new Regex("<<LastName>>");
-                docText = regexText.Replace(docText, "Nguyen");
-
-                using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
-                {
-                    sw.Write(docText);
-                }
-
-                
             }
-            */
-            using (WordprocessingDocument wordDocComplte = WordprocessingDocument.CreateFromTemplate(templatePath + "\\" + templateName, false))
+            return r;
+        }
+
+        private static string createFileFromTemplate(string templateName, Client client)
+        {
+            string templatePath = @"C:\Users\Public\Documents\Templates";
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            string fileName = templateName.Substring(0,templateName.Length-4) + client.First_Name + client.Last_Name + 
+                "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".docx";
+            if (!Directory.Exists(savePath))
             {
-                wordDocComplte.SaveAs(templatePath + "\\" + saveName);
-                wordDocComplte.Close();
+                Directory.CreateDirectory(savePath);
             }
-
-
-            // Break here since the path saveName is used in the process
-            using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(templatePath + "\\" + saveName, true))
+            try
             {
-                string docText = null;
-                using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
+                File.Copy(templatePath + "\\" + templateName, savePath + "\\" + fileName);
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
+            return savePath + "\\" + fileName;
+
+        }
+
+        public static void merge(List<Client> clientList, string template, out List<string> fileNames)
+        {
+            fileNames = new List<string>();
+            bool searched = false;
+            MatchCollection mc;
+            List<MergeResult> matches=new List<MergeResult>();
+            foreach (Client client in clientList)
+            {
+                //string newFile = client.First_Name + client.Last_Name + documentLocation;
+                //File.Copy(documentLocation, newFile);
+                string newFile = createFileFromTemplate(template, client);
+                if (newFile == null) throw new Exception("Error Creating File!");
+                fileNames.Add(newFile);
+                using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(newFile, true))
                 {
-                    docText = sr.ReadToEnd();
+                    string docText = null;
+                    using (StreamReader sr = new StreamReader(wordDoc.MainDocumentPart.GetStream()))
+                    {
+                        docText = sr.ReadToEnd();
+                    }
+                   
+                    if (!searched)
+                    {
+                        Regex regex = new Regex("&lt;(.)*?&gt;", RegexOptions.Compiled);
+                        
+                        mc = regex.Matches(docText);
+
+                        for (int i = 0; i < mc.Count; i++)
+                        {
+                           // Console.WriteLine("Result " + i + ": ");
+                           // Console.WriteLine("\tat: " + mc[i].Index);
+                           // Console.WriteLine("\tvalue: " + mc[i].Value);
+                            Regex r = new Regex("<(.)*?>", RegexOptions.Compiled);
+                            string p = mc[i].Value.Substring(4, mc[i].Length - 8);
+
+                            MergeResult mr = new MergeResult();
+                            mr.Result = r.Replace(p, "");
+                            mr.Start = mc[i].Index;
+                            mr.End = mc[i].Index + mc[i].Length;
+                            matches.Add(mr);
+                        }
+                        searched = true;
+                    }
+                    using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
+                    {
+                        int s = 0;
+                        for (int i = 0; i < matches.Count; i++)
+                        {
+                            Console.WriteLine(matches[i].Result);
+                            string toWrite = docText.Substring(s, matches[i].Start - s);
+                            string tag = replaceValue(client, matches[i].Result);
+                            s = matches[i].End;
+                            sw.Write(toWrite + tag);
+
+                        }
+                       
+                        sw.Write(docText.Substring(s, docText.Length - s));
+                    }
                 }
-
-                Regex regexText = new Regex("<<FirstName>>");
-                docText = regexText.Replace(docText, "Duy");
-
-                Regex regexText2 = new Regex("<<LastName>>");
-                docText = regexText.Replace(docText, "Nguyen");
-
-                using (StreamWriter sw = new StreamWriter(wordDoc.MainDocumentPart.GetStream(FileMode.Create)))
-                {
-                    sw.Write(docText);
-                }
-
-                wordDoc.Save();
+    
             }
         }
 
