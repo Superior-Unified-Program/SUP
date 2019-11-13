@@ -93,7 +93,7 @@ namespace SUP_MVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult AuthenticateUser([FromBody] string args)
+        public string AuthenticateUser([FromBody] string args)
         {
             try
             {
@@ -113,7 +113,7 @@ namespace SUP_MVC.Controllers
                 // if searching for active clients only, remove inactive clients.
                 var json = JsonConvert.SerializeObject(LoginSuccessful);
 
-                return RedirectToAction("Search", "Search");
+                return json;
             }
             catch (Exception e)
             {

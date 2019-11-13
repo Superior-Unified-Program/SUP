@@ -52,7 +52,7 @@ namespace SUP_Library
         /// </returns>
         public static bool verifiedLogIn(string theUsername, string thePassword)
         {
-            thePassword = Harsh.HashPassword(thePassword);
+            //thePassword = Harsh.HashPassword(thePassword);
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
@@ -61,9 +61,9 @@ namespace SUP_Library
                     var par = new DynamicParameters();
                     par.Add("@userName", theUsername);
                     par.Add("@givenPW", thePassword);
-                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
-                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
-                    int cnt = par.Get<int>("result");
+                    par.Add("Valid_Login", 0, direction: ParameterDirection.ReturnValue);
+                    connection.Query(sql, par, commandType: CommandType.StoredProcedure);
+                    int cnt = par.Get<int>("Valid_Login");
                     if (cnt > 0)
                     {
                         return true;
