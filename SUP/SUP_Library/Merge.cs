@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Word = Microsoft.Office.Interop.Word;
 using SUP_Library.DBComponent;
-
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.IO.Compression;
@@ -16,7 +10,6 @@ using System.IO.Compression;
 
 namespace SUP_Library
 {
-   
     /// <summary>
     /// Class to store search results in
     /// </summary>
@@ -25,10 +18,13 @@ namespace SUP_Library
         public string Result { get; set; }
         public int Start { get; set; }
         public int End { get; set; }
-        // public int length { get; set; }
     }
+    /// <summary>
+    /// The merge class
+    /// </summary>
     public class Merge
     {
+
         private const string templatePath = @"C:\Users\Public\Documents\Templates";
         private const string savePath = @"C:\Users\Public\Documents\SUPExport\TEMP";
         private const string zipPath = @"C:\Users\Public\Documents\SUPExport";
@@ -38,119 +34,7 @@ namespace SUP_Library
             public string close;
         }
         private static token mergeToken;
-        public Merge()
-        {
-            
-        }
-        /// <summary>
-        /// Check the DocumentTemplate.Docx file, create a copy of it and modified it. Export the copy to a certain place.
-        /// </summary>
-        public static void mergeold(string templateName)
-        {
-            try
-            {
-                //if (File.Exists(@"C:\Users\hoang\Desktop\" + templateName + ".docx"))      //check for the DocumentTemplate.Docx file in computer
-                {
-                    #region Open Template
-
-                    Word.Document template = null;
-                    Word.Application wordAppTemplate = new Word.Application();
-                    wordAppTemplate.ShowAnimation = false;
-                    wordAppTemplate.Visible = false;
-
-                    #endregion
-
-                    #region Create Document
-
-                    Word.Application wordApp = new Word.Application();
-                    Word.Document document = wordApp.Documents.Open(Properties.Resources.Guest_Parking_Letter_Template);
-                    wordApp.ShowAnimation = false;
-                    wordApp.Visible = false;
-
-                    #endregion
-
-                    #region Properties
-
-                    object openFileName = AppDomain.CurrentDomain.BaseDirectory + @"DocumentTemplate.Docx";     //check for the DocumentTemplate.Docx file in computer
-                    string savePath = @"C:\Users\Public\CCApp";
-                    object saveFileName = savePath + "\\" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + ".Docx";
-
-                    #endregion
-
-                    #region Document = Copy of Template
-
-                    if (!Directory.Exists(savePath))
-                    {
-                        Directory.CreateDirectory(savePath);
-                    }
-
-                    template = wordAppTemplate.Documents.Open(ref openFileName);
-                    template.Activate();
-                    template.SaveAs(ref saveFileName);
-                    template.Close();
-                    wordAppTemplate.Quit();
-
-                    #endregion
-
-                    document = wordApp.Documents.Open(Properties.Resources.Guest_Parking_Letter_Template);
-                    document.Activate();
-
-                    //Word.MailMerge.CreateDataSource();
-                    /*
-                     * Find text in template in here
-                     */
-                    List<Client> clientList = new List<Client>();
-                    //Edit file here
-
-
-
-                    document.Save();
-                    document.Close();
-
-                    wordApp.Quit();
-                }
-                //else throw new Exception();
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
-        }
-
-        /// <summary>
-        /// Find and replace the text in the document.
-        /// Modified the Sellection and Find method in Word library.
-        /// </summary>
-        /// <param name="certification"></param>
-        /// <param name="findText"></param>
-        /// <param name="replaceText"></param>
-        private void FindAndReplace(Word.Application template, object findText, object replaceText)
-        {
-            #region Replace Options
-
-            object matchCase = true;
-            object matchWholeWord = true;
-            object matchWildCards = false;
-            object matchSoundsLike = false;
-            object matchAllWordForms = false;
-            object forward = true;
-            object format = false;
-            object matchKashida = false;
-            object matchDiacritics = false;
-            object matchAlefHamza = false;
-            object matchControl = false;
-            object read_only = false;
-            object visible = true;
-            object replace = 2;
-            object wrap = 1;
-
-            #endregion
-
-            template.Selection.Find.Execute(ref findText, ref matchCase, ref matchWholeWord, ref matchWildCards,
-                ref matchSoundsLike, ref matchAllWordForms, ref forward, ref wrap, ref format, ref replaceText,
-                ref replace, ref matchKashida, ref matchDiacritics, ref matchAlefHamza, ref matchControl);
-        }
-
+          
         private static string replaceValue(Client client, string match)
         {
             string r;
@@ -158,7 +42,6 @@ namespace SUP_Library
             {
                 case "firstname":
                     r = client.First_Name;
-                   // Console.WriteLine("Attempting to replace first name..");
                     break;
                 case "lastname":
                     r = client.Last_Name;
@@ -231,20 +114,17 @@ namespace SUP_Library
         }
         public static string compress(string templateName)
         {
-            //string startPath = @".\start";
-
             string zipShortName = templateName.Substring(0, templateName.Length - 4);
 
             string zipPathLong = zipPath + @"\" + zipShortName + ".zip";
-                //= @".\result.zip";
-            //string extractPath = @".\extract";
+             
             ZipFile.CreateFromDirectory(savePath, zipPathLong);
 
             return zipPathLong;
-            //ZipFile.ExtractToDirectory(zipPath, extractPath);
+            
         }
         public static void merge(List<Client> clientList, string template, out string exportFile)
-        //    , out List<string> fileNames)
+        
         {
             List<String> fileNames = new List<string>();
             bool searched = false;
@@ -255,8 +135,7 @@ namespace SUP_Library
             mergeToken.close = "&gt;";
             foreach (Client client in clientList)
             {
-                //string newFile = client.First_Name + client.Last_Name + documentLocation;
-                //File.Copy(documentLocation, newFile);
+                
                 string newFile = createFileFromTemplate(template, client);
                 if (newFile == null) throw new Exception("Error Creating File!");
                 fileNames.Add(newFile);
@@ -270,18 +149,14 @@ namespace SUP_Library
                    
                     if (!searched)
                     {
-                        //Regex regex = new Regex("&lt;(.)*?&gt;", RegexOptions.Compiled);
                         Regex regex = new Regex(  mergeToken.open + "(.)*?" + mergeToken.close, RegexOptions.Compiled);
 
                         mc = regex.Matches(docText);
 
                         for (int i = 0; i < mc.Count; i++)
                         {
-                           // Console.WriteLine("Result " + i + ": ");
-                           // Console.WriteLine("\tat: " + mc[i].Index);
-                           // Console.WriteLine("\tvalue: " + mc[i].Value);
                             Regex r = new Regex("<(.)*?>", RegexOptions.Compiled);
-                           // string p = mc[i].Value.Substring(4, mc[i].Length - 8);
+                           
                            string p = mc[i].Value.Substring(mergeToken.open.Length, (mc[i].Length - (mergeToken.open.Length + mergeToken.close.Length)));
 
                             MergeResult mr = new MergeResult();
