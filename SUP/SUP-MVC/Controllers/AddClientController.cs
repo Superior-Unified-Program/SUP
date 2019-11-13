@@ -110,8 +110,8 @@ namespace SUP_MVC.Controllers
                 return "FAAAAAILLL";
             }
         }
-
-
+        
+        
         // POST: AddClient/UpdateClient
         [HttpPost]
         public int UpdateClient([FromBody] string args)
@@ -202,7 +202,7 @@ namespace SUP_MVC.Controllers
                 return -1;
             }
         }
-
+        
         public ActionResult AddClient()
 		{
 			return View();

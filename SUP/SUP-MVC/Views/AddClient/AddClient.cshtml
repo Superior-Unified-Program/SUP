@@ -8,7 +8,8 @@
 	<meta charset="utf-8">
 	<title>Search</title>
 	<style>
-		.tableHeader {
+		.tableHeader 
+        {
 			width: 100%;
 			text-align: center;
 			font-size: large;
@@ -17,31 +18,38 @@
 			height: 45px;
 			padding-top: 20px;
 		}
-		.row {
+		.row 
+        {
 			width: 100%;
 		}
-		.cell {
+		.cell 
+        {
 			width: 25%;
 			text-align: left;
 		}
-		.noteCell {
+		.noteCell 
+        {
 			width: 50%;
 			text-align: left;
 		}
-		.activeCell {
+		.activeCell 
+        {
 			width: 25%;
 			text-align: left;
 		}
-		.saveEditCell {
+		.saveEditCell 
+        {
 			width: calc(100% - 50px);
 			text-align: right;
 			padding-top: 10px;
 			padding-right: 20px;
 		}
-		textarea {
+		textarea 
+        {
 			width: calc(100% - 50px - 35px);
 		}
-		.breakLine {
+		.breakLine 
+        {
 			margin-left: -10%;
 			padding-top: 0px;
 			padding-top: 0px;
@@ -51,11 +59,13 @@
 	</style>
 	<script language="javascript">
 
-        function toggleEdit() {
+        function toggleEdit()
+        {
             console.log($("input[type='text']"))
             $("input[type='text']").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true) {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                     $(".saveButton").prop('value', "Save");
                     $(".saveButton").unbind('click').click(function () {
@@ -70,8 +80,10 @@
                     });
                 }
             });
-            $(".activeInput").each(function () {
-                if ($(this).prop('disabled') == true) {
+            $(".activeInput").each(function ()
+            {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                 }
                 else {
@@ -79,50 +91,60 @@
                 }
             });
             $("textarea").each(function () {
-                if ($(this).prop('disabled') == true) {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                 }
-                else {
+                else
+                {
                     $(this).prop('disabled', true);
                 }
             });
             $("select").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true) {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                 }
-                else {
+                else
+                {
                     $(this).prop('disabled', true);
                 }
             });
         }
         setTimeout(function () {
-            if (getClientIdFromURL()) {
+            if (getClientIdFromURL())
+            {
                 toggleEdit();
             }
         }, 100);
 
-		function check() {
+        function check()
+        {
 			var email = document.getElementbyid("email");
 			if (!email.checkValidity())
 				email.setCustomvalidity("Please enter the right email format!");
         }
 
-        function getClientIdFromURL() {
+        function getClientIdFromURL()
+        {
             var args = location.href.split('?');
             console.log(args);
             var params = "";
-            if (args.length > 1) {
+            if (args.length > 1)
+            {
                 params = args[1].split('=');
                 console.log(params);
             }
             var clientId = "";
-            if (params.length > 1) {
+            if (params.length > 1)
+            {
                 clientId = params[1];
                 console.log(clientId);
             }
 
-            if (clientId != "") {
+            if (clientId != "")
+            {
                 loadClientData(clientId);
                 return true;
             }
@@ -132,12 +154,14 @@
             return false;
         }
 
-        function selectElement(id, valueToSelect) {    
+        function selectElement(id, valueToSelect)
+        {    
             let element = document.getElementById(id);
             element.value = valueToSelect;
         }
 
-        function loadClientData(clientId) {
+        function loadClientData(clientId)
+        {
             console.log(clientId);
             var dataPost = clientId;
             $.ajax({
@@ -202,7 +226,8 @@
                     //selectElement('leaveCode', '11')
 
 
-                    if (isActive) {
+                    if (isActive)
+                    {
                         console.log(isActive);
                         $(".activeInput").prop( "checked", true );
                     }
@@ -218,16 +243,19 @@
             location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
 
-        function saveClientData() {
+        function saveClientData()
+        {
             var args = location.href.split('?');
             console.log(args);
             var params = "";
-            if (args.length > 1) {
+            if (args.length > 1)
+            {
                 params = args[1].split('=');
                 console.log(params);
             }
             var clientId = "";
-            if (params.length > 1) {
+            if (params.length > 1)
+            {
                 clientId = params[1];
                 console.log(clientId);
             }
@@ -290,7 +318,7 @@
                     <div class="cell">
                         Organization Type*<br />
                         <select id="organizationInput" name="Organization" class="organizationInput" size="1" required tabindex="5">
-                            <option value=""></option>
+                            <option value="">All</option>
                             <option value="business">Business</option>
                             <option value="electedOfficial">Elected Official</option>
                             <option value="educationAll">Education - All</option>
