@@ -44,37 +44,41 @@
 	</head>
 
 	<body>
-		<table class="ribbon">
-			<tr>
-				<th class="welcome" scope="row">Welcome<br />_________</th>
-			</tr>
-			<tr>
-				<th class="tab" scope="row"><a asp-area="" asp-page="Search/Search">Search</a></th>
-			</tr>
-			<tr>
-				<th class="tab" scope="row"> <a asp-area="" asp-page="AddClient/AddClient">Add/Edit Client</a></th>
+        <table class="ribbon">
+            <tr>
+                <th class="welcome" scope="row">Welcome<br />_________</th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"><a asp-area="" asp-page="Search/Search">Search</a></th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> <a asp-area="" asp-page="AddClient/AddClient">Add/Edit Client</a></th>
 
-			</tr>
-			<tr>
-				<th class="tab" scope="row"> <a asp-area="" asp-page="About/About">About Sup</a></th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> <a asp-area="" asp-page="AddUser/AddUser">Add User</a></th>
 
-			</tr>
-			<tr>
-				<th scope="row" rowspan="2" height="50%">&nbsp;</th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> <a asp-area="" asp-page="About/About">About Sup</a></th>
 
-			</tr>
-			<tr>
-			</tr>
-			<tr>
-				<form>
-					<th class="tab" scope="row"> <a asp-area="" asp-page="Login/Login" onclick="if(confirm('Do you want to logout?')==false)return false;">Logout</a></th>
-				</form>
-			</tr>
-			<tr>
-				<form>
-					<th class="tab" scope="row"> <a asp-area="" asp-page="Login/AttemptLogin">For Testing</a></th>
-				</form>
-			</tr>
-		</table>
+            </tr>
+            <tr>
+                <th scope="row" rowspan="2" height="50%">&nbsp;</th>
+
+            </tr>
+            <tr>
+            </tr>
+            <tr>
+                <form>
+                    <th class="tab" scope="row"> <a asp-area="" asp-page="Login/Login" onclick="if(confirm('Do you want to logout?')==false)return false;">Logout</a></th>
+                </form>
+            </tr>
+            <tr>
+                <form>
+                    <th class="tab" scope="row"> <a asp-area="" asp-page="Login/AttemptLogin">For Testing</a></th>
+                </form>
+            </tr>
+        </table>
 	</body>
 </html>
