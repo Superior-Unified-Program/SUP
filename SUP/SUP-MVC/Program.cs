@@ -14,7 +14,6 @@ namespace SUP_MVC
 	{
 		public static void Main(string[] args)
         {
-            Merge.newMerge();
             CreateHostBuilder(args).Build().Run();
 		}
 

@@ -12,7 +12,8 @@ namespace SUP_Library
 {
     public class ExportFile
     {
-        public static void CreateExcelFile(List<Client> clientList)
+        #region Old Export
+        public static void CreateExcelFileOld(List<Client> clientList)
         {
             #region Setup new Excel File
 
@@ -93,8 +94,8 @@ namespace SUP_Library
             }
             eWorkSheet.Columns.AutoFit();
         }
-
-        public static void CreateExcelFile2(List<Client> clientList, out string fileName)
+        #endregion
+        public static void CreateExcelFile(List<Client> clientList, out string fileName)
         {
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             //string savePath = @"C:\Users\%USERNAME%\Documents\SUPExport";

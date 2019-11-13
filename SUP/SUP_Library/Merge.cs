@@ -139,6 +139,7 @@ namespace SUP_Library
                 ref matchSoundsLike, ref matchAllWordForms, ref forward, ref wrap, ref format, ref replaceText,
                 ref replace, ref matchKashida, ref matchDiacritics, ref matchAlefHamza, ref matchControl);
         }
+        #endregion
 
         private static string replaceValue(Client client, string match)
         {
@@ -179,6 +180,9 @@ namespace SUP_Library
                 case "phone":
                     r = client.Phone?.Business_Phone;
                     break;
+                case "date":
+                    r = DateTime.Now.Month.ToString("MM") + " " + DateTime.Now.Day + " " + DateTime.Now.Year;
+                    break;
                 default:
                     r = "";
                     break;
@@ -190,13 +194,11 @@ namespace SUP_Library
         private static string createFileFromTemplate(string templateName, Client client)
         {
             string templatePath = @"C:\Users\Public\Documents\Templates";
-            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            string savePath = @"C:\Users\Public\Documents\SUPMerge";
             string fileName = templateName.Substring(0,templateName.Length-4) + client.First_Name + client.Last_Name + 
                 "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".docx";
-            if (!Directory.Exists(savePath))
-            {
-                Directory.CreateDirectory(savePath);
-            }
+            if (!Directory.Exists(templatePath)) return null;
+            if (!Directory.Exists(savePath)) Directory.CreateDirectory(savePath);
             try
             {
                 File.Copy(templatePath + "\\" + templateName, savePath + "\\" + fileName);

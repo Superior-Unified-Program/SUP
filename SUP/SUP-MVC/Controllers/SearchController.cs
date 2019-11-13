@@ -157,7 +157,9 @@ namespace SUP_MVC.Controllers
                 }
 
                 string fileName;
-                ExportFile.CreateExcelFile2(clientArray, out fileName);
+                ExportFile.CreateExcelFile(clientArray, out fileName);
+                List<string> fileNameList;
+                Merge.merge(clientArray, "Guest_Parking_Letter_Template.docx", out fileNameList);
                 /*
                 using (WebClient client = new WebClient())
                 {
