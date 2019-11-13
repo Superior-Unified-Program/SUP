@@ -157,9 +157,16 @@ namespace SUP_MVC.Controllers
                 }
 
                 string fileName;
-                ExportFile.CreateExcelFile(clientArray, out fileName);
-                List<string> fileNameList;
-                Merge.merge(clientArray, "Guest_Parking_Letter_Template.docx", out fileNameList);
+                ExportFile.CreateExcelFile2(clientArray, out fileName);
+
+                // Test guest parking template letter if placed in template folder in c:\users\public\documents\templates
+                // Using opening and closing tokens < > and search fields defined in spec document such as <firstname> and <lastname>
+                //List<string> templateNames = Merge.getTemplateNames();
+                //string zipfile;
+                //if (templateNames.Count>=1)
+                //    Merge.merge(clientArray, templateNames[0], out zipfile);
+                
+
                 /*
                 using (WebClient client = new WebClient())
                 {
@@ -173,7 +180,8 @@ namespace SUP_MVC.Controllers
                 //  The below line is meaningless until then.
                 var json = JsonConvert.SerializeObject(fileName);
                 return json;
-                
+
+          
             }
             catch (Exception e)
             {
