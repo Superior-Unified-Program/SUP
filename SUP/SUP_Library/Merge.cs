@@ -10,6 +10,9 @@ using SUP_Library.DBComponent;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Text.RegularExpressions;
+using System.Globalization;
+using System.IO.Compression;
+
 
 namespace SUP_Library
 {
@@ -26,6 +29,9 @@ namespace SUP_Library
     }
     public class Merge
     {
+        private const string templatePath = @"C:\Users\Public\Documents\Templates";
+        private const string savePath = @"C:\Users\Public\Documents\SUPExport\TEMP";
+        private const string zipPath = @"C:\Users\Public\Documents\SUPExport";
         private struct token
         {
             public string open;
@@ -152,7 +158,7 @@ namespace SUP_Library
             {
                 case "firstname":
                     r = client.First_Name;
-                    Console.WriteLine("Attempting to replace first name..");
+                   // Console.WriteLine("Attempting to replace first name..");
                     break;
                 case "lastname":
                     r = client.Last_Name;
@@ -184,6 +190,12 @@ namespace SUP_Library
                 case "phone":
                     r = client.Phone?.Business_Phone;
                     break;
+                case "date":
+                    CultureInfo info = new CultureInfo( "en-US",false );
+                    r = info.DateTimeFormat.GetMonthName(DateTime.Now.Month);
+                    r += " " + DateTime.Now.Day;
+                    r += ", " + DateTime.Now.Year;
+                    break;
                 default:
                     r = "";
                     break;
@@ -194,10 +206,14 @@ namespace SUP_Library
 
         private static string createFileFromTemplate(string templateName, Client client)
         {
-            string templatePath = @"C:\Users\Public\Documents\Templates";
-            string savePath = @"C:\Users\Public\Documents\SUPExport";
+          
             string fileName = templateName.Substring(0,templateName.Length-4) + client.First_Name + client.Last_Name + 
                 "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".docx";
+
+            if (!Directory.Exists(zipPath))
+            {
+                Directory.CreateDirectory(zipPath);
+            }
             if (!Directory.Exists(savePath))
             {
                 Directory.CreateDirectory(savePath);
@@ -213,10 +229,24 @@ namespace SUP_Library
             return savePath + "\\" + fileName;
 
         }
-
-        public static void merge(List<Client> clientList, string template, out List<string> fileNames)
+        public static string compress(string templateName)
         {
-            fileNames = new List<string>();
+            //string startPath = @".\start";
+
+            string zipShortName = templateName.Substring(0, templateName.Length - 4);
+
+            string zipPathLong = zipPath + @"\" + zipShortName + ".zip";
+                //= @".\result.zip";
+            //string extractPath = @".\extract";
+            ZipFile.CreateFromDirectory(savePath, zipPathLong);
+
+            return zipPathLong;
+            //ZipFile.ExtractToDirectory(zipPath, extractPath);
+        }
+        public static void merge(List<Client> clientList, string template, out string exportFile)
+        //    , out List<string> fileNames)
+        {
+            List<String> fileNames = new List<string>();
             bool searched = false;
             MatchCollection mc;
             List<MergeResult> matches=new List<MergeResult>();
@@ -279,6 +309,19 @@ namespace SUP_Library
                     }
                 }
     
+            }
+
+
+            exportFile = compress(template);
+            deleteTempFiles(fileNames);
+            
+
+        }
+        private static void deleteTempFiles(List<string> files)
+        {
+            for (int i = 0; i<files.Count; i++)
+            {
+                File.Delete(files[i]);
             }
         }
 
