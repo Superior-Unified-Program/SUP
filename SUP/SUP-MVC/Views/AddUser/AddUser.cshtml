@@ -1,0 +1,69 @@
+﻿@model SUP_MVC.Models.AddUser.AddUserViewModel
+
+@{
+    ViewData["Title"] = "AddUser";
+}
+
+<head>
+    <meta charset="utf-8" />
+    <title>Add User</title>
+</head>
+<style>
+    .box {
+        display: -webkit-flex;
+        display: flex;
+        -webkit-align-items: center;
+        align-items: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        padding-top: 10%
+    }
+
+    .input {
+        height: 40px;
+        border-radius: 5px;
+        outline: none;
+        border-top-style: groove;
+        border-right-style: groove;
+        border-bottom-style: groove;
+        border-left-style: groove;
+        border: 1px solid #a1a1a1;
+        line-height: : 50%;
+    }
+</style>
+<script>
+    function Check() {
+        var passwd1 = document.pw.pw1.value;
+        var passwd2 = document.pw.pw2.value;
+
+        if (passwd1 != passwd2) {
+            document.pw.infor.innerText = "Your new password and confirmed new password do not match! Please enter again!";
+            document.pw.pw1.innerText = "";
+            document.pw.pw2.innerText = "";
+        } else {
+            document.pw.infor.innerText = "";
+        }
+    }
+</script>
+
+
+    <body>
+        <form name="pw">
+            <div class="box">
+                <ul>
+                    <div>User name*<input class="Username" type="text" placeholder="" required style="width: 45px" tabindex="1"></div>
+
+                    <div>Password*<input type="Password" name="pw1" class="Password" value="" required tabindex="2"></div>
+
+
+                    <div>Confirm Password*<input type="Password" name="pw2" class="Passwordconfirm" value="" required tabindex="3" onblur="Check()"> <input width=500 type="text" style="color: red; border-style: solid; border-width:0" name="infor" readonly /></div>
+
+
+                    <div>User type*<input type="text" class="Usertype" placeholder="" style="width: 35px" tabindex="4"></div>
+                    <div>Office*<input type="text" class="Office" placeholder="" style="width: 35px" tabindex="5"></div>
+                    <div><button type="submit" class="" value="Save">Save</button></div>
+                </ul>
+            </div>
+        </form>
+    </body>
+

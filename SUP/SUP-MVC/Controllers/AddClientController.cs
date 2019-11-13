@@ -110,8 +110,8 @@ namespace SUP_MVC.Controllers
                 return "FAAAAAILLL";
             }
         }
-
-
+        
+        
         // POST: AddClient/UpdateClient
         [HttpPost]
         public int UpdateClient([FromBody] string args)
@@ -146,9 +146,9 @@ namespace SUP_MVC.Controllers
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    if (MiddleInitial?.Length >= 1)
+                    /*if (MiddleInitial?.Length >= 1)
                     {
-                        Client.Middle_initial = MiddleInitial[0];
+                        Client.Middle_initial = MiddleInitial.Substring(0,1);
                     }
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
@@ -202,7 +202,7 @@ namespace SUP_MVC.Controllers
                 return -1;
             }
         }
-
+        
         public ActionResult AddClient()
 		{
 			return View();

@@ -8,7 +8,8 @@
 	<meta charset="utf-8">
 	<title>Search</title>
 	<style>
-		.tableHeader {
+		.tableHeader 
+        {
 			width: 100%;
 			text-align: center;
 			font-size: large;
@@ -17,31 +18,38 @@
 			height: 45px;
 			padding-top: 20px;
 		}
-		.row {
+		.row 
+        {
 			width: 100%;
 		}
-		.cell {
+		.cell 
+        {
 			width: 25%;
 			text-align: left;
 		}
-		.noteCell {
+		.noteCell 
+        {
 			width: 50%;
 			text-align: left;
 		}
-		.activeCell {
+		.activeCell 
+        {
 			width: 25%;
 			text-align: left;
 		}
-		.saveEditCell {
+		.saveEditCell 
+        {
 			width: calc(100% - 50px);
 			text-align: right;
 			padding-top: 10px;
 			padding-right: 20px;
 		}
-		textarea {
+		textarea 
+        {
 			width: calc(100% - 50px - 35px);
 		}
-		.breakLine {
+		.breakLine 
+        {
 			margin-left: -10%;
 			padding-top: 0px;
 			padding-top: 0px;
@@ -51,11 +59,13 @@
 	</style>
 	<script language="javascript">
 
-        function toggleEdit() {
+        function toggleEdit()
+        {
             console.log($("input[type='text']"))
             $("input[type='text']").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true) {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                     $(".saveButton").prop('value', "Save");
                     $(".saveButton").unbind('click').click(function () {
@@ -70,51 +80,71 @@
                     });
                 }
             });
-            $("textarea").each(function () {
-                if ($(this).prop('disabled') == true) {
+            $(".activeInput").each(function ()
+            {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                 }
                 else {
+                    $(this).prop('disabled', true);
+                }
+            });
+            $("textarea").each(function () {
+                if ($(this).prop('disabled') == true)
+                {
+                    $(this).prop('disabled', false);
+                }
+                else
+                {
                     $(this).prop('disabled', true);
                 }
             });
             $("select").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true) {
+                if ($(this).prop('disabled') == true)
+                {
                     $(this).prop('disabled', false);
                 }
-                else {
+                else
+                {
                     $(this).prop('disabled', true);
                 }
             });
         }
         setTimeout(function () {
-            if (getClientIdFromURL()) {
+            if (getClientIdFromURL())
+            {
                 toggleEdit();
             }
         }, 100);
 
-		function check() {
+        function check()
+        {
 			var email = document.getElementbyid("email");
 			if (!email.checkValidity())
 				email.setCustomvalidity("Please enter the right email format!");
         }
 
-        function getClientIdFromURL() {
+        function getClientIdFromURL()
+        {
             var args = location.href.split('?');
             console.log(args);
             var params = "";
-            if (args.length > 1) {
+            if (args.length > 1)
+            {
                 params = args[1].split('=');
                 console.log(params);
             }
             var clientId = "";
-            if (params.length > 1) {
+            if (params.length > 1)
+            {
                 clientId = params[1];
                 console.log(clientId);
             }
 
-            if (clientId != "") {
+            if (clientId != "")
+            {
                 loadClientData(clientId);
                 return true;
             }
@@ -123,7 +153,15 @@
             });
             return false;
         }
-        function loadClientData(clientId) {
+
+        function selectElement(id, valueToSelect)
+        {    
+            let element = document.getElementById(id);
+            element.value = valueToSelect;
+        }
+
+        function loadClientData(clientId)
+        {
             console.log(clientId);
             var dataPost = clientId;
             $.ajax({
@@ -139,12 +177,23 @@
                     var currentClient = returnedData;
                     var firstName = currentClient["First_Name"];
                     var lastName = currentClient["Last_Name"];
+                    var assistantsFirstName = currentClient["Assistant_First_Name"];
+                    var assistantsLastName = currentClient["Assistant_Last_Name"];
                     var middleinitial = currentClient["Middle_initial"];
+                    var prefix = currentClient["Prefix"];
                     var organization = currentClient["Org"];
                     if (currentClient['Email'] != null)
-                        $('.emailInput').val(currentClient['Email']['Email']);
+                        $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
+                    if (currentClient['Email'] != null)
+                        $('.businessEmailInput').val(currentClient['Email']['Business_Email']);
+                    if (currentClient['Email'] != null)
+                        $('.assistantEmailInput').val(currentClient['Email']['Assistant_Email']);
                     if (currentClient['Phone'] != null)
-                        $('.phoneInput').val(currentClient['Phone']['Number']);
+                        $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone']);
+                    if (currentClient['Phone'] != null)
+                        $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone']);
+                    if (currentClient['Phone'] != null)
+                        $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
                     if (currentClient['Org'] != null) {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
@@ -170,7 +219,15 @@
                     $('.firstNameInput').val(firstName);
                     $('.middleInitialInput').val(middleinitial);
                     $('.lastNameInput').val(lastName);
-                    if (isActive) {
+                    $('.assistantFirstNameInput').val(assistantsFirstName);
+                    $('.assistantLastNameInput').val(assistantsLastName);
+                    $('.prefixInput').val(prefix);
+
+                    //selectElement('leaveCode', '11')
+
+
+                    if (isActive)
+                    {
                         console.log(isActive);
                         $(".activeInput").prop( "checked", true );
                     }
@@ -186,16 +243,19 @@
             location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
 
-        function saveClientData() {
+        function saveClientData()
+        {
             var args = location.href.split('?');
             console.log(args);
             var params = "";
-            if (args.length > 1) {
+            if (args.length > 1)
+            {
                 params = args[1].split('=');
                 console.log(params);
             }
             var clientId = "";
-            if (params.length > 1) {
+            if (params.length > 1)
+            {
                 clientId = params[1];
                 console.log(clientId);
             }
@@ -245,129 +305,127 @@
 <body>
 	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
 		<form action="" method="get" id="client_info" onchange="submitForm();" onsubmit="return check()">
-			<div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
-				<div class="tableHeader">Client Information</div>
-				<div class="row">
-					<div class="cell">Prefix<br /><input type="text" placeholder="" style="width: 45px" tabindex="1"></div>
-					<div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
-					<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
-					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
-				</div>
-				<div class="row">
-					<div class="cell"></div>
-					<div class="cell">Assistant's First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
-					<div class="cell">Assistant's Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
-				</div>
-				<hr class="breakLine" />
-				<div class="row">
-					<div class="cell">
-						Organization Type*<br />
-						<select name="Organization" class="organizationInput" size="1" required tabindex="5">
-							<option value=""></option>
-							<option value="business">Business</option>
-							<option value="electedOfficial">Elected Official</option>
-							<option value="educationAll">Education - All</option>
-							<option value="elementary">Elementary</option>
-							<option value="middle">Middle</option>
-							<option value="highSchool">High School</option>
-							<option value="higherEd">Higher Ed.</option>
-							<option value="nonProfit">Non-profit</option>
-							<option value="UWSystem">UW-System</option>
-							<option value="boardOfRegent">Board of Regent</option>
-							<option value="advancement">Advancement</option>
-							<option value="other">Other</option>
-						</select>
-					</div>
-					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
-					<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
-				</div>
-				<div class="tableHeader">Contact Information</div>
-				<div class="row">
-					<div class="cell">Address Line1*<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" required tabindex="8"></div>
-					<div class="cell">City*<br /><input class="cityInput" type="text" placeholder="City" required tabindex="10"></div>
-					<div class="cell">
-						State<br /><select class="stateInput" name="state" tabindex="11">
-							<option value=""></option>
-							<option value="AL">Alabama</option>
-							<option value="AK">Alaska</option>
-							<option value="AZ">Arizona</option>
-							<option value="AR">Arkansas</option>
-							<option value="CA">California</option>
-							<option value="CO">Colorado</option>
-							<option value="CT">Connecticut</option>
-							<option value="DE">Delaware</option>
-							<option value="DC">District Of Columbia</option>
-							<option value="FL">Florida</option>
-							<option value="GA">Georgia</option>
-							<option value="HI">Hawaii</option>
-							<option value="ID">Idaho</option>
-							<option value="IL">Illinois</option>
-							<option value="IN">Indiana</option>
-							<option value="IA">Iowa</option>
-							<option value="KS">Kansas</option>
-							<option value="KY">Kentucky</option>
-							<option value="LA">Louisiana</option>
-							<option value="ME">Maine</option>
-							<option value="MD">Maryland</option>
-							<option value="MA">Massachusetts</option>
-							<option value="MI">Michigan</option>
-							<option value="MN">Minnesota</option>
-							<option value="MS">Mississippi</option>
-							<option value="MO">Missouri</option>
-							<option value="MT">Montana</option>
-							<option value="NE">Nebraska</option>
-							<option value="NV">Nevada</option>
-							<option value="NH">New Hampshire</option>
-							<option value="NJ">New Jersey</option>
-							<option value="NM">New Mexico</option>
-							<option value="NY">New York</option>
-							<option value="NC">North Carolina</option>
-							<option value="ND">North Dakota</option>
-							<option value="OH">Ohio</option>
-							<option value="OK">Oklahoma</option>
-							<option value="OR">Oregon</option>
-							<option value="PA">Pennsylvania</option>
-							<option value="RI">Rhode Island</option>
-							<option value="SC">South Carolina</option>
-							<option value="SD">South Dakota</option>
-							<option value="TN">Tennessee</option>
-							<option value="TX">Texas</option>
-							<option value="UT">Utah</option>
-							<option value="VT">Vermont</option>
-							<option value="VA">Virginia</option>
-							<option value="WA">Washington</option>
-							<option value="WV">West Virginia</option>
-							<option value="WI">Wisconsin</option>
-							<option value="WY">Wyoming</option>
-						</select>
-					</div>
-					<div class="cell">Zipcode *<br /><input class="zipInput" type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
-				</div>
-				<div class="row">
-					<div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="9"></div>
-				</div>
-				<hr class="breakLine" />
-				<div class="row">
-					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="14"></div>
-					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
-					<div class="cell">Business Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
-					<div class="cell">Business Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
-				</div>
-				<div class="row">
-					<div class="cell">Assistant's Email*<br /><input type="text" class="firstNameInput" placeholder="" required tabindex="2"></div>
-					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="lastNameInput" placeholder="" required tabindex="3"></div>
-				</div>
-				<div class="tableHeader">Miscellaneous</div>
-				<div class="row">
-					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Permit*<br /><input class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
-					<div class="noteCell">
-						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
-						</div>
-						<div class="row">
-							<div class="saveEditCell"><input type="button" class="saveButton" value="Save" id="button" tabindex="21"></div>
-						</div>
-					</div>
+            <div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
+                <div class="tableHeader">Client Information</div>
+                <div class="row">
+                    <div class="cell">Prefix<br /><input class="prefixInput" type="text" placeholder="" style="width: 45px" tabindex="1"></div>
+                    <div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
+                    <div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+                    <div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
+                </div>
+                <hr class="breakLine" />
+                <div class="row">
+                    <div class="cell">
+                        Organization Type*<br />
+                        <select id="organizationInput" name="Organization" class="organizationInput" size="1" required tabindex="5">
+                            <option value="">All</option>
+                            <option value="business">Business</option>
+                            <option value="electedOfficial">Elected Official</option>
+                            <option value="educationAll">Education - All</option>
+                            <option value="elementary">Elementary</option>
+                            <option value="middle">Middle</option>
+                            <option value="highSchool">High School</option>
+                            <option value="higherEd">Higher Ed.</option>
+                            <option value="nonProfit">Non-profit</option>
+                            <option value="UWSystem">UW-System</option>
+                            <option value="boardOfRegent">Board of Regent</option>
+                            <option value="advancement">Advancement</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
+                    <div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
+                </div>
+                <div class="tableHeader">Contact Information</div>
+                <div class="row">
+                    <div class="cell">Address Line1*<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" required tabindex="8"></div>
+                    <div class="cell">City*<br /><input class="cityInput" type="text" placeholder="City" required tabindex="10"></div>
+                    <div class="cell">
+                        State<br /><select class="stateInput" name="state" tabindex="11">
+                            <option value=""></option>
+                            <option value="AL">Alabama</option>
+                            <option value="AK">Alaska</option>
+                            <option value="AZ">Arizona</option>
+                            <option value="AR">Arkansas</option>
+                            <option value="CA">California</option>
+                            <option value="CO">Colorado</option>
+                            <option value="CT">Connecticut</option>
+                            <option value="DE">Delaware</option>
+                            <option value="DC">District Of Columbia</option>
+                            <option value="FL">Florida</option>
+                            <option value="GA">Georgia</option>
+                            <option value="HI">Hawaii</option>
+                            <option value="ID">Idaho</option>
+                            <option value="IL">Illinois</option>
+                            <option value="IN">Indiana</option>
+                            <option value="IA">Iowa</option>
+                            <option value="KS">Kansas</option>
+                            <option value="KY">Kentucky</option>
+                            <option value="LA">Louisiana</option>
+                            <option value="ME">Maine</option>
+                            <option value="MD">Maryland</option>
+                            <option value="MA">Massachusetts</option>
+                            <option value="MI">Michigan</option>
+                            <option value="MN">Minnesota</option>
+                            <option value="MS">Mississippi</option>
+                            <option value="MO">Missouri</option>
+                            <option value="MT">Montana</option>
+                            <option value="NE">Nebraska</option>
+                            <option value="NV">Nevada</option>
+                            <option value="NH">New Hampshire</option>
+                            <option value="NJ">New Jersey</option>
+                            <option value="NM">New Mexico</option>
+                            <option value="NY">New York</option>
+                            <option value="NC">North Carolina</option>
+                            <option value="ND">North Dakota</option>
+                            <option value="OH">Ohio</option>
+                            <option value="OK">Oklahoma</option>
+                            <option value="OR">Oregon</option>
+                            <option value="PA">Pennsylvania</option>
+                            <option value="RI">Rhode Island</option>
+                            <option value="SC">South Carolina</option>
+                            <option value="SD">South Dakota</option>
+                            <option value="TN">Tennessee</option>
+                            <option value="TX">Texas</option>
+                            <option value="UT">Utah</option>
+                            <option value="VT">Vermont</option>
+                            <option value="VA">Virginia</option>
+                            <option value="WA">Washington</option>
+                            <option value="WV">West Virginia</option>
+                            <option value="WI">Wisconsin</option>
+                            <option value="WY">Wyoming</option>
+                        </select>
+                    </div>
+                    <div class="cell">Zipcode *<br /><input class="zipInput" type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
+                </div>
+                <div class="row">
+                    <div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="9"></div>
+                </div>
+                <hr class="breakLine" />
+                <div class="row">
+                    <div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="14"></div>
+                    <div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
+                    <div class="cell">Business Email address*<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
+                    <div class="cell">Business Phone Number<br /><input class="businessPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+                </div>
+                <div class="tableHeader">Assistant's Information</div>
+                <div class="row">
+                    <div class="cell">Assistant's First Name*<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" required tabindex="2"></div>
+                    <div class="cell">Assistant's Last Name*<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" required tabindex="3"></div>
+                    <div class="cell">Assistant's Email*<br /><input type="text" class="assistantEmailInput" placeholder="" required tabindex="2"></div>
+                    <div class="cell">Assistant's Phone Number*<br /><input type="text" class="assistantPhoneInput" placeholder="" required tabindex="3"></div>
+                </div>
+                <div class="tableHeader">Miscellaneous</div>
+                <div class="row">
+                    <div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
+                    <div class="cell">Permit*<br /><input type="text" class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+                    <div class="noteCell">
+                        Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
+                        </div>
+                        <div class="row">
+                            <div class="saveEditCell"><input type="button" class="saveButton" value="Save" id="button" tabindex="21"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
 </form>

@@ -5,6 +5,30 @@
 	Layout = null;
 }
 
+<script>
+    function Login() {       
+        var username = $('.bt_username').val();
+        var password = $('.bt_password').val();
+
+        var dataPost = username + ',' + password;
+        $.ajax({
+            url: '/Login/AuthenticateUser',
+            type: 'POST',
+            data: JSON.stringify(dataPost),
+            contentType: 'application/json; charset=utf-8',
+            error: function (xhr) {
+                
+                console.log('testfail');
+            },
+			success: function (result) {
+                console.log(result);
+            },
+            async: true,
+            processData: false
+        });
+    }
+</script>
+
 <head>
 	<title>Login</title>
 	<meta http-equive="Content-Type" charset="utf-8">
@@ -31,11 +55,11 @@
 		<form>
 			<img src="../../logo.jpg" />
 			<br />
-			<p><h7>Username:&nbsp;</h7><input type="name" class="bt_username" style="height:30px;width:200px;" /></p>
+			<p><h7>Username:&nbsp;</h7><input type="text" class="bt_username" style="height:30px;width:200px;" /></p>
 			<p><h7>Password:&nbsp;&nbsp;</h7><input type="password" class="bt_password" style="height:30px;width:200px;" /></p>
 			<p></p><a id="error"></a></p>
 			<br />
-			<button type="login" style="display:inline" class="login_but" onclick="Login()"><h7>Login</h7></button>
+			<input type="button" style="display:inline" class="login_but" onclick="Login()" value="Login"/>
 		</form>
 	</div>
 

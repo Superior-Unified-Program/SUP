@@ -169,23 +169,53 @@ namespace SUP_Library
 
                 Row row = new Row();
                 row.RowIndex = 1;
-                row.AppendChild(AddCellWithText("First Name"));
+				row.AppendChild(AddCellWithText("Prefix"));
+				row.AppendChild(AddCellWithText("First Name"));
                 row.AppendChild(AddCellWithText("Last Name"));
-                row.AppendChild(AddCellWithText("Category"));
-                row.AppendChild(AddCellWithText("Email"));
-                row.AppendChild(AddCellWithText("Phone#"));
-                sheetData.AppendChild(row);
+				row.AppendChild(AddCellWithText("Middle Initial"));
+				row.AppendChild(AddCellWithText("Address Line 1"));
+				row.AppendChild(AddCellWithText("Address Line 2"));
+				row.AppendChild(AddCellWithText("City"));
+				row.AppendChild(AddCellWithText("State"));
+				row.AppendChild(AddCellWithText("Zip"));
+				row.AppendChild(AddCellWithText("Category"));
+				row.AppendChild(AddCellWithText("Title"));
+				row.AppendChild(AddCellWithText("Business Email"));
+				row.AppendChild(AddCellWithText("Personal Email"));
+				row.AppendChild(AddCellWithText("Business Phone"));
+				row.AppendChild(AddCellWithText("Personal Phone"));
+				row.AppendChild(AddCellWithText("Assistant's First Name"));
+				row.AppendChild(AddCellWithText("Assistant's Last Name"));
+				row.AppendChild(AddCellWithText("Assistant's Email"));
+				row.AppendChild(AddCellWithText("Assistant's Phone"));
+				row.AppendChild(AddCellWithText("Permit Number"));
+				sheetData.AppendChild(row);
 
-                for (int i = 2; i < clientList.Count; i++)
+                for (int i = 2; i < clientList.Count+2; i++)
                 {
                     Row newRow = new Row();
                     newRow.RowIndex = (UInt32)i;
-                    newRow.AppendChild(AddCellWithText(clientList[i-2].First_Name));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Prefix));
+					newRow.AppendChild(AddCellWithText(clientList[i-2].First_Name));
                     newRow.AppendChild(AddCellWithText(clientList[i-2].Last_Name));
-                    newRow.AppendChild(AddCellWithText(clientList[i-2].Org.Org_Name));
-                    newRow.AppendChild(AddCellWithText(clientList[i-2].Email.Email));
-                    newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Number));
-                    sheetData.AppendChild(newRow);
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Middle_initial));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.Line1));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.Line2));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.City));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.State));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.Zip));
+					newRow.AppendChild(AddCellWithText(clientList[i-2].Org.Org_Name));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Org.Title));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Email.Business_Email));
+					newRow.AppendChild(AddCellWithText(clientList[i-2].Email.Personal_Email));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Business_Phone));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Personal_Phone));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Assistant_First_Name));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Assisntant_Last_Name));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Email.Assistant_Email));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Assistant_Phone));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Permit_Num));
+					sheetData.AppendChild(newRow);
                 }
 
                 wbPart.Workbook.Sheets.AppendChild(sheet);

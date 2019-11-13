@@ -105,6 +105,36 @@
             padding:10px;
 
         }
+
+		.flex-colum {
+		align-content:center;
+		overflow: auto;
+		width: 10.5%;
+        overflow: hidden; 
+		}
+
+		.flex-email {
+        align-content:center;
+		overflow: auto;
+		width: 15.7%;
+        overflow: hidden; 
+		}
+
+        .yellowizedSelect {
+            box-shadow: inset 0px 1px 0px 0px #fcf6cf;
+            background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
+            background-color: #edf035;
+            border: 1px solid #241e19;
+            display: inline-block;
+            cursor: pointer;
+            color: #2e1813;
+            font-family: Arial;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 3px;
+            text-decoration: none;
+        }
+
                  
         .auto_hidden {
             width: 200px;
@@ -169,10 +199,6 @@
             background-color: #d1c060;
         }
 
-        .yellowizedButton:active {
-            position: relative;
-            top: 1px;
-        }
 
         .yellowizedTextField {
             display: inline-block;
@@ -865,12 +891,12 @@
         <p class="lastNameTemplate"></p>
     </div>
     <div id="mainWindow">
-        <div style="position:relative; margin-left: 25%; width: 75%;" align="left">
+        <div style="width: 80%; margin-left: 10%;" align="right">
             <form>
                 <div class="flex-container">
                     <div class="sidebar-left">
                         <a>First Name</a><br />
-                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name">
+                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
                         <div class="auto_hidden" id="auto"></div>
                         <script>
                             var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
@@ -878,7 +904,7 @@
                     </div>
                     <div class="sidebar-middle">
                         <a>Last Name</a><br />
-                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name">
+                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
                         <div class="auto_hidden" id="autoLastName"></div>
                         <script>
                             var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
@@ -887,7 +913,7 @@
 
                     <div class="sidebar-right">
                         <a>Organization Type</a><br />
-                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category">
+                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category" style="width:100%">
                             <!--We need to keep an empty option to allow searches that do not include organization-->
                             <option value=""></option>
                             <option value="business">Business</option>
@@ -908,52 +934,41 @@
                 </div>
 
             </form>
-            <div style="float:left; margin-left: calc(10% + 180px);">
+            <div style="float:left; margin-left: 45%;">
                 <p style="float:left;">Display Inactive: </p>
                 <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
             </div>
         </div>
-        <table style="float:left; position:relative; margin-left: calc(10% - 7px); left: -15px">
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td colspan="2">
-                        <a href="javascript:allCheck('choice',true)">Select</a>
-                        <a href="javascript:allCheck('choice',false)">No select</a>
-                        <a href="javascript:reserveCheck('choice')"> Inverse</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="width: 183px">
-                        <p><b>First Name</b></p>
-                    </td>
-                    <td style="width: 186px">
-                        <p><b>Last Name</b></p>
-                    </td>
-                    <td style="width: 185px">
-                        <p><b>Job Title</b></p>
-                    </td>
-                    <td style="width: 182px">
-                        <p><b>Organization Name</b></p>
-                    </td>
-                    <td style="width: 182px">
-                        <p><b>Email</b></p>
-                    </td>
-                    <td style="width: 188px">
-                        <p><b>Phone #</b></p>
-                    </td>
-                    <td>
-                        <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="flex-colum" style="width: 14.3%; float: right; margin-right: 9.8%;margin-left: 75.9%;">
+            <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
+            <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
+            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect"> Inverse</a>
+        </div>
+        <div class="flex-colum" style="width: 3.4%; float: left; margin-left: 10%; border: 1px solid black; visibility:hidden;">
+            <p></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%; float: left;">
+            <p><b>First Name</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%; float: left;">
+            <p><b>Last Name</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%;float: left;">
+            <p><b>Job Title</b></p>
+        </div>
+        <div class="flex-colum" style="width: 12.5%;float: left;">
+            <p><b>Organization Name</b></p>
+        </div>
+        <div class="flex-email" style="width: 12.5%;float: left;">
+            <p><b>Email</b></p>
+        </div>
+        <div class="flex-colum" style="float:right; width: 11.5%;float: left;">
+            <p><b>Phone #</b></p>
+        </div>
+        <div class="flex-colum" style="float:right; width: 2.8%;float: left;">
+            <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
+        </div>
+
         <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
             <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
                 <tbody style="width:100%">
