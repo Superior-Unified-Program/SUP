@@ -89,10 +89,9 @@ namespace SUP_Library
 
         private static string createFileFromTemplate(string templateName, Client client)
         {
-          
-            string fileName = templateName.Substring(0,templateName.Length-4) + client.First_Name + client.Last_Name + 
-                "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".docx";
 
+            string fileName = templateName.Substring(0, templateName.Length - 5) + "_" + client.Last_Name + "_" + client.First_Name + ".docx";
+           
             if (!Directory.Exists(zipPath))
             {
                 Directory.CreateDirectory(zipPath);
@@ -114,9 +113,9 @@ namespace SUP_Library
         }
         public static string compress(string templateName)
         {
-            string zipShortName = templateName.Substring(0, templateName.Length - 4);
+            string zipShortName = templateName.Substring(0, templateName.Length - 5);
 
-            string zipPathLong = zipPath + @"\" + zipShortName + ".zip";
+            string zipPathLong = zipPath + @"\" + zipShortName + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".zip";
              
             ZipFile.CreateFromDirectory(savePath, zipPathLong);
 
@@ -199,6 +198,27 @@ namespace SUP_Library
                 File.Delete(files[i]);
             }
         }
+        public static List<string> getTemplateNames()
+        {
+            List<string> templateNames = new List<string>();
+            if (Directory.Exists(templatePath))
+            {
+               string[] tNames = Directory.GetFiles(templatePath, "*.docx");
+                foreach (string file in tNames)
+                {
+                    string[] fileSplit = file.Split('\\');
+                    string fileName = fileSplit[fileSplit.Length - 1];
+                    templateNames.Add(fileName);
+                }
+            }
+           
+            return templateNames;
+        }
+        public static string getTemplatePath()
+        {
+            return templatePath;
+        }
+
 
     }
 }
