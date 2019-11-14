@@ -61,14 +61,23 @@ namespace SUP_Library
                     var par = new DynamicParameters();
                     par.Add("@userName", theUsername);
                     par.Add("@givenPW", thePassword);
-                    par.Add("Valid_Login", 0, direction: ParameterDirection.ReturnValue);
+                    par.Add("Result", 0, direction: ParameterDirection.ReturnValue);
                     connection.Query(sql, par, commandType: CommandType.StoredProcedure);
-                    int cnt = par.Get<int>("Valid_Login");
-                    if (cnt > 0)
+
+                    var data = connection.Query<UserReturn>(sql,
+                               new { @userName = theUsername, @givenPW = thePassword }, commandType: CommandType.StoredProcedure).ToList();
+                    var resultingUser = data.FirstOrDefault();
+                    var isValid = resultingUser.Valid_Login;
+                    if (!isValid)
                     {
-                        return true;
+                        //TODO: Logic for incrementing user attempts, possibly lock user
+                        resultingUser.Failed_Attempts++;
+                        if (resultingUser.Failed_Attempts >= 3)
+                        {
+                            resultingUser.Account_Locked = true;
+                        }
                     }
-                    return false;
+                    return isValid;
                 }
             }
             catch (Exception exc)
