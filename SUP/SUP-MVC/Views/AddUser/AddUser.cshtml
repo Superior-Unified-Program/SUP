@@ -4,19 +4,19 @@
     ViewData["Title"] = "AddUser";
 }
 
-    <head>
-        <meta charset="utf-8" />
-        <title>Add User</title>
-        <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    </head>
+<head>
+    <meta charset="utf-8" />
+    <title>Add User</title>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</head>
 <style>
     .box {
         display: flex;
-        flex-direction:column;
-        position:relative;
-        padding-left:15%;
-        width:85%;
-  
+        flex-direction: column;
+        position: relative;
+        padding-left: 15%;
+        width: 85%;
+        justify-content: center;
     }
 
     .input {
@@ -28,52 +28,72 @@
         border-bottom-style: groove;
         border-left-style: groove;
         border: 1px solid #a1a1a1;
-        line-height:50%;
+        line-height: 50%;
     }
-    
+
     .cell {
-        padding-top:5px;
-        float:left;
-        line-height:30px;
-        margin-left:15%;    
+        padding-top: 5px;
+        float: left;
+        line-height: 30px;
+        margin-left: 15%;
+        text-align: left;
+        width: 25%;
     }
-   
 </style>
 <script>
-    function Check() {
-        var passwd1 = document.pw.pw1.value;
-        var passwd2 = document.pw.pw2.value;
 
-        if (passwd1 != passwd2) {
-            document.pw.infor.innerText = "Your new password and confirmed new password do not match! Please enter again!";
-            document.pw.pw1.innerText = "";
-            document.pw.pw2.innerText = "";
-        } else {
-            document.pw.infor.innerText = "";
+
+    function Check(form) {
+        var pw1 = form.pw1.value;
+        var pw2 = form.pw2.value;
+
+        if (pw1 == '') {
+            alert("Please enter password!");
+        }
+        else if (pw2 == '') {
+            alert("Please enter confirm password");
+        }
+        else if (pw1 != pw2) {
+            alert("\nPassword did not match! Please enter the right one!")
+            return false;
+        }
+        else {
+            return true;
         }
     }
+
 </script>
 
 
-    <body>
-        <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-            <form name="pw">
-                <div class="box">
+<body>
+    <div style="position: absolute; left: 25%; top: 10%; width: 85%;">
+        <form name="pw" onsubmit="return Check(this)">
 
-                    <div class="cell">User name*<input class="Username" type="text" placeholder="" required style="width: 45px" tabindex="1"></div>
-
-                    <div class="cell">Password*<input type="Password" name="pw1" class="Password" value="" required tabindex="2"></div>
-
-
-                    <div class="cell">Confirm Password*<input type="Password" name="pw2" class="Passwordconfirm" value="" required tabindex="3" onblur="Check()"> <input width=500 type="text" style="color: red; border-style: solid; border-width:0" name="infor" readonly /></div>
-
-
-                    <div class="cell">User type*<input type="text" class="Usertype" placeholder="" style="width: 35px" tabindex="4"></div>
-                    <div class="cell">Office*<input type="text" class="Office" placeholder="" style="width: 35px" tabindex="5"></div>
-                    <div class="cell"><button type="submit" class="" value="Save">Save</button></div>
-
+            <div class="box">
+                <div class="cell">User name*<br /><input class="Username" type="text" placeholder="" required></div>
+                <div class="cell">Password*<br /><input type="Password" name="pw1" placeholder="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" value="" required></div>
+                <div class="cell">Confirm Password*<br /><input type="Password" name="pw2" placeholder="confirm password" required> </div>
+                <div class="cell">
+                    User type*<br /><select class="Usertype" name="state" tabindex="11">
+                        <option value=""></option>
+                        <option value="admin">Administrator</option>
+                        <option value="standard">Standard</option>
+                    </select>
                 </div>
-            </form>
-        </div>
-    </body>
+                <div class="cell">
+                    Office*<br /><select class="Office" name="office" tabindex="11">
+                        <option value=""></option>
+                        <option value="CCEL">CCEL</option>
+                        <option value="CASL">CASL</option>
+                        <option value="Chancellor's">Chancellor's office</option>
+             
+                    </select>
+                </div>
+                <div class="cell"><button type="submit" class="submitNewUser">Save</button></div>
+            </div>
+
+        </form>
+
+    </div>
+</body>
 
