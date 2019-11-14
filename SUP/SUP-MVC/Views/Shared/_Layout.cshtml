@@ -216,31 +216,34 @@
 		<img class="logo" src="../../logo.jpg" />
 	</div>
 	<div id="ribbonDiv" style="height: 100%; position: absolute; top: 0; left: 0">
-		<table class="ribbon">
-			<tr>
-				<th class="welcome" scope="row">Welcome<br />_________</th>
-			</tr>
-			<tr>
-				<th class="tab" scope="row"> @Html.ActionLink("Search", "Search", new { controller = "Search" })</th>
-			</tr>
-			<tr>
-				<th class="tab" scope="row"> @Html.ActionLink("Add Client", "AddClient", new { controller = "AddClient" })</th>
+        <table class="ribbon">
+            <tr>
+                <th class="welcome" scope="row">Welcome<br />_________</th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> @Html.ActionLink("Search", "Search", new { controller = "Search" })</th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> @Html.ActionLink("Add Client", "AddClient", new { controller = "AddClient" })</th>
 
-			</tr>
-			<tr>
-				<th class="tab" scope="row"> @Html.ActionLink("About", "About", new { controller = "About" })</th>
-			</tr>
-			<tr>
-				<th scope="row" rowspan="2" height="50%">&nbsp;</th>
-			</tr>
-			<tr>
-			</tr>
-			<tr>
-				<form>
-					<th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" }, new { onclick = "return confirm('Are sure want to Logout?');" })</th>
-				</form>
-			</tr>
-		</table>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> @Html.ActionLink("Add User", "AddUser", new { controller = "AddUser" })</th>
+            </tr>
+            <tr>
+                <th class="tab" scope="row"> @Html.ActionLink("About", "About", new { controller = "About" })</th>
+            </tr>
+            <tr>
+                <th scope="row" rowspan="2" height="50%">&nbsp;</th>
+            </tr>
+            <tr>
+            </tr>
+            <tr>
+                <form>
+                    <th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" }, new { onclick = "return confirm('Are sure want to Logout?');" })</th>
+                </form>
+            </tr>
+        </table>
 	</div>
 
 

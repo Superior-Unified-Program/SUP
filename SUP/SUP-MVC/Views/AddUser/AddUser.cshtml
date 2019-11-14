@@ -4,19 +4,19 @@
     ViewData["Title"] = "AddUser";
 }
 
-<head>
-    <meta charset="utf-8" />
-    <title>Add User</title>
-</head>
+    <head>
+        <meta charset="utf-8" />
+        <title>Add User</title>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    </head>
 <style>
     .box {
-        display: -webkit-flex;
         display: flex;
-        -webkit-align-items: center;
-        align-items: center;
-        -webkit-justify-content: center;
-        justify-content: center;
-        padding-top: 10%
+        flex-direction:column;
+        position:relative;
+        padding-left:15%;
+        width:85%;
+  
     }
 
     .input {
@@ -28,8 +28,16 @@
         border-bottom-style: groove;
         border-left-style: groove;
         border: 1px solid #a1a1a1;
-        line-height: : 50%;
+        line-height:50%;
     }
+    
+    .cell {
+        padding-top:5px;
+        float:left;
+        line-height:30px;
+        margin-left:15%;    
+    }
+   
 </style>
 <script>
     function Check() {
@@ -48,22 +56,24 @@
 
 
     <body>
-        <form name="pw">
-            <div class="box">
-                <ul>
-                    <div>User name*<input class="Username" type="text" placeholder="" required style="width: 45px" tabindex="1"></div>
+        <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+            <form name="pw">
+                <div class="box">
 
-                    <div>Password*<input type="Password" name="pw1" class="Password" value="" required tabindex="2"></div>
+                    <div class="cell">User name*<input class="Username" type="text" placeholder="" required style="width: 45px" tabindex="1"></div>
 
-
-                    <div>Confirm Password*<input type="Password" name="pw2" class="Passwordconfirm" value="" required tabindex="3" onblur="Check()"> <input width=500 type="text" style="color: red; border-style: solid; border-width:0" name="infor" readonly /></div>
+                    <div class="cell">Password*<input type="Password" name="pw1" class="Password" value="" required tabindex="2"></div>
 
 
-                    <div>User type*<input type="text" class="Usertype" placeholder="" style="width: 35px" tabindex="4"></div>
-                    <div>Office*<input type="text" class="Office" placeholder="" style="width: 35px" tabindex="5"></div>
-                    <div><button type="submit" class="" value="Save">Save</button></div>
-                </ul>
-            </div>
-        </form>
+                    <div class="cell">Confirm Password*<input type="Password" name="pw2" class="Passwordconfirm" value="" required tabindex="3" onblur="Check()"> <input width=500 type="text" style="color: red; border-style: solid; border-width:0" name="infor" readonly /></div>
+
+
+                    <div class="cell">User type*<input type="text" class="Usertype" placeholder="" style="width: 35px" tabindex="4"></div>
+                    <div class="cell">Office*<input type="text" class="Office" placeholder="" style="width: 35px" tabindex="5"></div>
+                    <div class="cell"><button type="submit" class="" value="Save">Save</button></div>
+
+                </div>
+            </form>
+        </div>
     </body>
 
