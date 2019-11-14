@@ -157,31 +157,56 @@ namespace SUP_MVC.Controllers
                 }
 
                 string fileName;
-                ExportFile.CreateExcelFile2(clientArray, out fileName);
+                ExportFile.CreateExcelFile(clientArray, out fileName);
 
                 // Test guest parking template letter if placed in template folder in c:\users\public\documents\templates
                 // Using opening and closing tokens < > and search fields defined in spec document such as <firstname> and <lastname>
-                //List<string> templateNames = Merge.getTemplateNames();
-                //string zipfile;
-                //if (templateNames.Count>=1)
-                //    Merge.merge(clientArray, templateNames[0], out zipfile);
-                
-
-                /*
-                using (WebClient client = new WebClient())
-                {
-                    string eFileName = "ExcelFile" + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".xlsm";
-                    client.DownloadFile("http://sup.simple-url.com/",
-                                        @"C:\Users\Public\Documents\" + eFileName + ".xlsx");
-                }
-                */
-
+                List<string> templateNames = Merge.getTemplateNames();
+                string zipfile;
+                if (templateNames.Count>=1)
+                Merge.merge(clientArray, templateNames[0], out zipfile);
                 //TODO: return value should describe whether or not the process worked to the client.
                 //  The below line is meaningless until then.
                 var json = JsonConvert.SerializeObject(fileName);
                 return json;
+            }
+            catch (Exception e)
+            {
+                throw e;
+                //return "FAAAAAILLL";
+            }
+        }
 
-          
+        // POST: Search/TemplateMerge
+        [HttpPost]
+        public string TemplateMerge([FromBody] string args)
+        {
+            try
+            {
+                string[] separatedArgs = args.Split(' ');
+
+                if (separatedArgs.Length <= 0)
+                {
+                    throw (new Exception("Oopsie"));
+                }
+
+                var clientArray = new List<Client>();
+                foreach (var ID in separatedArgs)
+                {
+                    var currentClient = DatabaseConnection.GetClientByIdFull(ID);
+                    if (currentClient != null)
+                        clientArray.Add(currentClient);
+                }
+
+                // Test guest parking template letter if placed in template folder in c:\users\public\documents\templates
+                // Using opening and closing tokens < > and search fields defined in spec document such as <firstname> and <lastname>
+                
+                List<string> templateNames = Merge.getTemplateNames();
+                string zipFile = "";
+                if (templateNames.Count >= 1) Merge.merge(clientArray, templateNames[0], out zipFile);
+
+                var json = JsonConvert.SerializeObject(zipFile);
+                return json;
             }
             catch (Exception e)
             {

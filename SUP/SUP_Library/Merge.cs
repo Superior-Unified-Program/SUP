@@ -123,21 +123,21 @@ namespace SUP_Library
             
         }
         public static void merge(List<Client> clientList, string template, out string exportFile)
-        
         {
             List<String> fileNames = new List<string>();
             bool searched = false;
             MatchCollection mc;
-            List<MergeResult> matches=new List<MergeResult>();
+            List<MergeResult> matches = new List<MergeResult>();
             mergeToken = new token();
             mergeToken.open = "&lt;";
             mergeToken.close = "&gt;";
+
             foreach (Client client in clientList)
             {
-                
                 string newFile = createFileFromTemplate(template, client);
                 if (newFile == null) throw new Exception("Error Creating File!");
                 fileNames.Add(newFile);
+
                 using (WordprocessingDocument wordDoc = WordprocessingDocument.Open(newFile, true))
                 {
                     string docText = null;
@@ -171,7 +171,6 @@ namespace SUP_Library
                         int s = 0;
                         for (int i = 0; i < matches.Count; i++)
                         {
-                            Console.WriteLine(matches[i].Result);
                             string toWrite = docText.Substring(s, matches[i].Start - s);
                             string tag = replaceValue(client, matches[i].Result);
                             s = matches[i].End;
@@ -185,18 +184,18 @@ namespace SUP_Library
     
             }
 
-
             exportFile = compress(template);
             deleteTempFiles(fileNames);
-            
-
         }
         private static void deleteTempFiles(List<string> files)
         {
+            File.Delete(savePath);
+            /*
             for (int i = 0; i<files.Count; i++)
             {
                 File.Delete(files[i]);
             }
+            */
         }
         public static List<string> getTemplateNames()
         {
@@ -218,7 +217,5 @@ namespace SUP_Library
         {
             return templatePath;
         }
-
-
     }
 }
