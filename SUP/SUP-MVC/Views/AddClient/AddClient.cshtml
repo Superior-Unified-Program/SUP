@@ -8,12 +8,13 @@
 	<meta charset="utf-8">
 	<title>Search</title>
 	<style>
-        .box {
+        .box 
+        {
             display:flex;
 
-        position: relative;
-        padding-left: 15%;
-        width: 85%;
+            position: relative;
+            padding-left: 15%;
+            width: 85%;
         }
 		.tableHeader 
         {
@@ -82,7 +83,8 @@
                         saveClientData();
                     });
                 }
-                else {
+                else
+                {
                     $(this).prop('disabled', true);
                     $(".saveButton").prop('value', "Edit");
                     $(".saveButton").unbind('click').click(function () {
@@ -96,7 +98,8 @@
                 {
                     $(this).prop('disabled', false);
                 }
-                else {
+                else
+                {
                     $(this).prop('disabled', true);
                 }
             });
@@ -193,34 +196,52 @@
                     var prefix = currentClient["Prefix"];
                     var organization = currentClient["Org"];
                     if (currentClient['Email'] != null)
+                    {
                         $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
+                    }
                     if (currentClient['Email'] != null)
+                    {
                         $('.businessEmailInput').val(currentClient['Email']['Business_Email']);
+                    }
                     if (currentClient['Email'] != null)
+                    {
                         $('.assistantEmailInput').val(currentClient['Email']['Assistant_Email']);
+                    }
                     if (currentClient['Phone'] != null)
+                    {
                         $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone']);
+                    }
                     if (currentClient['Phone'] != null)
+                    {
                         $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone']);
+                    }
                     if (currentClient['Phone'] != null)
+                    {
                         $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
-                    if (currentClient['Org'] != null) {
+                    }
+                    if (currentClient['Org'] != null)
+                    {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
 
-                    if (currentClient['Address'] != null) {
+                    if (currentClient['Address'] != null)
+                    {
                         $('.addressLineOneInput').val(currentClient['Address']['Line1']);
                     }
-                    if (currentClient['Address'] != null) {
+                    if (currentClient['Address'] != null)
+                    {
                         $('.addressLineTwoInput').val(currentClient['Address']['Line2']);
                     }
-                    if (currentClient['Address'] != null) {
+                    if (currentClient['Address'] != null)
+                    {
                         $('.cityInput').val(currentClient['Address']['City']);
                     }
-                    if (currentClient['Address'] != null) {
+                    if (currentClient['Address'] != null)
+                    {
                         $('.stateInput').val(currentClient['Address']['State']);
                     }
-                    if (currentClient['Address'] != null) {
+                    if (currentClient['Address'] != null)
+                    {
                         $('.zipInput').val(currentClient['Address']['Zip']);
                     }
                     var company = currentClient["Company"];
