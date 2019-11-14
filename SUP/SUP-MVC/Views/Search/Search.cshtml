@@ -25,15 +25,6 @@
 			 width: 85%;
 		}
 
-        body {
-            margin-left: 0px;
-            margin-top: 0px;
-            margin-right: 0px;
-            margin-bottom: 0px;
-            background: rgb(255,255,255);
-            background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(244,245,237,1) 80%, rgba(229,218,217,1) 100%);
-        }
-
 		.templateTable {
 			width: 100%;
 		}
@@ -122,7 +113,7 @@
 
         .yellowizedSelect {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
-            background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
+            background: linear-gradient(to bottom, #ffd146 5%, #decc47 100%);
             background-color: #edf035;
             border: 1px solid #241e19;
             display: inline-block;
@@ -181,7 +172,7 @@
 
         .yellowizedButton {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
-            background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
+            background: linear-gradient(to bottom, #ffd146 5%, #decc47 100%);
             background-color: #edf035;
             border: 1px solid #241e19;
             display: inline-block;
@@ -195,7 +186,7 @@
         }
 
         .yellowizedButton:hover {
-            background: linear-gradient(to bottom, #d1c060 5%, #edf035 100%);
+            background: linear-gradient(to bottom, #decc47 5%, #ffd146 100%);
             background-color: #d1c060;
         }
 
@@ -229,31 +220,31 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: #e0e93d;
+            background: #dfcd50;
             border: 0px none #24211e;
             border-radius: 50px;
         }
 
             ::-webkit-scrollbar-thumb:hover {
-                background: #f5fcc5;
+                background: #daca40;
             }
 
             ::-webkit-scrollbar-thumb:active {
-                background: #c07645;
+                background: #c7a444;
             }
 
         ::-webkit-scrollbar-track {
-            background: #4b4234;
+            background: rgb(176,176,176);
             border: 1px solid #000000;
             border-radius: 50px;
         }
 
             ::-webkit-scrollbar-track:hover {
-                background: #b08460;
+                background: rgb(176,176,176);
             }
 
             ::-webkit-scrollbar-track:active {
-                background: #302723;
+                background: rgb(176,176,176);
             }
 
         ::-webkit-scrollbar-corner {
@@ -504,6 +495,39 @@
             });
         }
 
+        function ExportTemplate() {
+            var dataPost = "";
+            $('.rowViewButton').each(function () {
+                var curParent = $(this).parent().parent();
+
+                console.log(curParent);
+                console.log(curParent.find(':checkbox'))
+                console.log(curParent.find(':checkbox').prop('checked'));
+                if (curParent.find(':checkbox').prop('checked') == true)
+                    dataPost += $(this).val() + " ";
+            });
+            console.log(dataPost);
+            $.ajax({
+                url: '/Search/TemplateMerge',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    returnedData = JSON.parse(result);
+                    if (returnedData != "") {
+                //use window.location.href for redirect to download action for download the file
+                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadTemplate" })/?fileName=" + returnedData;
+            }
+                },
+                async: true,
+                processData: false
+            });
+        }
+
+
         var returnedData;
 		function Search() {
             var firstName = $('.searchFirstName').val();
@@ -625,6 +649,7 @@
         }
         function popConfirm()
         {
+
             document.getElementById("confirmation").style.display = "flex";
         }
         function closeConfirm()
@@ -1084,9 +1109,9 @@
             <div class="buttonRow">
                 <form action="middlewareHere" method="POST" enctype="multipart/form-data">
                     <input type="file" class="browse" name="browse" style="width: 500px;">
-                    <button type="submit" class="yellowizedButton addTemplate" value="Add Template">Add Template</button>
+                    <input type="button" class="yellowizedButton addTemplate" value="Add Template">
                 </form>
-                <button class="yellowizedButton closeButton" onclick="closeSetup()">Close</button>
+                <input class="yellowizedButton closeButton" onclick="closeSetup()" value="Close">
             </div>
         </div>
 

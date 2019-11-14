@@ -405,7 +405,7 @@ BEGIN
 
     -- Insert statements for procedure here
 
-	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
+	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 3 AND DIFFERENCE(@lastName, Last_Name) > 3
 
 END
 GO
@@ -498,18 +498,18 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT
 GO
 ALTER PROCEDURE updateClient
 	-- Add the parameters for the stored procedure here
-	@ID int, @prefix varchar(10) = '', @firstName varchar(50),
-	@lastName varchar(50), @middleInitial varchar(1) = '',
-	@permitNum varchar(50) = '',
-	@active bit = 1, @notes varchar(30) = '',
-	@orgName varchar(30), @orgType varchar(20),
-	@title varchar(20) = '', @Personal_phoneNumber varchar(11) = '',
-	@Business_phoneNumber varchar(11) = '', @Personal_Email varchar(30) = '',
-	@Business_Email varchar(30) = '', @Assistant_Email varchar(30) = '',
-	@Assistant_phoneNumber varchar(11) = '', @line1 varchar(35) = '',
-	@line2 varchar(35) = '', @city varchar(25) = '',
-	@state varchar(2) = '', @zipCode varchar(5) = '',
-	@assistantFirstName varchar(50) = '', @assistantLastName varchar(50) = ''
+	@ID int, @prefix varchar(10) = null, @firstName varchar(50) = null,
+	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
+	@permitNum varchar(50) = null,
+	@active bit = null, @notes varchar(30) = null,
+	@orgName varchar(30) = null, @orgType varchar(20) = null,
+	@title varchar(20) = null, @Personal_phoneNumber varchar(11) = null,
+	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
+	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
+	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
+	@line2 varchar(35) = null, @city varchar(25) = null,
+	@state varchar(2) = null, @zipCode varchar(5) = null,
+	@assistantFirstName varchar(50) = null, @assistantLastName varchar(50) = null
 
 AS
 BEGIN
