@@ -464,7 +464,39 @@
                     returnedData = JSON.parse(result);
                     if (returnedData != "") {
                 //use window.location.href for redirect to download action for download the file
-                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "Download" })/?fileName=" + returnedData;
+                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadExcel" })/?fileName=" + returnedData;
+            }
+                },
+                async: true,
+                processData: false
+            });
+        }
+
+        function TemplateMerge() {
+            var dataPost = "";
+            $('.rowViewButton').each(function () {
+                var curParent = $(this).parent().parent();
+
+                console.log(curParent);
+                console.log(curParent.find(':checkbox'))
+                console.log(curParent.find(':checkbox').prop('checked'));
+                if (curParent.find(':checkbox').prop('checked') == true)
+                    dataPost += $(this).val() + " ";
+            });
+            console.log(dataPost);
+            $.ajax({
+                url: '/Search/TemplateMerge',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    returnedData = JSON.parse(result);
+                    if (returnedData != "") {
+                //use window.location.href for redirect to download action for download the file
+                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadZipFile" })/?fileName=" + returnedData;
             }
                 },
                 async: true,
@@ -1074,9 +1106,9 @@
                 </table>
             </div>
             <div class="buttonRow">
-                <form action="middlewareHere">
-                    <button type="submit" class="yellowizedButton continue">Generate Output</button>
-                </form>
+                
+                <button type="submit" class="yellowizedButton continue" onclick="TemplateMerge()">Generate Output</button>
+                
             </div>
             <div class="buttonRow">
                 <a href="middlewareHere" download>

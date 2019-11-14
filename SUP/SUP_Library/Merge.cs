@@ -189,13 +189,10 @@ namespace SUP_Library
         }
         private static void deleteTempFiles(List<string> files)
         {
-            File.Delete(savePath);
-            /*
             for (int i = 0; i<files.Count; i++)
             {
                 File.Delete(files[i]);
             }
-            */
         }
         public static List<string> getTemplateNames()
         {

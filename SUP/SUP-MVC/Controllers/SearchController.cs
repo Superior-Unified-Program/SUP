@@ -161,10 +161,10 @@ namespace SUP_MVC.Controllers
 
                 // Test guest parking template letter if placed in template folder in c:\users\public\documents\templates
                 // Using opening and closing tokens < > and search fields defined in spec document such as <firstname> and <lastname>
-                List<string> templateNames = Merge.getTemplateNames();
-                string zipfile;
-                if (templateNames.Count>=1)
-                Merge.merge(clientArray, templateNames[0], out zipfile);
+                //List<string> templateNames = Merge.getTemplateNames();
+                //string zipfile;
+                //if (templateNames.Count>=1)
+                //Merge.merge(clientArray, templateNames[0], out zipfile);
                 //TODO: return value should describe whether or not the process worked to the client.
                 //  The below line is meaningless until then.
                 var json = JsonConvert.SerializeObject(fileName);
@@ -204,6 +204,7 @@ namespace SUP_MVC.Controllers
                 List<string> templateNames = Merge.getTemplateNames();
                 string zipFile = "";
                 if (templateNames.Count >= 1) Merge.merge(clientArray, templateNames[0], out zipFile);
+                else return "No person selected !!!!";
 
                 var json = JsonConvert.SerializeObject(zipFile);
                 return json;
@@ -222,7 +223,7 @@ namespace SUP_MVC.Controllers
 		}
 
         [HttpGet]
-        public ActionResult Download(string fileName)
+        public ActionResult DownloadExcel(string fileName)
         {
             //Get the temp folder and file path in server
             string savePath = @"C:\Users\Public\Documents\SUPExport";
@@ -230,6 +231,17 @@ namespace SUP_MVC.Controllers
             byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
             System.IO.File.Delete(fullPath);    // detele the excel file
             return File(fileByteArray, "application/vnd.ms-excel", fileName);
+        }
+
+        [HttpGet]
+        public ActionResult DownloadZipFile(string fileName)
+        {
+            //Get the temp folder and file path in server
+            string savePath = @"C:\Users\Public\Documents\SUPExport";
+            string fullPath = Path.Combine(savePath, fileName);
+            byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
+            System.IO.File.Delete(fullPath);    // detele the excel file
+            return File(fileByteArray, "application/zip", fileName);
         }
     }
 }
