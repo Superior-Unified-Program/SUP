@@ -153,6 +153,7 @@
     <Compile Include="DBComponent\ContactInformation.cs" />
     <Compile Include="DBComponent\Organization.cs" />
     <Compile Include="DBComponent\PhoneNumber.cs" />
+    <Compile Include="DBComponent\UserReturn.cs" />
     <Compile Include="ExportFile.cs" />
     <Compile Include="Harsh.cs" />
     <Compile Include="Merge.cs" />

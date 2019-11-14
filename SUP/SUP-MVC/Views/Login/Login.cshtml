@@ -28,9 +28,12 @@
                         console.log(result);
                         returnedData = JSON.parse(result);
                         console.log(returnedData);
-                        if (returnedData == "true") {
+                        if (returnedData == true) {
                             window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "Search" })";
-                    }
+                        }
+                        else {
+                            alert("Login attempt failed.");
+                        }
                     },
                     async: true,
                     processData: false
