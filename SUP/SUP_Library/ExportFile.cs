@@ -12,7 +12,8 @@ namespace SUP_Library
 {
     public class ExportFile
     {
-        public static void CreateExcelFile(List<Client> clientList)
+        #region Old Export
+        public static void CreateExcelFileOld(List<Client> clientList)
         {
             #region Setup new Excel File
 
@@ -93,8 +94,8 @@ namespace SUP_Library
             }
             eWorkSheet.Columns.AutoFit();
         }
-
-        public static void CreateExcelFile2(List<Client> clientList, out string fileName)
+        #endregion
+        public static void CreateExcelFile(List<Client> clientList, out string fileName)
         {
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             //string savePath = @"C:\Users\%USERNAME%\Documents\SUPExport";
@@ -130,34 +131,36 @@ namespace SUP_Library
                 };
 
                 var workingSheet = ((WorksheetPart)wbPart.GetPartById(sheet.Id)).Worksheet;
+
+                #region Junk
                 /*
-                int rowindex = 1;
+               int rowindex = 1;
 
-                foreach (var client in clientList)
-                {
-                    Row row = new Row();
-                    row.RowIndex = (UInt32)rowindex;
+               foreach (var client in clientList)
+               {
+                   Row row = new Row();
+                   row.RowIndex = (UInt32)rowindex;
 
-                    if (rowindex == 1) //Header
-                    {
-                        row.AppendChild(AddCellWithText("First Name"));
-                        row.AppendChild(AddCellWithText("Last Name"));
-                        row.AppendChild(AddCellWithText("Category"));
-                        row.AppendChild(AddCellWithText("Email"));
-                        row.AppendChild(AddCellWithText("Phone#"));
-                    }
-                    else //Data
-                    {
-                        row.AppendChild(AddCellWithText(client.First_Name));
-                        row.AppendChild(AddCellWithText(client.Last_Name));
-                        row.AppendChild(AddCellWithText(client.Org.Org_Name));
-                        row.AppendChild(AddCellWithText(client.Email.Email));
-                        row.AppendChild(AddCellWithText(client.Phone.Number));
-                    }
-                    sheetData.AppendChild(row);
-                    rowindex++;
-                }
-                */
+                   if (rowindex == 1) //Header
+                   {
+                       row.AppendChild(AddCellWithText("First Name"));
+                       row.AppendChild(AddCellWithText("Last Name"));
+                       row.AppendChild(AddCellWithText("Category"));
+                       row.AppendChild(AddCellWithText("Email"));
+                       row.AppendChild(AddCellWithText("Phone#"));
+                   }
+                   else //Data
+                   {
+                       row.AppendChild(AddCellWithText(client.First_Name));
+                       row.AppendChild(AddCellWithText(client.Last_Name));
+                       row.AppendChild(AddCellWithText(client.Org.Org_Name));
+                       row.AppendChild(AddCellWithText(client.Email.Email));
+                       row.AppendChild(AddCellWithText(client.Phone.Number));
+                   }
+                   sheetData.AppendChild(row);
+                   rowindex++;
+               }
+               */
 
                 /* Auto Fit Part
                 Columns colList = worksheetPart.Worksheet.GetFirstChild<Columns>();
@@ -166,6 +169,7 @@ namespace SUP_Library
                 colList.Append(c);
                 worksheetPart.Worksheet.Append(colList);
                 */
+                #endregion
 
                 Row row = new Row();
                 row.RowIndex = 1;
@@ -219,7 +223,8 @@ namespace SUP_Library
                 }
 
                 wbPart.Workbook.Sheets.AppendChild(sheet);
-                
+
+                #region Auto Fit
                 /* Auto Fit Part
                 Row r1 = new Row
                 {
@@ -251,6 +256,7 @@ namespace SUP_Library
                 //Set Border
                 //wbPark
                 */
+                #endregion
 
                 wbPart.Workbook.Save();
                 spreadDoc.Close();
