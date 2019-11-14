@@ -405,7 +405,7 @@ BEGIN
 
     -- Insert statements for procedure here
 
-	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 2 AND DIFFERENCE(@lastName, Last_Name) > 2
+	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 3 AND DIFFERENCE(@lastName, Last_Name) > 3
 
 END
 GO
