@@ -7,7 +7,7 @@
 <head>
 	<meta charset="utf-8">
 	<title>Search</title>
-	<style>
+    <style>
 		.popup{
 			display: none;
 			flex-wrap: nowrap;
@@ -59,7 +59,7 @@
 			font-size: 1vw;
 		}
 
-		.tableHeader 
+		.tableHeader
         {
 			width: 100%;
 			text-align: center;
@@ -69,40 +69,46 @@
 			height: 45px;
 			padding-top: 20px;
 		}
-		.row 
+		.row
         {
 			width: 100%;
 		}
-		.cell 
+        @@media (max-width:600px) {
+        .cell
+        {
+            flex:100%;
+            max-width:100%;
+        }
+        }
+		.cell
         {
 			width: 25%;
 			text-align: left;
-            overflow:auto;
             overflow:hidden;
 
 		}
-		.noteCell 
+		.noteCell
         {
 			width: 50%;
 			text-align: left;
 		}
-		.activeCell 
+		.activeCell
         {
 			width: 25%;
 			text-align: left;
 		}
-		.saveEditCell 
+		.saveEditCell
         {
 			width: calc(100% - 50px);
 			text-align: right;
 			padding-top: 10px;
 			padding-right: 20px;
 		}
-		textarea 
+		textarea
         {
 			width: calc(100% - 50px - 35px);
 		}
-		.breakLine 
+		.breakLine
         {
 			margin-left: -10%;
 			padding-top: 0px;
@@ -129,7 +135,7 @@
             background: linear-gradient(to bottom, #d1c060 5%, #edf035 100%);
             background-color: #d1c060;
         }
-	</style>
+    </style>
 	<script language="javascript">
 
         function toggleEdit()
