@@ -25,6 +25,8 @@ In Visual Studio:
 
 Change  the value of "SupConnectionString" in appsettings.json to match the IP address and authentication of the database that you just set up.
 
+Set the start up project to SUP-MVC by right-clicking in the solution and selecting "Set as StartUp Project."
+
 To be able to test the Merge feature in this release:
 
 This template relies on the client's address and parking pass number, so make sure for optimal results to test out on clients with this information filled out.
