@@ -24,11 +24,10 @@ namespace SUP_Library
     /// </summary>
     public class Merge
     {
-
-        private const string templatePath = @"C:\Users\Public\Documents\Templates";
-        private const string savePath = @"C:\Users\Public\Documents\SUPExport\TEMP";
-        private const string zipPath = @"C:\Users\Public\Documents\SUPExport";
-        private struct token
+        private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+        private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+        private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+		private struct token
         {
             public string open;
             public string close;
@@ -205,7 +204,7 @@ namespace SUP_Library
         }
         public static List<string> getTemplateNames()
         {
-            List<string> templateNames = new List<string>();
+			List<string> templateNames = new List<string>();
             if (Directory.Exists(templatePath))
             {
                string[] tNames = Directory.GetFiles(templatePath, "*.docx");

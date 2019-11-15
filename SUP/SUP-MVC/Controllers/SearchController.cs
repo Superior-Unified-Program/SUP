@@ -243,5 +243,21 @@ namespace SUP_MVC.Controllers
             System.IO.File.Delete(fullPath);    // detele the excel file
             return File(fileByteArray, "application/zip", fileName);
         }
-    }
+
+		[HttpPost]
+		public string GetTemplateNames([FromBody] string args)
+		{
+			try
+			{
+				var nameList = SUP_Library.Merge.getTemplateNames();
+				var json = JsonConvert.SerializeObject(nameList);
+				return json;
+			}
+			catch (Exception e)
+			{
+				throw e;
+				//return "FAAAAAILLL";
+			}
+		}
+	}
 }

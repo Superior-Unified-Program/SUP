@@ -463,7 +463,7 @@
             });
         }
 
-        function TemplateMerge() {
+		function TemplateMerge() {
             var dataPost = "";
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
@@ -521,6 +521,35 @@
                 //use window.location.href for redirect to download action for download the file
                 window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadTemplate" })/?fileName=" + returnedData;
             }
+                },
+                async: true,
+                processData: false
+            });
+		}
+
+		function LoadTemplates() {
+            var dataPost = "";
+            $.ajax({
+                url: '/Search/GetTemplateNames',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+					returnedData = JSON.parse(result);
+					$('.templateTableRow').remove();
+					$('.templateRowTemplate').hide();
+					for (var i = 0; i < returnedData.length; i++) {
+						var name = returnedData[i];
+						var Row = $('.templateRowTemplate').clone();
+						Row.removeClass('templateRowTemplate').addClass('templateTableRow').show();
+						Row.find('.rowTemplateName').text(name);
+						Row.find('.selecter').val(name);
+						$('.templateRowTemplate').parent().append(Row);
+						Row.show();
+					}
                 },
                 async: true,
                 processData: false
@@ -1062,7 +1091,7 @@
             </table>
         </div>
         <div style="width: 100%; margin-top: 5px;">
-            <button class="yellowizedButton template" onclick="popSetup()">Select Template</button>
+            <button class="yellowizedButton template" onclick="popSetup(); LoadTemplates();">Select Template</button>
             <button style="margin-left: 20%" class="yellowizedButton excel" onclick="Export()">Export to Excel</button>
         </div>
         <div class="setup" id="setup">
@@ -1079,32 +1108,20 @@
                 </form>
             </div>
             <div class="resultRow">
-                <table id="poptable">
-                    <tr>
-                        <th>&nbsp;</th>
-                        <th>Name</th>
-                        <th>Date modified</th>
-                        <th>Uploaded by</th>
-                    </tr>
-                    <tr>
-                        <td id="radioSet"><input type="radio" name="template"></td>
-                        <td id="colSet">ParkingPassTemplate</td>
-                        <td id="colSet">9/9/9999</td>
-                        <td id="colSet">username1</td>
-                    </tr>
-                    <tr>
-                        <td id="radioSet"><input type="radio" name="template"></td>
-                        <td id="colSet">LetterTemplate</td>
-                        <td id="colSet">8/8/8888</td>
-                        <td id="colSet">thatOneGuy17</td>
-                    </tr>
-                    <tr>
-                        <td id="radioSet"><input type="radio" name="template"></td>
-                        <td id="colSet">HolidayCardTemplate</td>
-                        <td id="colSet">1/19/2019</td>
-                        <td id="colSet">buttercup2000</td>
-                    </tr>
-                </table>
+				<table id="poptable" class="templatePopupTable">
+					<tr>
+						<th>&nbsp;</th>
+						<th>Name</th>
+						<th>Date modified</th>
+						<th>Uploaded by</th>
+					</tr>
+					<tr class="templateRowTemplate">
+						<td id="radioSet" class="radio" name="fileName"><input class="selecter" type="radio" name="template" value=""></td>
+						<td id="colSet" class="rowTemplateName"></td>
+						<td id="colSet" class="rowTemplateDate"></td>
+						<td id="colSet" class="rowTemplateUser"></td>
+					</tr>
+				</table>
             </div>
             <div class="buttonRow">
                 <button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
