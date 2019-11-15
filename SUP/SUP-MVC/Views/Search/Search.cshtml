@@ -204,7 +204,7 @@
             color: rgba(38,23,17,1);
             -o-text-overflow: clip;
             text-overflow: clip;
-            background: rgba(226,224,199,1);
+            background: rgba(220,220,220,1);
             -webkit-box-shadow: 2px 1px 1px 1px rgba(0,0,0,0.2) inset;
             box-shadow: 2px 1px 1px 1px rgba(0,0,0,0.2) inset;
         }
@@ -555,48 +555,47 @@
                     }
                     for (var i = 0; i < returnedData.length; i++)
                     {
-                        var currentRow = returnedData[i]; 
-                        var Row = $('.templateRow').clone(); 
-                        Row.removeClass('templateRow').addClass('removableRow').show(); 
-                        Row.find('.rowFirstName').val(currentRow['First_Name']);
-                        Row.find('.rowLastName').val(currentRow['Last_Name']);
+						var currentRow = returnedData[i];
+						var hasPermit = (currentRow['Permit_Num'] != "");
+						if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) {
 
-                        if (currentRow['Email'] != null)
-                        { 
-                            Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
-                        }
-                        if (currentRow['Phone'] != null)
-                        {
-                            Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
-                        }
-                        if (currentRow['Org'] != null)
-                        {
-							Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
-							Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
-                        }
-                        var clientId = currentRow['ID']
-                        Row.find('.rowViewButton').val(clientId);
+							var Row = $('.templateRow').clone();
+							Row.removeClass('templateRow').addClass('removableRow').show();
+							Row.find('.rowFirstName').val(currentRow['First_Name']);
+							Row.find('.rowLastName').val(currentRow['Last_Name']);
 
-                        //autocomplete
-                        var firstNameRow = $('.firstNameTemplate').clone();
-                        firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
-                        firstNameRow.text(currentRow['First_Name']);
-                        $('.firstNamesList').append(firstNameRow);
+							if (currentRow['Email'] != null) {
+								Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
+							}
+							if (currentRow['Phone'] != null) {
+								Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
+							}
+							if (currentRow['Org'] != null) {
+								Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+								Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
+							}
+							var clientId = currentRow['ID']
+							Row.find('.rowViewButton').val(clientId);
 
-                        var lastNameRow = $('.lastNameTemplate').clone();
-                        lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
-                        lastNameRow.text(currentRow['Last_Name']);
-                        $('.lastNamesList').append(lastNameRow);
+							//autocomplete
+							var firstNameRow = $('.firstNameTemplate').clone();
+							firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
+							firstNameRow.text(currentRow['First_Name']);
+							$('.firstNamesList').append(firstNameRow);
+
+							var lastNameRow = $('.lastNameTemplate').clone();
+							lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
+							lastNameRow.text(currentRow['Last_Name']);
+							$('.lastNamesList').append(lastNameRow);
 
 
-                        $('.checkedId').each(function (index)
-                        {
-                            if ($(this).text() == clientId)
-                            {
-                                Row.find('.rowSelected').prop('checked', true);
-                            }
-                        });
-                        $('.templateRow').parent().append(Row);
+							$('.checkedId').each(function (index) {
+								if ($(this).text() == clientId) {
+									Row.find('.rowSelected').prop('checked', true);
+								}
+							});
+							$('.templateRow').parent().append(Row);
+						}
                     }
                     $('.rowViewButton').unbind('click').click(function ()
                     {
@@ -989,10 +988,16 @@
                 </div>
 
             </form>
-            <div style="float:left; margin-left: 45%;">
-                <p style="float:left;">Display Inactive: </p>
-                <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
-            </div>
+			<div style="float:left; margin-left: 45%;">
+				<div>
+					<p style="float:left;">Display Inactive: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
+				</div>
+				<div>
+					<p style="float:left;">Has Permit: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
+				</div>
+			</div>
         </div>
         <div class="flex-colum" style="width: 14.3%; float: right; margin-right: 9.8%;margin-left: 75.9%;">
             <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>

@@ -158,7 +158,8 @@ namespace SUP_MVC.Controllers
                 var Note = separatedArgs[13];
                 var Phone = separatedArgs[14];
                 var Active = separatedArgs[15];
-                var Client = DatabaseConnection.GetClientByIdFull(clientId);
+				var Permit = separatedArgs[16];
+				var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
                     int intClientId = Int32.Parse(clientId);
@@ -187,6 +188,7 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
+					Client.Permit_Num = Permit;
 					return DatabaseConnection.updateClient(Client);
                 }
                 else

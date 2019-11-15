@@ -39,6 +39,21 @@
         text-align: left;
         width: 25%;
     }
+
+	.yellowizedButton {
+        box-shadow: inset 0px 1px 0px 0px #fcf6cf;
+        background: linear-gradient(to bottom, #ffd146 5%, #decc47 100%);
+        background-color: #edf035;
+        border: 1px solid #241e19;
+        display: inline-block;
+        cursor: pointer;
+        color: #2e1813;
+        font-family: Arial;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 6px 12px;
+        text-decoration: none;
+    }
 </style>
 <script>
 
@@ -89,7 +104,7 @@
              
                     </select>
                 </div>
-                <div class="cell"><button type="submit" class="submitNewUser">Save</button></div>
+                <div class="cell"><input type="button" class="submitNewUser yellowizedButton" value="Save" /></div>
             </div>
 
         </form>

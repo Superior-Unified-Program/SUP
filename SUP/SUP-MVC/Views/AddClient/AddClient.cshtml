@@ -257,7 +257,8 @@
                     var assistantsLastName = currentClient["Assistant_Last_Name"];
                     var middleinitial = currentClient["Middle_initial"];
                     var prefix = currentClient["Prefix"];
-                    var organization = currentClient["Org"];
+					var organization = currentClient["Org"];
+					var permit = currentClient["Permit_Num"];
                     if (currentClient['Email'] != null)
                     {
                         $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
@@ -281,12 +282,23 @@
                     if (currentClient['Phone'] != null)
                     {
                         $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
+					}
+					if (currentClient['Org'] != null)
+					{
+						var orgTypeText = currentClient['Org']['Org_Type'];
+						$(".organizationInput option").filter(function () {
+							return this.text == orgTypeText; 
+						}).attr('selected', true);
+						//$('.organizationInput').text(currentClient['Org']['Org_Type']);
                     }
                     if (currentClient['Org'] != null)
                     {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
-
+                    if (currentClient['Org'] != null)
+                    {
+                        $('.titleInput').val(currentClient['Org']['Title']);
+                    }
                     if (currentClient['Address'] != null)
                     {
                         $('.addressLineOneInput').val(currentClient['Address']['Line1']);
@@ -315,7 +327,8 @@
                     $('.lastNameInput').val(lastName);
                     $('.assistantFirstNameInput').val(assistantsFirstName);
                     $('.assistantLastNameInput').val(assistantsLastName);
-                    $('.prefixInput').val(prefix);
+					$('.prefixInput').val(prefix);
+					$('.permitInput').val(permit);
 
                     //selectElement('leaveCode', '11')
 
@@ -359,11 +372,9 @@
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
 			var middleInitial = $('.middleInitialInput').val();
-			console.log(middleInitial);
-            var company = $('.companyInput').text();
-            var organization = $('.organizationInput').text();
+			var company = $('.companyInput').val();
+			var organization = $( ".organizationInput option:selected" ).text();
 			var title = $('.titleInput').val();
-			console.log(title);
             var Line1 = $('.addressLineOneInput').val();
             var Line2 = $('.addressLineTwoInput').val();
             var City = $('.cityInput').val();
@@ -373,13 +384,14 @@
             var Note = $('.noteInput').val();
             var Phone = $(".phoneInput").val();
 			var Active = $(".activeInput").prop("checked");
+			var Permit = $(".permitInput").val();
 
 			var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
             var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
                 organization + ',' + company + ',' + title +
                 ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip + 
-                ',' + Email + ',' + Note + ',' + Phone + ',' + Active;
+                ',' + Email + ',' + Note + ',' + Phone + ',' + Active + ',' + Permit;
             $.ajax({
                 url: '/AddClient/UpdateClient',
                 type: 'POST',
@@ -411,8 +423,7 @@
                 },
 				success: function (result) {
 					returnedData = JSON.parse(result);
-					if (returnedData) { popMatchFound() }
-					//$('.matchMessage').remove();
+					$('.returnedMatch').remove();
 					for (var i = 0; i < returnedData.length; i++) {
 						var returnedFirstName = returnedData[i]['First_Name'];
 						var returnedLastName = returnedData[i]['Last_Name'];
@@ -425,11 +436,17 @@
 						Row.attr("clientID", returnedID);
                         $('.returnedMatchesDiv').append(Row);
 					}
-					var p = $('.returnedMatch').first();
-					var msg = p.text();
-					var ID = p.attr('clientID');
-					$('.matchMessage').text(msg);
-					$('.popupButtonsDiv').attr('currentID',ID);
+					if ($('.returnedMatch').length) {
+						popMatchFound();
+						var p = $('.returnedMatch').first();
+						var msg = p.text();
+						var ID = p.attr('clientID');
+						$('.matchMessage').text(msg);
+						$('.popupButtonsDiv').attr('currentID', ID);
+					}
+					else {
+						saveClientData();
+					}
                 },
                 async: true,
                 processData: false
@@ -591,7 +608,7 @@
 						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
 						</div>
 						<div class="row">
-							<div class="saveEditCell"><input type="button" class="saveButton" value="Save" id="button" tabindex="21"></div>
+							<div class="saveEditCell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
 						</div>
 					</div>
 				</div>
