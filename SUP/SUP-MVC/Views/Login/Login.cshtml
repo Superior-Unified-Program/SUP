@@ -5,50 +5,57 @@
 	Layout = null;
 }
 
-<script>
-    function Login() {       
-        var username = $('.bt_username').val();
-        var password = $('.bt_password').val();
 
-        var dataPost = username + ',' + password;
-        $.ajax({
-            url: '/Login/AuthenticateUser',
-            type: 'POST',
-            data: JSON.stringify(dataPost),
-            contentType: 'application/json; charset=utf-8',
-            error: function (xhr) {
-                
-                console.log('testfail');
-            },
-			success: function (result) {
-                console.log(result);
-            },
-            async: true,
-            processData: false
-        });
-    }
-</script>
+    <head>
 
-<head>
-	<title>Login</title>
-	<meta http-equive="Content-Type" charset="utf-8">
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
-	<link href="~/css/site.css" rel="stylesheet" type="text/css">
+        <title>Login</title>
+        <meta http-equive="Content-Type" charset="utf-8">
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script>
+            function Login() {
+                var username = $('.bt_username').val();
+                var password = $('.bt_password').val();
+                var dataPost = username + "," + password;
+                $.ajax({
+                    url: '/Login/AuthenticateUser',
+                    type: 'POST',
+                    data: JSON.stringify(dataPost),
+                    contentType: 'application/json; charset=utf-8',
+                    error: function (xhr) {
+                        alert('Error: ' + xhr.statusText);
+                    },
+                    success: function (result) {
+                        console.log(result);
+                        returnedData = JSON.parse(result);
+                        console.log(returnedData);
+                        if (returnedData == true) {
+                            window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "Search" })";
+                        }
+                        else {
+                            alert("Login attempt failed.");
+                        }
+                    },
+                    async: true,
+                    processData: false
+                });
+            }
+        </script>
+        <link href="~/css/site.css" rel="stylesheet" type="text/css">
 
-	<style>
-		.yellow {
-			width: 100%;
-			height: 100%;
-			text-align: center;
-			padding-top: 15%;
-			background-image: linear-gradient(to top,white,#FFD700);
-		}
+        <style>
+            .yellow {
+                width: 100%;
+                height: 100%;
+                text-align: center;
+                padding-top: 15%;
+                background-image: linear-gradient(to top,white,#FFD700);
+            }
 
-		#error {
-			color: red;
-		}
-	</style>
-</head>
+            #error {
+                color: red;
+            }
+        </style>
+    </head>
 
 <body>
 	<div class="body yellow">
