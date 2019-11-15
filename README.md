@@ -27,8 +27,6 @@ Change  the value of "SupConnectionString" in appsettings.json to match the IP a
 
 To be able to test the Merge feature in this release:
 
-Place "Guest_Parking_Letter_Template.docx" from the Templates folder in the SUP project in the "C:\Users\Public\Documents\Templates" directory. Create this directory if it does not exist.
-
 This template relies on the client's address and parking pass number, so make sure for optimal results to test out on clients with this information filled out.
 
-To perform merge, select clients to perform merge on, hit "Select Template", and choose "Letter Template." Hit "Continue" followed by "Generate Output." A zip file with the merged documents will be presented for download.
+To perform merge, select clients to perform merge on, hit "Select Template", and choose "Guest_Parking_Letter_Template.docx." Hit "Continue" followed by "Generate Output." A zip file with the merged documents will be presented for download.
