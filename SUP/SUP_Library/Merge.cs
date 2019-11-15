@@ -90,8 +90,7 @@ namespace SUP_Library
         private static string createFileFromTemplate(string templateName, Client client)
         {
 
-            string fileName = templateName.Substring(0, templateName.Length - 5) + "_" + client.Last_Name + "_" + client.First_Name + ".docx";
-           
+            
             if (!Directory.Exists(zipPath))
             {
                 Directory.CreateDirectory(zipPath);
@@ -100,15 +99,25 @@ namespace SUP_Library
             {
                 Directory.CreateDirectory(savePath);
             }
+            const string EXTENSION = ".docx";
+            string fileName = templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + EXTENSION;
+            fileName = savePath + "\\" + fileName;
+
+            
+            for(int i=2; File.Exists(fileName); i++) // file already exists...is there more than one db entry with this name?
+            {
+                fileName = savePath + "\\" + templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + i + EXTENSION;
+            }   
+
             try
             {
-                File.Copy(templatePath + "\\" + templateName, savePath + "\\" + fileName);
+                File.Copy(templatePath + "\\" + templateName, fileName);//savePath + "\\" + fileName);
             }
             catch (Exception e)
             {
                 return null;
             }
-            return savePath + "\\" + fileName;
+            return fileName;//savePath + "\\" + fileName;
 
         }
         public static string compress(string templateName)
