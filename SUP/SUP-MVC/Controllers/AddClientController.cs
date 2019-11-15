@@ -110,6 +110,24 @@ namespace SUP_MVC.Controllers
                 return "FAAAAAILLL";
             }
         }
+
+		[HttpPost]
+		public string CheckForNearMatch([FromBody] string args)
+		{
+			string[] separatedArgs = args.Split(',');
+			if (separatedArgs.Length < 2)
+			{
+				throw (new Exception("Illegal number of arguments"));
+			}
+			var firstName = separatedArgs[0];
+			var lastName = separatedArgs[1];
+
+			var listOfPossibleMatches = SUP_Library.DatabaseConnection.checkForNearMatch(lastName, firstName);
+
+			var json = JsonConvert.SerializeObject(listOfPossibleMatches);
+
+			return json;
+		}
         
         
         // POST: AddClient/UpdateClient
@@ -122,7 +140,7 @@ namespace SUP_MVC.Controllers
                 string[] separatedArgs = args.Split(',');
                 if (separatedArgs.Length < 13)
                 {
-                    throw (new Exception("Oopsie"));
+                    throw (new Exception("Illegal number of arguments"));
                 }
                 var clientId = separatedArgs[0];
                 var firstName = separatedArgs[1];
@@ -146,7 +164,7 @@ namespace SUP_MVC.Controllers
                     int intClientId = Int32.Parse(clientId);
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    /*if (MiddleInitial?.Length >= 1)
+                    if (MiddleInitial?.Length >= 1)
                     {
                         Client.Middle_initial = MiddleInitial.Substring(0,1);
                     }
@@ -157,19 +175,19 @@ namespace SUP_MVC.Controllers
                         Org_Type = organization,
                         Title = title
                     };
-                    /*Client.Email = new SUP_Library.DBComponent.EmailAddress
+                    Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
                         Client_ID = intClientId,
                         Email = Email
-                    };*/
-                    /*Client.Phone = new SUP_Library.DBComponent.PhoneNumber
+                    };
+                    Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
                         Client_ID = intClientId,
                         Number = Phone
-                    };*/
+                    };
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
-                    return DatabaseConnection.updateClient(Client);
+					return DatabaseConnection.updateClient(Client);
                 }
                 else
                 {
