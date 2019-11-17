@@ -464,7 +464,8 @@
         }
 
 		function TemplateMerge() {
-            var dataPost = "";
+			var radioValue = $("input[class='selecter']:checked").val();
+            var dataPost = radioValue + " ";
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
@@ -485,7 +486,7 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-                    if (returnedData != "") {
+					if (returnedData != "") {
                 //use window.location.href for redirect to download action for download the file
                 window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadZipFile" })/?fileName=" + returnedData;
             }
@@ -495,8 +496,8 @@
             });
         }
 
-        function ExportTemplate() {
-            var dataPost = "";
+		function ExportTemplate() {
+			var dataPost = "";
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
@@ -1116,7 +1117,7 @@
 						<th>Uploaded by</th>
 					</tr>
 					<tr class="templateRowTemplate">
-						<td id="radioSet" class="radio" name="fileName"><input class="selecter" type="radio" name="template" value=""></td>
+						<td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
 						<td id="colSet" class="rowTemplateName"></td>
 						<td id="colSet" class="rowTemplateDate"></td>
 						<td id="colSet" class="rowTemplateUser"></td>
