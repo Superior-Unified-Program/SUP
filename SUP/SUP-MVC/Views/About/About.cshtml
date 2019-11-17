@@ -8,21 +8,45 @@
 	<meta charset="utf-8">
 	<title>Search</title>
 	<style>
+        .box {
+            display:flex;
+        }
+        .photo {
+            height:auto;
+        }
+        .container {
+            direction:inherit;
+        }
+        .hyperLink {
+            margin-left: 15%;
+            margin-top: 5%;
+            width: 70%;
+            height: 60px;
+            background-color: #FFD700;
+            border: 1px solid black;
+            padding-top: 12px;
+            overflow:hidden;
+        }
 	</style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
 
 <body class="organize">
-	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-		<img src="../../logo.jpg" height="300" />
-		<p align="center" style="font-size:30px;"><b>Welcome to the Superior Unified Program(SUP).</b> &copy; <sub>2019</sub></p>
-		<p align="center" style="font-size:18px;">With this System you will be able to search for Clients and add them to the central database and perform various output tasks.</p>
-		<p>Developers:</p>
-		<p align="center" style="font-size:18px;">Justin Heino, Matthew Holcomb, Jacob Leonard, Qingyuan Liu, Duy Nguyen, Marcus Parmeter, Louis Pearson, Chao Wang</p>
-		<a href="https://1drv.ms/x/s!Ag2_WbsJNprZkAo-q0hOeE-33Uox?e=4OH2Ot" style="text-decoration: none;">
-			<div style="margin-left: 15%; margin-top: 5%; width: 70%; height: 60px; background-color: #FFD700; border: 1px solid black; padding-top: 12px;">
-				<p align="center">Looking for an update on the sites features? Click here to see a list of features to come and their current status.</p>
-			</div>
-		</a>
-	</div>
+    <div class="box">
+        <div style="position: absolute; left: 15%; top: 10%; width: 85%;">
+            <div class="photo"><img src="../../logo.jpg" /></div>
+            <div class="container">
+                <p align="center" style="font-size:30px;"><b>Welcome to the Superior Unified Program(SUP).</b> &copy; <sub>2019</sub></p>
+                <p align="center" style="font-size:18px;">With this System you will be able to search for Clients and add them to the central database and perform various output tasks.</p>
+                <p>Developers:</p>
+                <p align="center" style="font-size:18px;">Justin Heino, Matthew Holcomb, Jacob Leonard, Qingyuan Liu, Duy Nguyen, Marcus Parmeter, Louis Pearson, Chao Wang</p>
+                
+                <div class="hyperLink" >
+                    <a href="https://1drv.ms/x/s!Ag2_WbsJNprZkAo-q0hOeE-33Uox?e=4OH2Ot" style="text-decoration: none;">
+                        <p align="center">Looking for an update on the sites features? Click here to see a list of features to come and their current status.</p>
+                </div>
+            </div>
+            </a>
+        </div>
+    </div>
 </body>

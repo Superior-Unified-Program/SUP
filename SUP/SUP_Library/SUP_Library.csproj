@@ -168,8 +168,8 @@
     <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Templates\Guest_Parking_Letter_Template.docx" />
-    <None Include="Templates\Guest_Parking_Letter_Template_Original.docx" />
-    <None Include="Templates\Letter_Template.docx" />
+    <None Include="Templates\Incompatible\Guest_Parking_Letter_Template_Original.docx" />
+    <None Include="Templates\Incompatible\Letter_Template.docx" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
