@@ -263,5 +263,22 @@ namespace SUP_MVC.Controllers
 				//return "FAAAAAILLL";
 			}
 		}
+
+		[HttpPost]
+		public string GetTemplateInfo([FromBody] string args)
+		{
+			try
+			{
+				var nameList = SUP_Library.Merge.getTemplateNames();
+				var nameAndDateList = SUP_Library.Merge.getFileModificationDates(nameList);
+				var json = JsonConvert.SerializeObject(nameAndDateList);
+				return json;
+			}
+			catch (Exception e)
+			{
+				throw e;
+				//return "FAAAAAILLL";
+			}
+		}
 	}
 }

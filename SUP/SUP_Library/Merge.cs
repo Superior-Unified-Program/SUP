@@ -222,5 +222,15 @@ namespace SUP_Library
         {
             return templatePath;
         }
+		public static List<string> getFileModificationDates(List<string> files)
+		{
+			List<string> results = new List<string>();
+			foreach (string file in files)
+			{
+				string modification = File.GetLastWriteTime(templatePath + "//" + file).ToShortDateString();
+				results.Add(file + " " + modification);
+			}
+			return results;
+		}
     }
 }

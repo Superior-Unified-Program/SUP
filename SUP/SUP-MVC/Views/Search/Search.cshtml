@@ -531,7 +531,7 @@
 		function LoadTemplates() {
             var dataPost = "";
             $.ajax({
-                url: '/Search/GetTemplateNames',
+                url: '/Search/GetTemplateInfo',
                 type: 'POST',
                 data: JSON.stringify(dataPost),
                 contentType: 'application/json; charset=utf-8',
@@ -543,10 +543,15 @@
 					$('.templateTableRow').remove();
 					$('.templateRowTemplate').hide();
 					for (var i = 0; i < returnedData.length; i++) {
-						var name = returnedData[i];
+						var splitter = returnedData[i].lastIndexOf(" ");
+						var name = returnedData[i].substring(0, splitter);
+						var date = returnedData[i].substring(splitter + 1);
+						console.log(name);
+						console.log(date);
 						var Row = $('.templateRowTemplate').clone();
 						Row.removeClass('templateRowTemplate').addClass('templateTableRow').show();
 						Row.find('.rowTemplateName').text(name);
+						Row.find('.rowTemplateDate').text(date);
 						Row.find('.selecter').val(name);
 						$('.templateRowTemplate').parent().append(Row);
 						Row.show();
