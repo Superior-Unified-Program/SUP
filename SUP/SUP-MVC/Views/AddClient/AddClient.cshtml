@@ -446,6 +446,8 @@
         function popMatchFound() {
             document.getElementById("matchFoundPopup").style.display = "flex";
         }
+
+
     </script>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
@@ -469,8 +471,8 @@
                 <div class="row">
                     <div class="cell">
                         Organization Type<br />
-						<select multip id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
-						<option value=""></option>
+						<select multiple="multiple" id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5" title="Press Ctrl while clicking multiple selections in Windows (use Command + click on Mac)">
+			
 						<option value="business">Business</option>
 						<option value="electedOfficial">Elected Official</option>
 						<option value="educationAll">Education - All</option>
