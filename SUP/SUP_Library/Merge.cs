@@ -24,9 +24,13 @@ namespace SUP_Library
     /// </summary>
     public class Merge
     {
-        private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-        private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
-        private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+        //private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+        //private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+        //private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+
+		private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+		private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+		private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
 		private struct token
         {
             public string open;
