@@ -26,7 +26,9 @@
 		}
 
 		.templateTable {
-			width: 100%;
+		width: 100%;
+        position:relative;
+        border-collapse:collapse;
 		}
 
         .organize {
@@ -97,18 +99,41 @@
 
         }
 
+        .searchResult{
+        height: 420px;
+        overflow-y:scroll; 
+        overflow-x: auto; 
+        width: 80%; 
+        margin-left: 10%; 
+        }
+
+    
+        .flex-select{
+        width: 14.3%; 
+        float: right;
+        margin-right: 9.8%;
+        margin-left: 75.9%;
+        }
+
 		.flex-colum {
 		align-content:center;
 		overflow: auto;
-		width: 10.5%;
+		width: calc((73%-79px)/6); 
+        height: 29px;
+        float: left;
         overflow: hidden; 
 		}
 
-		.flex-email {
-        align-content:center;
-		overflow: auto;
-		width: 15.7%;
-        overflow: hidden; 
+        .flex-view{
+        margin-left:10%;
+        width: 56px; 
+        float: left;
+        }
+
+		.flex-checkBox{
+        margin-right:11%;
+        width:13px; 
+        float:right;
 		}
 
         .yellowizedSelect {
@@ -1002,7 +1027,7 @@
 
                     <div class="sidebar-right">
                         <a>Organization Type</a><br />
-						<select class="custom-select searchOrganization" onKeyUp="Search()" name="category" style="width:100%">
+						<select multiple title="Press Ctrl while clicking multiple selections in Windows (use Command + click on Mac)" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
 							<!--We need to keep an empty option to allow searches that do not include organization-->
 							<option value=""></option>
 							<option value="business">Business</option>
@@ -1035,56 +1060,56 @@
 				</div>
 			</div>
         </div>
-        <div class="flex-colum" style="width: 14.3%; float: right; margin-right: 9.8%;margin-left: 75.9%;">
+        <div class="flex-select">
             <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
             <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
-            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect"> Inverse</a>
+            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect">Exclude</a>
         </div>
-        <div class="flex-colum" style="width: 3.4%; float: left; margin-left: 10%; border: 1px solid black; visibility:hidden;">
+        <div class="flex-view">
             <p></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%; float: left;">
+        <div class="flex-colum">
             <p><b>First Name</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%; float: left;">
+        <div class="flex-colum">
             <p><b>Last Name</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Job Title</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Organization Name</b></p>
         </div>
-        <div class="flex-email" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Email</b></p>
         </div>
-        <div class="flex-colum" style="float:right; width: 11.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Phone #</b></p>
         </div>
-        <div class="flex-colum" style="float:right; width: 2.8%;float: left;">
+        <div class="flex-checkBox">
             <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
         </div>
-
-        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
-            <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
+        
+        <div class="searchResult" align="right">
+            <table class="templateTable" cellpadding="0px">
                 <tbody style="width:100%">
                     <tr class="templateRow" style="width:100%">
-                        <td>
+                        <td style="overflow:hidden;">
                             <button class="yellowizedButton rowViewButton dataCell" value="0">View</button>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowFirstName dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowLastName dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowJobTitle dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowOrganization dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowEmailAddress dataCell" type="text" value="" disabled>
                         </td>
                         <td>
