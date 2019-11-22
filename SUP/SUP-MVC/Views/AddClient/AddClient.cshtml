@@ -87,12 +87,13 @@
         }
 
         .noteCell {
-            width: 50%;
+            width: 100%;
             text-align: left;
+			overflow: hidden;
         }
 
-        .activeCell {
-            width: 25%;
+        .cellMini {
+            width: 8%;
             text-align: left;
         }
 
@@ -581,15 +582,16 @@
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Holiday Card Recipient<br /><input type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Community Breakfast Attendee<br /><input type="checkbox" tabindex="18" checked="checked"></div>
 					<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
+				</div>
+				<div class="row">
 					<div class="noteCell">
-						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
-						</div>
-						<div class="row">
-							<div class="saveEditCell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
-						</div>
+						Note<br /><textarea style="width: 75%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
 					</div>
+					<div class="cell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
 				</div>
 			</div>
 		</form>
