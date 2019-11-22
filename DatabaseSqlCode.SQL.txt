@@ -2,19 +2,20 @@ USE [master]
 GO
 
 /*Create database*/
-IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdb' OR name = 'SUPdb')
-   exec('CREATE DATABASE [SUPdb] CONTAINMENT = NONE')
+IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdbTEST' OR name = 'SUPdbTEST')
+   exec('CREATE DATABASE [SUPdbTEST] CONTAINMENT = NONE')
 GO
 
 /* create User If possible */
 --CREATE LOGIN teamRADGSHAUser
 USE [master]
+IF EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser') DROP LOGIN [SUPuser]
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
    exec('CREATE LOGIN SUPuser WITH PASSWORD = ''abc123''')
 GO
 
 --create user
-USE [SUPdb]
+USE [SUPdbTEST]
 IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
@@ -50,10 +51,11 @@ CREATE TABLE AccountAudits(
     updated_at DATETIME NOT NULL,
     operation varchar(20) NOT NULL
 )
-GO
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
-CREATE TABLE Client ( ID int not null IDENTITY(1,1) PRIMARY KEY, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Notes varchar(30))
+CREATE TABLE Client ( ID int not null IDENTITY(1,1), Prefix varchar(10), Last_Name varchar(50),
+First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(30),
+CONSTRAINT PK_Client PRIMARY KEY ( ID ))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
 CREATE TABLE Address ( Client_ID int, Line1 varchar(35), Line2 varchar(35), City varchar(25), State char(2), Zip char(5), 
@@ -73,10 +75,10 @@ CREATE TABLE Organization ( [Name] varchar(30), [Type] varchar(20),
 CONSTRAINT PK_Organization PRIMARY KEY ( [Name], [Type] ) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Works_For')
-CREATE TABLE Works_For ( Client_ID int, Org_Name varchar(30), Org_Type varchar(20), Title varchar(20), 
-CONSTRAINT PK_Works_For PRIMARY KEY ( Client_ID, Org_Name, Org_Type ), 
-CONSTRAINT FK_Works_For_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID), 
-CONSTRAINT FK_Works_For_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
+CREATE TABLE Associated_With ( Client_ID int, Org_Name varchar(30), Org_Type varchar(20), Title varchar(20), [Primary] bit, 
+CONSTRAINT PK_Associated_With PRIMARY KEY ( Client_ID, Org_Name, Org_Type ),
+CONSTRAINT FK_Associated_With_Client FOREIGN KEY (Client_ID) REFERENCES Client (ID),
+CONSTRAINT FK_Associated_With_Organization FOREIGN KEY (Org_Name, Org_type) REFERENCES Organization ( [Name], [Type] ) )
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Assistant')
 CREATE TABLE Assistant ( Boss_ID int, First_Name varchar(50), Last_Name varchar(50), 
@@ -162,16 +164,30 @@ END')
 --creation of any views
 -----------------------------------------------------------------------------------------------------------------------------
 --creates a view that is used in the queryClientFull SP
-USE [SUPdb]
+USE [SUPdbTEST]
 IF OBJECT_ID('viewall', 'V') IS NOT NULL
 DROP VIEW viewAll
 GO
 
 CREATE VIEW viewAll
 AS
-	SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title FROM Client 
+	SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active,
+	Holiday_Card, Community_Breakfast, Notes, Line1, Line2, City, State, Zip, Org_Name, Org_Type, Title, [Primary] FROM Client 
 		FULL JOIN [Address] ON ID = Address.Client_ID
-		FULL JOIN Works_For ON ID = Works_For.Client_ID
+		FULL JOIN Associated_With ON ID = Associated_With.Client_ID
+		FULL JOIN Assistant ON ID = Assistant.Boss_ID
+		WHERE [Primary] = 1
+GO
+
+IF OBJECT_ID('viewLess', 'V') IS NOT NULL
+DROP VIEW viewLess
+GO
+
+CREATE VIEW viewLess
+AS
+	SELECT ID, Prefix, Client.Last_Name, Client.First_Name, Middle_initial, Assistant.First_Name AS 'Assistant_First_Name', Assistant.Last_Name AS 'Assistant_Last_Name', Permit_Num, Active,
+	Holiday_Card, Community_Breakfast, Notes, Line1, Line2, City, State, Zip FROM Client 
+		FULL JOIN [Address] ON ID = Address.Client_ID
 		FULL JOIN Assistant ON ID = Assistant.Boss_ID
 GO
 
@@ -285,10 +301,10 @@ BEGIN
 	IF @title IS NULL SET @title = ''
 
 
-	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit, Notes varchar(30),
-		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit,
+	Holiday_Card bit, Community_Breakfast bit, Notes varchar(30), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
 
-	INSERT INTO #searchResults SELECT * FROM [viewAll]
+	INSERT INTO #searchResults SELECT * FROM [viewLess]
 
 	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
 
@@ -299,13 +315,11 @@ BEGIN
 	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
 	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
 
-	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card_Sent, Community_Breakfast_Invite, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
 		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
 	WHERE First_Name LIKE (@firstName + '%') 
 		AND Last_Name LIKE (@lastName + '%') 
-		AND Org_type LIKE (@orgType + '%')
-		AND Title LIKE (@title + '%') OR Title IS NULL
-	ORDER BY Last_Name, First_Name, Middle_initial, Org_Type
+	ORDER BY Last_Name, First_Name, Middle_initial
 
 	DROP TABLE #searchResults
 
@@ -325,9 +339,10 @@ ALTER PROCEDURE addClient
 	@prefix varchar(10) = '', @firstName varchar(50),
 	@lastName varchar(50), @middleInitial varchar(1) = '',
 	@permitNum varchar(50) = '',
-	@active bit = 1, @notes varchar(30) = '',
-	@orgName varchar(30), @orgType varchar(20),
-	@title varchar(20) = '', @Personal_phoneNumber varchar(11) = '',
+	@active bit = 1, @holidayCard bit = 0,
+	@communityBreakfast bit = 0,  @notes varchar(30) = '',
+	/*@orgName varchar(30), @orgType varchar(20),
+	@title varchar(20) = '',*/ @Personal_phoneNumber varchar(11) = '',
 	@Business_phoneNumber varchar(11) = '', @Personal_Email varchar(30) = '',
 	@Business_Email varchar(30) = '', @Assistant_Email varchar(30) = '',
 	@Assistant_phoneNumber varchar(11) = '', @line1 varchar(35) = '',
@@ -340,8 +355,8 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
-    	IF @Business_Email IS NULL SET @Business_Email = ''
+    -- Insert statements for procedure here
+    IF @Business_Email IS NULL SET @Business_Email = ''
 	IF @Assistant_Email IS NULL SET @Assistant_Email = ''
 	IF @Personal_Email IS NULL SET @Personal_Email = ''
 	IF @Business_phoneNumber IS NULL SET @Business_Email = ''
@@ -350,9 +365,9 @@ BEGIN
 	IF @middleInitial IS NULL SET @middleInitial = ''
 	IF @permitNum IS NULL SET @permitNum = ''
 	IF @notes IS NULL SET @notes = ''
-	IF @orgName IS NULL SET @orgName = ''
+	/*IF @orgName IS NULL SET @orgName = ''
 	IF @orgType IS NULL SET @orgType = ''
-	IF @title IS NULL SET @title = ''
+	IF @title IS NULL SET @title = ''*/
 	IF @line1 IS NULL SET @line1 = ''
 	IF @line2 IS NULL SET @line2 = ''
 	IF @state IS NULL SET @state = ''
@@ -360,16 +375,16 @@ BEGIN
 	IF @assistantFirstName IS NULL SET @assistantFirstName = ''
 	IF @assistantLastName IS NULL SET @assistantLastName = ''
     
-	INSERT INTO Client (Prefix, First_Name, Last_Name, Middle_initial, Permit_Num, Client.Active, Notes) VALUES (@prefix, @firstName, @lastName, @middleInitial, @permitNum, @active, @notes)
+	INSERT INTO Client (Prefix, First_Name, Last_Name, Middle_initial, Permit_Num, Active, Holiday_Card, Community_Breakfast, Notes) VALUES (@prefix, @firstName, @lastName, @middleInitial, @permitNum, @active, @holidayCard, @communityBreakfast, @notes)
 	
 	-- declare an int and set its value based on the auto generated ID from inserting into the client table in the previous line
 	DECLARE @ID int
 	SET @ID = SCOPE_IDENTITY()
 
 	-- set values into the tables. dont repeat adding to organization table in the case that the organization and type already exist in the database
-	IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
-	INSERT INTO Works_For(Client_ID, Org_Name, Org_Type, Title) VALUES (@ID, @orgName, @orgType, @title)
-	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
+	/*IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
+	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@ID, @orgName, @orgType, @title, 1)
+	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)*/
 
 	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'business', @Business_phoneNumber)
 	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'personal', @Personal_phoneNumber)
@@ -617,10 +632,10 @@ BEGIN
 	-- Insert statements for procedure here
 
 	
-	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit, Notes varchar(30),
-		Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5), Org_Name varchar(30), Org_Type varchar(20), Title varchar(20))
+	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10),
+	Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(30), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
 
-	INSERT INTO #searchResults SELECT * FROM [viewAll]
+	INSERT INTO #searchResults SELECT * FROM [viewLess]
 
 	ALTER TABLE #searchResults ADD Personal_Email varchar(30), Business_Email varchar(30), Assistant_Email varchar(30), Personal_Phone varchar(11), Business_Phone varchar(11), Assistant_Phone varchar(30)
 
@@ -631,7 +646,7 @@ BEGIN
 	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
 	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
 
-	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card_Sent, Community_Breakfast_invite, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, 
 		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
 	WHERE ID = @Client_Id
 
@@ -655,14 +670,14 @@ BEGIN
 	DECLARE @org_name varchar(30) = null
 	DECLARE @org_type varchar(30) = null
 
-	-- check if they are in Works_For
-	if (SELECT COUNT(*) from Works_For Where Client_ID = @ID) = 1
+	-- check if they are in Associated_With
+	if (SELECT COUNT(*) from Associated_With Where Client_ID = @ID) = 1
 	BEGIN
 		-- store Org_Name for later use
-		SET @org_name = (SELECT Org_Name From Works_For Where Client_ID = @ID)
+		SET @org_name = (SELECT Org_Name From Associated_With Where Client_ID = @ID)
 		-- store Org_Type for later use
-		SET @org_type = (SELECT Org_Type From Works_For Where Client_ID = @ID)
-		DELETE from Works_For Where Client_ID = @ID
+		SET @org_type = (SELECT Org_Type From Associated_With Where Client_ID = @ID)
+		DELETE from Associated_With Where Client_ID = @ID
 	END
 
 	DELETE from [Address] Where Client_ID = @ID
@@ -676,15 +691,55 @@ BEGIN
 	DELETE from Client Where ID = @ID
 
 	-- if no other client work for that orginization delete it
-	if (SELECT COUNT(*) from Works_For Where Org_Name = @org_name AND Org_Type = @org_type) = 0
+	if (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
 		DELETE from Organization Where [Name] = @org_name AND [Type] = @org_type
 END
 
 GO
 
 -- =============================================
+-- Create date: 11/22/2019
+-- Description:	queries for organizations of a given ID
+-- =============================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('queryOrganization'))
+   exec('CREATE PROCEDURE queryOrganization AS BEGIN SET NOCOUNT ON END')
+GO
+
+ALTER PROCEDURE queryOrganization
+	@ID int
+
+AS
+BEGIN
+
+	SELECT * FROM Associated_With WHERE Client_ID = @ID
+
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].[addOrganization]    Script Date: 11/22/2019 9:42:15 AM ******/
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('addOrganization'))
+   exec('CREATE PROCEDURE addOrganization AS BEGIN SET NOCOUNT ON END')
+GO
+
+ALTER PROCEDURE addOrganization
+	@clientID int, @orgName varchar(30),
+	@orgType varchar(20), @title varchar(20) = '',
+	@primary bit
+
+AS
+BEGIN
+
+	IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
+	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@clientID, @orgName, @orgType, @title, @primary)
+
+END
+GO
+
+
+
+-- =============================================
 -- Create date: 11/1/2019
--- Description: adds dummy
+-- Description: adds dummy data
 -- =============================================
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('addDummyData'))
    exec('CREATE PROCEDURE addDummyData AS BEGIN SET NOCOUNT ON END')
