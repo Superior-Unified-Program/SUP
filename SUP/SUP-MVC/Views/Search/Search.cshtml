@@ -1005,28 +1005,28 @@
         <p class="lastNameTemplate"></p>
     </div>
     <div id="mainWindow">
-        <div style="width: 80%; margin-left: 10%;" align="right">
-            <form>
-                <div class="flex-container">
-                    <div class="sidebar-left">
-                        <a>First Name</a><br />
-                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
-                        <div class="auto_hidden" id="auto"></div>
-                        <script>
-                            var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
-                        </script>
-                    </div>
-                    <div class="sidebar-middle">
-                        <a>Last Name</a><br />
-                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
-                        <div class="auto_hidden" id="autoLastName"></div>
-                        <script>
-                            var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
-                        </script>
-                    </div>
+		<div style="width: 80%; margin-left: 10%;" align="right">
+			<form>
+				<div class="flex-container">
+					<div class="sidebar-left">
+						<a>First Name</a><br />
+						<input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
+						<div class="auto_hidden" id="auto"></div>
+						<script>
+							var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
+						</script>
+					</div>
+					<div class="sidebar-middle">
+						<a>Last Name</a><br />
+						<input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
+						<div class="auto_hidden" id="autoLastName"></div>
+						<script>
+							var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
+						</script>
+					</div>
 
-                    <div class="sidebar-right">
-                        <a>Organization Type</a><br />
+					<div class="sidebar-right">
+						<a>Organization Type</a><br />
 						<select multiple title="Press Ctrl while clicking multiple selections in Windows (use Command + click on Mac)" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
 							<!--We need to keep an empty option to allow searches that do not include organization-->
 							<option value=""></option>
@@ -1044,22 +1044,30 @@
 							<option value="government">Government</option>
 							<option value="other">Other</option>
 						</select>
-                    </div>
+					</div>
 
-                </div>
+				</div>
 
-            </form>
-			<div style="float:left; margin-left: 45%;">
-				<div>
+			</form>
+			<div style="float:left; display: flex; width: 100%">
+				<div style="display: flex; width: 25%">
 					<p style="float:left;">Display Inactive: </p>
 					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
 				</div>
-				<div>
+				<div style="display: flex; width: 25%">
 					<p style="float:left;">Has Permit: </p>
 					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
 				</div>
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Holiday Card Recipient: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
+				</div>
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Community Breakfast Attendee: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
+				</div>
 			</div>
-        </div>
+		</div>
         <div class="flex-select">
             <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
             <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
