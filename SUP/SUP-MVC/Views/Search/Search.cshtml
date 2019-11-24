@@ -8,26 +8,29 @@
     <meta charset="utf-8">
     <title>Search</title>
     <style>
-		@@media only screen and (max-width: 600px) {
-			#ribbonDiv {
-				margin-left: -25%;
-			}
-			#mainWindow {
-				left: -15%;
-				position: absolute;
-			}
-		}
+        @@media only screen and (max-width: 600px) {
+            #ribbonDiv {
+                margin-left: -25%;
+            }
 
-		#mainWindow {
-			 position: absolute;
-			 left: 15%;
-			 top: 10%;
-			 width: 85%;
-		}
+            #mainWindow {
+                left: -15%;
+                position: absolute;
+            }
+        }
 
-		.templateTable {
-			width: 100%;
-		}
+        #mainWindow {
+            position: absolute;
+            left: 15%;
+            top: 10%;
+            width: 85%;
+        }
+
+        .templateTable {
+            width: 100%;
+            position: relative;
+            border-collapse: collapse;
+        }
 
         .organize {
             width: 100%;
@@ -70,46 +73,67 @@
             width: 100%;
             height: 100px;
             align-items: center;
-            flex-direction: row;    
+            flex-direction: row;
             justify-content: center;
         }
 
         .sidebar-left {
-         align-self:center;
+            align-self: center;
             width: 33.3%;
             margin: 5px;
-            padding:10px;
-
+            padding: 10px;
         }
+
         .sidebar-middle {
-            align-self:center;
-            width:33.3%;
-            margin: 5px;
-            padding:10px;
-
-
-        } 
-           .sidebar-right{
-            align-self:center;
+            align-self: center;
             width: 33.3%;
             margin: 5px;
-            padding:10px;
-
+            padding: 10px;
         }
 
-		.flex-colum {
-		align-content:center;
-		overflow: auto;
-		width: 10.5%;
-        overflow: hidden; 
-		}
+        .sidebar-right {
+            align-self: center;
+            width: 33.3%;
+            margin: 5px;
+            padding: 10px;
+        }
 
-		.flex-email {
-        align-content:center;
-		overflow: auto;
-		width: 15.7%;
-        overflow: hidden; 
-		}
+        .searchResult {
+            height: 420px;
+            overflow-y: scroll;
+            overflow-x: auto;
+            width: 80%;
+            margin-left: 10%;
+        }
+
+
+        .flex-select {
+            width: 14.3%;
+            float: right;
+            margin-right: 9.8%;
+            margin-left: 75.9%;
+        }
+
+        .flex-colum {
+            align-content: center;
+            overflow: auto;
+            width: calc((73%-79px)/6);
+            height: 29px;
+            float: left;
+            overflow: hidden;
+        }
+
+        .flex-view {
+            margin-left: 10%;
+            width: 56px;
+            float: left;
+        }
+
+        .flex-checkBox {
+            margin-right: 11%;
+            width: 13px;
+            float: right;
+        }
 
         .yellowizedSelect {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
@@ -126,7 +150,7 @@
             text-decoration: none;
         }
 
-                 
+
         .auto_hidden {
             width: 200px;
             border: #E0E0E0;
@@ -185,10 +209,10 @@
             text-decoration: none;
         }
 
-        .yellowizedButton:hover {
-            background: linear-gradient(to bottom, #decc47 5%, #ffd146 100%);
-            background-color: #d1c060;
-        }
+            .yellowizedButton:hover {
+                background: linear-gradient(to bottom, #decc47 5%, #ffd146 100%);
+                background-color: #d1c060;
+            }
 
 
         .yellowizedTextField {
@@ -252,92 +276,97 @@
         }
 
         .custom-select {
-          position: relative;
-          font-family: Arial;
+            position: relative;
+            font-family: Arial;
         }
 
-        .custom-select select {
-          display: none; /*hide original SELECT element:*/
-        }
+            .custom-select select {
+                display: none; /*hide original SELECT element:*/
+            }
 
         .select-selected {
-          background-color: yellow;
+            background-color: yellow;
         }
 
-        /*style the arrow inside the select element:*/
-        .select-selected:after {
-          position: absolute;
-          content: "";
-          top: 14px;
-          right: 10px;
-          width: 0;
-          height: 0;
-          border: 6px solid transparent;
-          border-color: #fff transparent transparent transparent;
-        }
+            /*style the arrow inside the select element:*/
+            .select-selected:after {
+                position: absolute;
+                content: "";
+                top: 14px;
+                right: 10px;
+                width: 0;
+                height: 0;
+                border: 6px solid transparent;
+                border-color: #fff transparent transparent transparent;
+            }
 
-        /*point the arrow upwards when the select box is open (active):*/
-        .select-selected.select-arrow-active:after {
-          border-color: transparent transparent #fff transparent;
-          top: 7px;
-        }
+            /*point the arrow upwards when the select box is open (active):*/
+            .select-selected.select-arrow-active:after {
+                border-color: transparent transparent #fff transparent;
+                top: 7px;
+            }
 
         /*style the items (options), including the selected item:*/
-        .select-items div,.select-selected {
-          color: #ffffff;
-          padding: 8px 16px;
-          border: 1px solid transparent;
-          border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-          cursor: pointer;
-          user-select: none;
+        .select-items div, .select-selected {
+            color: #ffffff;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+            cursor: pointer;
+            user-select: none;
         }
 
         /*style items (options):*/
         .select-items {
-          position: absolute;
-          background-color: yellow;
-          top: 100%;
-          left: 0;
-          right: 0;
-          z-index: 99;
+            position: absolute;
+            background-color: yellow;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
         }
 
         /*hide the items when the select box is closed:*/
         .select-hide {
-          display: none;
+            display: none;
         }
 
         .select-items div:hover, .same-as-selected {
-          background-color: rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .customInput {
-          -webkit-box-sizing: content-box;
-          -moz-box-sizing: content-box;
-          box-sizing: content-box;
-          padding: 8px 8px 8px 8px;
-          border-top: 1px solid #b7b7b7;
-          border-right: 2px solid #b7b7b7;
-          border-bottom: 1px solid #b7b7b7;
-          border-left: 2px solid #b7b7b7;
-          -webkit-border-radius: 5px / 40px;
-          border-radius: 5px / 40px;
-          font: normal 16px/normal Arial, Helvetica, sans-serif;
-          color: rgba(0,0,0,1);
-          -o-text-overflow: clip;
-          text-overflow: clip;
-          background: rgba(255,255,224,1);
-          -webkit-box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
-          box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
-          text-shadow: 1px 1px 0 rgba(254,255,242,1) ;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            padding: 8px 8px 8px 8px;
+            border-top: 1px solid #b7b7b7;
+            border-right: 2px solid #b7b7b7;
+            border-bottom: 1px solid #b7b7b7;
+            border-left: 2px solid #b7b7b7;
+            -webkit-border-radius: 5px / 40px;
+            border-radius: 5px / 40px;
+            font: normal 16px/normal Arial, Helvetica, sans-serif;
+            color: rgba(0,0,0,1);
+            -o-text-overflow: clip;
+            text-overflow: clip;
+            background: rgba(255,255,224,1);
+            -webkit-box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+            box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+            text-shadow: 1px 1px 0 rgba(254,255,242,1);
         }
+    </style>
 
-            </style>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+
+    <link rel="stylesheet" href="css/style.css">
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
-    
-       
+
+
     //CUSTOM SELECT BOX
         var x, i, j, selElmnt, a, b, c;
         /*look for any elements with the class "custom-select":*/
@@ -464,7 +493,8 @@
         }
 
 		function TemplateMerge() {
-            var dataPost = "";
+			var radioValue = $("input[class='selecter']:checked").val();
+            var dataPost = radioValue + " ";
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
@@ -485,7 +515,7 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-                    if (returnedData != "") {
+					if (returnedData != "") {
                 //use window.location.href for redirect to download action for download the file
                 window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadZipFile" })/?fileName=" + returnedData;
             }
@@ -495,8 +525,8 @@
             });
         }
 
-        function ExportTemplate() {
-            var dataPost = "";
+		function ExportTemplate() {
+			var dataPost = "";
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
@@ -530,7 +560,7 @@
 		function LoadTemplates() {
             var dataPost = "";
             $.ajax({
-                url: '/Search/GetTemplateNames',
+                url: '/Search/GetTemplateInfo',
                 type: 'POST',
                 data: JSON.stringify(dataPost),
                 contentType: 'application/json; charset=utf-8',
@@ -542,10 +572,15 @@
 					$('.templateTableRow').remove();
 					$('.templateRowTemplate').hide();
 					for (var i = 0; i < returnedData.length; i++) {
-						var name = returnedData[i];
+						var splitter = returnedData[i].lastIndexOf(" ");
+						var name = returnedData[i].substring(0, splitter);
+						var date = returnedData[i].substring(splitter + 1);
+						console.log(name);
+						console.log(date);
 						var Row = $('.templateRowTemplate').clone();
 						Row.removeClass('templateRowTemplate').addClass('templateTableRow').show();
 						Row.find('.rowTemplateName').text(name);
+						Row.find('.rowTemplateDate').text(date);
 						Row.find('.selecter').val(name);
 						$('.templateRowTemplate').parent().append(Row);
 						Row.show();
@@ -572,8 +607,8 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-                     
-                     
+
+
                     $('.removableRow').remove();
 					$('.firstName').remove();
 					$('.lastName').remove();
@@ -722,9 +757,9 @@
         }
         function AutoComplete(input, node_Div, repeat)
         {
-            this.input = $(input);        
+            this.input = $(input);
             this.node_Div = $(node_Div);
-            this.noRepeat = repeat;        
+            this.noRepeat = repeat;
             this.index = -1;          //index on div
             this.searchValue = "";   //save searching input
         }
@@ -952,7 +987,7 @@
             }
 		}
 
-     
+
 
             /**/</script>
 </head>
@@ -990,89 +1025,100 @@
                     </div>
 
                     <div class="sidebar-right">
-                        <a>Organization Type</a><br />
-                        <select class="custom-select searchOrganization" onKeyUp="Search()" name="category" style="width:100%">
-                            <!--We need to keep an empty option to allow searches that do not include organization-->
-                            <option value=""></option>
-                            <option value="business">Business</option>
-                            <option value="electedOfficial">Elected Official</option>
-                            <option value="educationAll">Education - All</option>
-                            <option value="elementary">Elementary</option>
-                            <option value="middle">Middle</option>
-                            <option value="highSchool">High School</option>
-                            <option value="higherEd">Higher Ed.</option>
-                            <option value="nonProfit">Non-profit</option>
-                            <option value="UWSystem">UW-System</option>
-                            <option value="boardOfRegent">Board of Regent</option>
-                            <option value="advancement">Advancement</option>
-                            <option value="other">Other</option>
-                        </select>
+                        <a>Organization Type</a><br /><selction>
+                            <select  multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
+                                <!--We need to keep an empty option to allow searches that do not include organization-->
+                                <option value="business">Business</option>
+                                <option value="electedOfficial">Elected Official</option>
+                                <option value="educationAll">Education - All</option>
+                                <option value="elementary">Elementary School</option>
+                                <option value="middle">Middle School</option>
+                                <option value="highSchool">High School</option>
+                                <option value="higherEd">Higher Education</option>
+                                <option value="nonProfit">Non-profit</option>
+                                <option value="UWSystem">UW-System</option>
+                                <option value="boardOfRegent">Board of Regent</option>
+                                <option value="advancement">Advancement & Alumni</option>
+                                <option value="government">Government</option>
+                                <option value="other">Other</option>
+                            </select>
+
+                            <script src="js/index.js"></script>
+                        </selction>
                     </div>
 
                 </div>
 
             </form>
-			<div style="float:left; margin-left: 45%;">
-				<div>
-					<p style="float:left;">Display Inactive: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
-				</div>
-				<div>
-					<p style="float:left;">Has Permit: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
-				</div>
-			</div>
+            <div style="float:left; display: flex; width: 100%">
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Display Inactive: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Has Permit: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Holiday Card Recipient: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Community Breakfast Attendee: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
+                </div>
+            </div>
         </div>
-        <div class="flex-colum" style="width: 14.3%; float: right; margin-right: 9.8%;margin-left: 75.9%;">
+        <div class="flex-select">
             <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
             <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
-            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect"> Inverse</a>
+            <a href="javascript:reserveCheck('choice')" class="yellowizedSelect">Exclude</a>
         </div>
-        <div class="flex-colum" style="width: 3.4%; float: left; margin-left: 10%; border: 1px solid black; visibility:hidden;">
+        <div class="flex-view">
             <p></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%; float: left;">
+        <div class="flex-colum">
             <p><b>First Name</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%; float: left;">
+        <div class="flex-colum">
             <p><b>Last Name</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Job Title</b></p>
         </div>
-        <div class="flex-colum" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Organization Name</b></p>
         </div>
-        <div class="flex-email" style="width: 12.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Email</b></p>
         </div>
-        <div class="flex-colum" style="float:right; width: 11.5%;float: left;">
+        <div class="flex-colum">
             <p><b>Phone #</b></p>
         </div>
-        <div class="flex-colum" style="float:right; width: 2.8%;float: left;">
+        <div class="flex-checkBox">
             <input class="yellowizedTextField checkAll" type="checkbox" name="choice" id="choice">
         </div>
-
-        <div style="height: 420px; overflow-y:scroll; overflow-x: auto; width: 80%; margin-left: 10%;" align="right">
-            <table class="templateTable" style="position:relative; border-collapse:collapse;" cellpadding="0px">
+        
+        <div class="searchResult" align="right">
+            <table class="templateTable" cellpadding="0px">
                 <tbody style="width:100%">
                     <tr class="templateRow" style="width:100%">
-                        <td>
+                        <td style="overflow:hidden;">
                             <button class="yellowizedButton rowViewButton dataCell" value="0">View</button>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowFirstName dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowLastName dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowJobTitle dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowOrganization dataCell" type="text" value="" disabled>
                         </td>
-                        <td>
+                        <td style="overflow:hidden;">
                             <input class="yellowizedTextField rowEmailAddress dataCell" type="text" value="" disabled>
                         </td>
                         <td>
@@ -1111,7 +1157,7 @@
 						<th>Uploaded by</th>
 					</tr>
 					<tr class="templateRowTemplate">
-						<td id="radioSet" class="radio" name="fileName"><input class="selecter" type="radio" name="template" value=""></td>
+						<td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
 						<td id="colSet" class="rowTemplateName"></td>
 						<td id="colSet" class="rowTemplateDate"></td>
 						<td id="colSet" class="rowTemplateUser"></td>

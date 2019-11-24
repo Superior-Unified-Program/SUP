@@ -197,10 +197,12 @@ namespace SUP_MVC.Controllers
                     throw (new Exception("Oopsie"));
                 }
 
+				var fileName = separatedArgs[0];
+
                 var clientArray = new List<Client>();
-                foreach (var ID in separatedArgs)
+				for(var i = 1; i < separatedArgs.Length; i++)
                 {
-                    var currentClient = DatabaseConnection.GetClientByIdFull(ID);
+                    var currentClient = DatabaseConnection.GetClientByIdFull(separatedArgs[i]);
                     if (currentClient != null)
                         clientArray.Add(currentClient);
                 }
@@ -208,10 +210,11 @@ namespace SUP_MVC.Controllers
                 // Test guest parking template letter if placed in template folder in c:\users\public\documents\templates
                 // Using opening and closing tokens < > and search fields defined in spec document such as <firstname> and <lastname>
                 
-                List<string> templateNames = Merge.getTemplateNames();
+                //List<string> templateNames = Merge.getTemplateNames();
                 string zipFile = "";
-                if (templateNames.Count >= 1) Merge.merge(clientArray, templateNames[0], out zipFile);
-                else return "No person selected !!!!";
+                //if (templateNames.Count >= 1) 
+				Merge.merge(clientArray, fileName, out zipFile);
+                //else return "No person selected !!!!";
 
                 var json = JsonConvert.SerializeObject(zipFile);
                 return json;
@@ -242,12 +245,13 @@ namespace SUP_MVC.Controllers
         [HttpGet]
         public ActionResult DownloadZipFile(string fileName)
         {
-            //Get the temp folder and file path in server
+			//Get the temp folder and file path in server
+			string saveAsName = fileName.Substring(fileName.LastIndexOf('\\')+1);
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             string fullPath = Path.Combine(savePath, fileName);
             byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
             System.IO.File.Delete(fullPath);    // detele the excel file
-            return File(fileByteArray, "application/zip", fileName);
+            return File(fileByteArray, "application/zip", saveAsName);
         }
 
 		[HttpPost]
@@ -257,6 +261,23 @@ namespace SUP_MVC.Controllers
 			{
 				var nameList = SUP_Library.Merge.getTemplateNames();
 				var json = JsonConvert.SerializeObject(nameList);
+				return json;
+			}
+			catch (Exception e)
+			{
+				throw e;
+				//return "FAAAAAILLL";
+			}
+		}
+
+		[HttpPost]
+		public string GetTemplateInfo([FromBody] string args)
+		{
+			try
+			{
+				var nameList = SUP_Library.Merge.getTemplateNames();
+				var nameAndDateList = SUP_Library.Merge.getFileModificationDates(nameList);
+				var json = JsonConvert.SerializeObject(nameAndDateList);
 				return json;
 			}
 			catch (Exception e)

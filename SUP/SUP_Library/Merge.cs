@@ -24,9 +24,13 @@ namespace SUP_Library
     /// </summary>
     public class Merge
     {
-        private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-        private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
-        private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+		//private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+		//private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+		//private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+
+		private static string templatePath = @"C:\Users\Public\Documents\Templates";
+		private static string savePath = @"C:\Users\Public\Documents\Temp";
+		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";
 		private struct token
         {
             public string open;
@@ -222,5 +226,15 @@ namespace SUP_Library
         {
             return templatePath;
         }
+		public static List<string> getFileModificationDates(List<string> files)
+		{
+			List<string> results = new List<string>();
+			foreach (string file in files)
+			{
+				string modification = File.GetLastWriteTime(templatePath + "//" + file).ToShortDateString();
+				results.Add(file + " " + modification);
+			}
+			return results;
+		}
     }
 }

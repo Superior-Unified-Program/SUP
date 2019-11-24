@@ -1,116 +1,122 @@
 ﻿@model SUP_MVC.Models.AddClient.AddClientViewModel
 
 @{
-	ViewData["Title"] = "AddClient";
+    ViewData["Title"] = "AddClient";
 }
 
 <head>
-	<meta charset="utf-8">
-	<title>Search</title>
-	<style>
-		.popup{
-			display: none;
-			flex-wrap: nowrap;
-			overflow: auto;
-			background-color: #E0E0E0;
-			border: 1px solid black;
-			position: fixed;
-			bottom: 40%;
-			top: 40%;
-			left: 40%;
-			width: 20%;
-			height: 12vw;
-			flex-direction: column;
-		}
+    <meta charset="utf-8">
+    <title>Search</title>
+    <style>
+        .popup {
+            display: none;
+            flex-wrap: nowrap;
+            overflow: auto;
+            background-color: #E0E0E0;
+            border: 1px solid black;
+            position: fixed;
+            bottom: 40%;
+            top: 40%;
+            left: 40%;
+            width: 20%;
+            height: 12vw;
+            flex-direction: column;
+        }
 
-		.confirmButton {
-			margin-left: auto;
-			margin-right: auto;
-			width: 40%;
-			height: 100%;
-			margin-bottom: 5%;
-		}
+        .confirmButton {
+            margin-left: auto;
+            margin-right: auto;
+            width: 40%;
+            height: 100%;
+            margin-bottom: 5%;
+        }
 
-		.popupButtonsDiv {
-			position: relative;
-			margin-left: auto;
-			margin-right: auto;
-			margin-top: 30%;
-			margin-bottom: auto;
-			width: 80%;
-			height: 15%;
-		}
+        .popupButtonsDiv {
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 30%;
+            margin-bottom: auto;
+            width: 80%;
+            height: 15%;
+        }
 
-		.popupButtonsDiv input {
-			font-size: 0.75vw;
-		}
+            .popupButtonsDiv input {
+                font-size: 0.75vw;
+            }
 
-		.popupMessageDiv {
-			position: relative;
-			margin-left: auto;
-			margin-right: auto;
-			margin-top: 0px;
-			margin-bottom: auto;
-			width: 80%;
-			height: 10%;
-		}
+        .popupMessageDiv {
+            position: relative;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 0px;
+            margin-bottom: auto;
+            width: 80%;
+            height: 10%;
+        }
 
-		.popupMessageDiv p {
-			font-size: 1vw;
-		}
+            .popupMessageDiv p {
+                font-size: 1vw;
+            }
 
-		.tableHeader 
-        {
-			width: 100%;
-			text-align: center;
-			font-size: large;
-			font-weight: 900;
-			margin-left: -50px;
-			height: 45px;
-			padding-top: 20px;
-		}
-		.row 
-        {
-			width: 100%;
-		}
-		.cell 
-        {
-			width: 25%;
-			text-align: left;
-            overflow:auto;
-            overflow:hidden;
+        .tableHeader {
+            width: 100%;
+            text-align: center;
+            font-size: large;
+            font-weight: 900;
+            margin-left: -50px;
+            height: 45px;
+            padding-top: 20px;
+        }
 
-		}
-		.noteCell 
-        {
-			width: 50%;
-			text-align: left;
-		}
-		.activeCell 
-        {
-			width: 25%;
-			text-align: left;
-		}
-		.saveEditCell 
-        {
-			width: calc(100% - 50px);
-			text-align: right;
-			padding-top: 10px;
-			padding-right: 20px;
-		}
-		textarea 
-        {
-			width: calc(100% - 50px - 35px);
-		}
-		.breakLine 
-        {
-			margin-left: -10%;
-			padding-top: 0px;
-			padding-top: 0px;
-			margin-top: 5px;
-			margin-bottom: 0px;
-		}
-		.yellowizedButton {
+        .row {
+            width: 100%;
+        }
+
+        @@media (max-width:600px) {
+            .cell {
+                flex: 100%;
+                max-width: 100%;
+            }
+        }
+
+        .cell {
+            width: 25%;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .noteCell {
+            width: 100%;
+            text-align: left;
+			overflow: hidden;
+        }
+
+        .cellMini {
+            width: 8%;
+            text-align: left;
+        }
+
+        .saveEditCell {
+            width: calc(100% - 50px);
+            text-align: right;
+            padding-top: 10px;
+            padding-right: 20px;
+        }
+
+        textarea {
+            width: calc(100% - 50px - 35px);
+        }
+
+        .breakLine {
+            margin-left: -10%;
+            padding-top: 0px;
+            padding-top: 0px;
+            margin-top: 5px;
+            margin-bottom: 0px;
+        }
+
+        .yellowizedButton {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
             background: linear-gradient(to bottom, #edf035 5%, #d1c060 100%);
             background-color: #edf035;
@@ -125,28 +131,25 @@
             text-decoration: none;
         }
 
-        .yellowizedButton:hover {
-            background: linear-gradient(to bottom, #d1c060 5%, #edf035 100%);
-            background-color: #d1c060;
-        }
-	</style>
-	<script language="javascript">
+            .yellowizedButton:hover {
+                background: linear-gradient(to bottom, #d1c060 5%, #edf035 100%);
+                background-color: #d1c060;
+            }
+    </style>
+    <script language="javascript">
 
-        function toggleEdit()
-        {
+        function toggleEdit() {
             console.log($("input[type='text']"))
             $("input[type='text']").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true)
-                {
+                if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                     $(".saveButton").prop('value', "Save");
                     $(".saveButton").unbind('click').click(function () {
                         saveClientData();
                     });
                 }
-                else
-                {
+                else {
                     $(this).prop('disabled', true);
                     $(".saveButton").prop('value', "Edit");
                     $(".saveButton").unbind('click').click(function () {
@@ -154,90 +157,75 @@
                     });
                 }
             });
-            $(".activeInput").each(function ()
-            {
-                if ($(this).prop('disabled') == true)
-                {
+            $(".activeInput").each(function () {
+                if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                 }
-                else
-                {
+                else {
                     $(this).prop('disabled', true);
                 }
             });
             $("textarea").each(function () {
-                if ($(this).prop('disabled') == true)
-                {
+                if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                 }
-                else
-                {
+                else {
                     $(this).prop('disabled', true);
                 }
             });
             $("select").each(function () {
                 console.log(this)
-                if ($(this).prop('disabled') == true)
-                {
+                if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                 }
-                else
-                {
+                else {
                     $(this).prop('disabled', true);
                 }
             });
         }
         setTimeout(function () {
-            if (getClientIdFromURL())
-            {
+            if (getClientIdFromURL()) {
                 toggleEdit();
             }
         }, 100);
 
-        function check()
-        {
-			var email = document.getElementbyid("email");
-			if (!email.checkValidity())
-				email.setCustomvalidity("Please enter the right email format!");
+        function check() {
+            var email = document.getElementbyid("email");
+            if (!email.checkValidity())
+                email.setCustomvalidity("Please enter the right email format!");
         }
 
-        function getClientIdFromURL()
-        {
+        function getClientIdFromURL() {
             var args = location.href.split('?');
             console.log(args);
             var params = "";
-            if (args.length > 1)
-            {
+            if (args.length > 1) {
                 params = args[1].split('=');
                 console.log(params);
             }
             var clientId = "";
-            if (params.length > 1)
-            {
+            if (params.length > 1) {
                 clientId = params[1];
                 console.log(clientId);
             }
 
-            if (clientId != "")
-            {
+            if (clientId != "") {
                 loadClientData(clientId);
                 return true;
             }
             $(".saveButton").unbind('click').click(function () {
-				//saveClientData();
-				checkForNearMatch();
+                //saveClientData();
+                checkForNearMatch();
             });
             return false;
         }
 
-        function selectElement(id, valueToSelect)
-        {    
+        function selectElement(id, valueToSelect) {
             let element = document.getElementById(id);
             element.value = valueToSelect;
         }
 
-        function loadClientData(clientId)
-        {
+        function loadClientData(clientId) {
             console.log(clientId);
             var dataPost = clientId;
             $.ajax({
@@ -257,66 +245,52 @@
                     var assistantsLastName = currentClient["Assistant_Last_Name"];
                     var middleinitial = currentClient["Middle_initial"];
                     var prefix = currentClient["Prefix"];
-					var organization = currentClient["Org"];
-					var permit = currentClient["Permit_Num"];
-                    if (currentClient['Email'] != null)
-                    {
+                    var organization = currentClient["Org"];
+                    var permit = currentClient["Permit_Num"];
+                    if (currentClient['Email'] != null) {
                         $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
                     }
-                    if (currentClient['Email'] != null)
-                    {
+                    if (currentClient['Email'] != null) {
                         $('.businessEmailInput').val(currentClient['Email']['Business_Email']);
                     }
-                    if (currentClient['Email'] != null)
-                    {
+                    if (currentClient['Email'] != null) {
                         $('.assistantEmailInput').val(currentClient['Email']['Assistant_Email']);
                     }
-                    if (currentClient['Phone'] != null)
-                    {
+                    if (currentClient['Phone'] != null) {
                         $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone']);
                     }
-                    if (currentClient['Phone'] != null)
-                    {
+                    if (currentClient['Phone'] != null) {
                         $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone']);
                     }
-                    if (currentClient['Phone'] != null)
-                    {
+                    if (currentClient['Phone'] != null) {
                         $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
-					}
-					if (currentClient['Org'] != null)
-					{
-						var orgTypeText = currentClient['Org']['Org_Type'];
-						$(".organizationInput option").filter(function () {
-							return this.text == orgTypeText; 
-						}).attr('selected', true);
-						//$('.organizationInput').text(currentClient['Org']['Org_Type']);
                     }
-                    if (currentClient['Org'] != null)
-                    {
+                    if (currentClient['Org'] != null) {
+                        var orgTypeText = currentClient['Org']['Org_Type'];
+                        $(".organizationInput option").filter(function () {
+                            return this.text == orgTypeText;
+                        }).attr('selected', true);
+                        //$('.organizationInput').text(currentClient['Org']['Org_Type']);
+                    }
+                    if (currentClient['Org'] != null) {
                         $('.companyInput').val(currentClient['Org']['Org_Name']);
                     }
-                    if (currentClient['Org'] != null)
-                    {
+                    if (currentClient['Org'] != null) {
                         $('.titleInput').val(currentClient['Org']['Title']);
                     }
-                    if (currentClient['Address'] != null)
-                    {
+                    if (currentClient['Address'] != null) {
                         $('.addressLineOneInput').val(currentClient['Address']['Line1']);
                     }
-                    if (currentClient['Address'] != null)
-                    {
+                    if (currentClient['Address'] != null) {
                         $('.addressLineTwoInput').val(currentClient['Address']['Line2']);
                     }
-                    if (currentClient['Address'] != null)
-                    {
+                    if (currentClient['Address'] != null) {
                         $('.cityInput').val(currentClient['Address']['City']);
                     }
-                    if (currentClient['Address'] != null)
-                    {
+                    if (currentClient['Address'] != null) {
                         $('.stateInput').val(currentClient['Address']['State']);
                     }
-                    if (currentClient['Address'] != null)
-                    {
+                    if (currentClient['Address'] != null) {
                         $('.zipInput').val(currentClient['Address']['Zip']);
                     }
                     var company = currentClient["Company"];
@@ -327,54 +301,49 @@
                     $('.lastNameInput').val(lastName);
                     $('.assistantFirstNameInput').val(assistantsFirstName);
                     $('.assistantLastNameInput').val(assistantsLastName);
-					$('.prefixInput').val(prefix);
-					$('.permitInput').val(permit);
+                    $('.prefixInput').val(prefix);
+                    $('.permitInput').val(permit);
 
                     //selectElement('leaveCode', '11')
 
 
-                    if (isActive)
-                    {
+                    if (isActive) {
                         console.log(isActive);
-                        $(".activeInput").prop( "checked", true );
+                        $(".activeInput").prop("checked", true);
                     }
                     $('.noteInput').val(note);
                 },
                 async: true,
                 processData: false
             });
-		}
+        }
 
-		function editClient(clientId)
-        {
+        function editClient(clientId) {
             location.href = '/AddClient/AddClient?clientId=' + clientId;
         }
 
-        function saveClientData(id)
-		{
-			var clientId = "";
-			if (id) { clientId = id }
-			else {
-				var args = location.href.split('?');
-				console.log(args);
-				var params = "";
-				if (args.length > 1)
-				{
-					params = args[1].split('=');
-					console.log(params);
-				}
-				if (params.length > 1)
-				{
-					clientId = params[1];
-					console.log(clientId);
-				}
-			}
+        function saveClientData(id) {
+            var clientId = "";
+            if (id) { clientId = id }
+            else {
+                var args = location.href.split('?');
+                console.log(args);
+                var params = "";
+                if (args.length > 1) {
+                    params = args[1].split('=');
+                    console.log(params);
+                }
+                if (params.length > 1) {
+                    clientId = params[1];
+                    console.log(clientId);
+                }
+            }
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
-			var middleInitial = $('.middleInitialInput').val();
-			var company = $('.companyInput').val();
-			var organization = $( ".organizationInput option:selected" ).text();
-			var title = $('.titleInput').val();
+            var middleInitial = $('.middleInitialInput').val();
+            var company = $('.companyInput').val();
+            var organization = $(".organizationInput option:selected").text();
+            var title = $('.titleInput').val();
             var Line1 = $('.addressLineOneInput').val();
             var Line2 = $('.addressLineTwoInput').val();
             var City = $('.cityInput').val();
@@ -383,14 +352,14 @@
             var Email = $('.emailInput').val();
             var Note = $('.noteInput').val();
             var Phone = $(".phoneInput").val();
-			var Active = $(".activeInput").prop("checked");
-			var Permit = $(".permitInput").val();
+            var Active = $(".activeInput").prop("checked");
+            var Permit = $(".permitInput").val();
 
-			var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
+            var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
             var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
                 organization + ',' + company + ',' + title +
-                ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip + 
+                ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
                 ',' + Email + ',' + Note + ',' + Phone + ',' + Active + ',' + Permit;
             $.ajax({
                 url: '/AddClient/UpdateClient',
@@ -400,8 +369,8 @@
                 error: function (xhr) {
                     alert('Error: ' + xhr.statusText);
                 },
-				success: function (result) {
-					alert(successString);
+                success: function (result) {
+                    alert(successString);
 					editClient(result);
                 },
                 async: true,
@@ -409,7 +378,16 @@
             });
 		}
 
-		function checkForNearMatch() {
+		function popupAlert(message) {
+			document.getElementById("messagePopup").style.display = "flex";
+			$('.popupMessage').text(message);
+		}
+
+		function closePopupAlert() {
+			document.getElementById("messagePopup").style.display = "none";
+		}
+
+        function checkForNearMatch() {
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
             var dataPost = firstName + ',' + lastName;
@@ -421,67 +399,68 @@
                 error: function (xhr) {
                     alert('Error: ' + xhr.statusText);
                 },
-				success: function (result) {
-					returnedData = JSON.parse(result);
-					$('.returnedMatch').remove();
-					for (var i = 0; i < returnedData.length; i++) {
-						var returnedFirstName = returnedData[i]['First_Name'];
-						var returnedLastName = returnedData[i]['Last_Name'];
-						var returnedID = returnedData[i]['ID'];
-						var message = "The name you entered is very similar to another client named " + returnedFirstName + " " + returnedLastName + " within the system. Would you like to update this client instead?";
+                success: function (result) {
+                    returnedData = JSON.parse(result);
+                    $('.returnedMatch').remove();
+                    for (var i = 0; i < returnedData.length; i++) {
+                        var returnedFirstName = returnedData[i]['First_Name'];
+                        var returnedLastName = returnedData[i]['Last_Name'];
+                        var returnedID = returnedData[i]['ID'];
+                        var message = "The name you entered is very similar to another client named " + returnedFirstName + " " + returnedLastName + " within the system. Would you like to update this client instead?";
 
-						var Row = $('.returnedMatchTemplate').clone();
+                        var Row = $('.returnedMatchTemplate').clone();
                         Row.removeClass('returnedMatchTemplate').addClass('returnedMatch');
-						Row.text(message);
-						Row.attr("clientID", returnedID);
+                        Row.text(message);
+                        Row.attr("clientID", returnedID);
                         $('.returnedMatchesDiv').append(Row);
-					}
-					if ($('.returnedMatch').length) {
-						popMatchFound();
-						var p = $('.returnedMatch').first();
-						var msg = p.text();
-						var ID = p.attr('clientID');
-						$('.matchMessage').text(msg);
-						$('.popupButtonsDiv').attr('currentID', ID);
-					}
-					else {
-						saveClientData();
-					}
+                    }
+                    if ($('.returnedMatch').length) {
+                        popMatchFound();
+                        var p = $('.returnedMatch').first();
+                        var msg = p.text();
+                        var ID = p.attr('clientID');
+                        $('.matchMessage').text(msg);
+                        $('.popupButtonsDiv').attr('currentID', ID);
+                    }
+                    else {
+                        saveClientData();
+                    }
                 },
                 async: true,
                 processData: false
             });
-		}
+        }
 
-		function notMatch() {
-			$('.returnedMatch').first().remove();
-			var p = $('.returnedMatch');
-			if (p.length) {
-				var first = p.first();
-				var msg = first.text();
-				var ID = first.attr('clientID');
-				$('.matchMessage').text(msg);
-				$('.popupButtonsDiv').attr('currentID',ID);
-			}
-			else {
-				document.getElementById("matchFoundPopup").style.display = "none";
-				saveClientData();
-			}
-		}
+        function notMatch() {
+            $('.returnedMatch').first().remove();
+            var p = $('.returnedMatch');
+            if (p.length) {
+                var first = p.first();
+                var msg = first.text();
+                var ID = first.attr('clientID');
+                $('.matchMessage').text(msg);
+                $('.popupButtonsDiv').attr('currentID', ID);
+            }
+            else {
+                document.getElementById("matchFoundPopup").style.display = "none";
+                saveClientData();
+            }
+        }
 
-		function isMatch() {
-			clientID = $('.popupButtonsDiv').attr('currentID');
-			document.getElementById("matchFoundPopup").style.display = "none";
-			saveClientData(clientID);
-		}
+        function isMatch() {
+            clientID = $('.popupButtonsDiv').attr('currentID');
+            document.getElementById("matchFoundPopup").style.display = "none";
+            saveClientData(clientID);
+        }
 
-		function popMatchFound()
-        {
+        function popMatchFound() {
             document.getElementById("matchFoundPopup").style.display = "flex";
         }
-	</script>
 
-	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    </script>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 </head>
 
 <body>
@@ -501,20 +480,21 @@
 				<hr class="breakLine" />
 				<div class="row">
 					<div class="cell">
-						Organization Type*<br />
-						<select id="organizationInput" name="Organization" class="organizationInput" size="1" required tabindex="5">
-							<option value="">All</option>
+						Organization Type<br />
+						<select multip id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
+							<option value=""></option>
 							<option value="business">Business</option>
 							<option value="electedOfficial">Elected Official</option>
 							<option value="educationAll">Education - All</option>
-							<option value="elementary">Elementary</option>
-							<option value="middle">Middle</option>
+							<option value="elementary">Elementary School</option>
+							<option value="middle">Middle School</option>
 							<option value="highSchool">High School</option>
-							<option value="higherEd">Higher Ed.</option>
+							<option value="higherEd">Higher Education</option>
 							<option value="nonProfit">Non-profit</option>
 							<option value="UWSystem">UW-System</option>
 							<option value="boardOfRegent">Board of Regent</option>
-							<option value="advancement">Advancement</option>
+							<option value="advancement">Advancement & Alumni</option>
+							<option value="government">Government</option>
 							<option value="other">Other</option>
 						</select>
 					</div>
@@ -523,8 +503,8 @@
 				</div>
 				<div class="tableHeader">Contact Information</div>
 				<div class="row">
-					<div class="cell">Address Line1*<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" required tabindex="8"></div>
-					<div class="cell">City*<br /><input class="cityInput" type="text" placeholder="City" required tabindex="10"></div>
+					<div class="cell">Address Line1<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" tabindex="8"></div>
+					<div class="cell">City<br /><input class="cityInput" type="text" placeholder="City" tabindex="10"></div>
 					<div class="cell">
 						State<br /><select class="stateInput" name="state" tabindex="11">
 							<option value=""></option>
@@ -581,36 +561,37 @@
 							<option value="WY">Wyoming</option>
 						</select>
 					</div>
-					<div class="cell">Zipcode *<br /><input class="zipInput" type="text" placeholder="Zip Code" required pattern="[0-9 -]{5,10}" tabindex="12"></div>
+					<div class="cell">Zipcode <br /><input class="zipInput" type="text" placeholder="Zip Code" rquired pattern="[0-9 -]{5,10}" tabindex="12"></div>
 				</div>
 				<div class="row">
 					<div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="9"></div>
 				</div>
 				<hr class="breakLine" />
 				<div class="row">
-					<div class="cell">Personal Email address*<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" required tabindex="14"></div>
+					<div class="cell">Personal Email address<br /><input class="personalEmailInput" type="text" id="email" placeholder="Email" tabindex="14"></div>
 					<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
-					<div class="cell">Business Email address*<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" required tabindex="16"></div>
+					<div class="cell">Business Email address<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" tabindex="16"></div>
 					<div class="cell">Business Phone Number<br /><input class="businessPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
 				</div>
 				<div class="tableHeader">Assistant's Information</div>
 				<div class="row">
-					<div class="cell">Assistant's First Name*<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" required tabindex="2"></div>
-					<div class="cell">Assistant's Last Name*<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" required tabindex="3"></div>
-					<div class="cell">Assistant's Email*<br /><input type="text" class="assistantEmailInput" placeholder="" required tabindex="2"></div>
-					<div class="cell">Assistant's Phone Number*<br /><input type="text" class="assistantPhoneInput" placeholder="" required tabindex="3"></div>
+					<div class="cell">Assistant's First Name<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" tabindex="2"></div>
+					<div class="cell">Assistant's Last Name<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" tabindex="3"></div>
+					<div class="cell">Assistant's Email<br /><input type="text" class="assistantEmailInput" placeholder="" tabindex="2"></div>
+					<div class="cell">Assistant's Phone Number<br /><input type="text" class="assistantPhoneInput" placeholder="" tabindex="3"></div>
 				</div>
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
-					<div class="activeCell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Permit*<br /><input type="text" class="permitInput" id="permit" placeholder="" required tabindex="19"></div>
+					<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Holiday Card Recipient<br /><input type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Community Breakfast Attendee<br /><input type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
+				</div>
+				<div class="row">
 					<div class="noteCell">
-						Note<br /><textarea name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea><div>
-						</div>
-						<div class="row">
-							<div class="saveEditCell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
-						</div>
+						Note<br /><textarea style="width: 75%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
 					</div>
+					<div class="cell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
 				</div>
 			</div>
 		</form>
@@ -623,6 +604,14 @@
 		<div class="popupButtonsDiv" currentID="">
 			<input type="button" class="yellowizedButton confirmButton" id="yesButton" value="Yes" id="button" style="margin-left: 0" onclick="isMatch()">
 			<input type="button" class="yellowizedButton confirmButton" id="noButton" value="No" id="button" style="margin-right: 0" onclick="notMatch()">
+		</div>
+	</div>
+	<div class="popup" id="messagePopup" style="">
+		<div class="popupAlertDiv">
+			<p class="popupMessage"></p>
+		</div>
+		<div class="popupAlertButtonsDiv" currentID="">
+			<input type="button" class="yellowizedButton confirmButton" id="okButton" value="OK" id="button" style="margin-left: 0" onclick="closePopupAlert()">
 		</div>
 	</div>
 </body>

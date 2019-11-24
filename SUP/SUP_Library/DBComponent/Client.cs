@@ -8,8 +8,6 @@ namespace SUP_Library.DBComponent
 {
     public class Client : IComparable
     {
-
-       
         public enum SortBy { Last_Name, First_Name, Org_Title, Org_Name, Business_Email, Business_Phone };
 
         public static void setSortCriteria(SortBy sortByCriteria, bool ascending)
@@ -32,13 +30,20 @@ namespace SUP_Library.DBComponent
         public string Middle_initial { get; set; }
 
         public Organization Org { get; set; }
+
+        public List<Organization> Organization; // don't use this yet
         public Address Address { get; set; }
 
         public EmailAddress Email { get; set; }
 
         public PhoneNumber Phone { get; set; }
 
-        public bool   Active { get; set; }
+        public bool Active { get; set; }
+
+        public bool Holiday_Card { get; set; }
+
+        public bool Community_Breakfast { get; set; }
+
         public string Assistant_First_Name { get; set; }
         public string Assistant_Last_Name { get; set; }
         public string Assisntant_Last_Name // allow dapper to pull in misspelled column in db
@@ -58,9 +63,11 @@ namespace SUP_Library.DBComponent
         public Client()
         {
             Org = new Organization(); // classes probably should be initialized and not null
+
             Address = new Address();
             Email = new EmailAddress();
             Phone = new PhoneNumber();
+            Organization = new List<Organization>();
             setSortCriteria(SortBy.Last_Name, true); // set to sort ascending and by last name by default
         }
 
