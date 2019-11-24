@@ -30,7 +30,7 @@ namespace SUP_Library
         private static string getConnectionString()
         {
             var appSettingsJson = ConnectionStringProvider.GetAppSettings();
-            string connectionString = appSettingsJson["SupConnectionString"];  
+            string connectionString = appSettingsJson["SupConnectionString"]; 
             // This retern the connection string in App.config file as the name same with connectionName.
             //return "Initial Catalog=SUPdb; Data Source=68.112.175.122; Integrated Security=False; User Id=SUPuser; Password=abc123;";
             //return ConfigurationManager.ConnectionStrings[connectionStringName].ConnectionString;

@@ -21,9 +21,9 @@ namespace SUP_Library
         public static IConfigurationRoot GetAppSettings()
         {
             string applicationExeDirectory = ApplicationExeDirectory();
-
-            var builder = new ConfigurationBuilder().SetBasePath(applicationExeDirectory).AddJsonFile("appsettings.json");
-
+             
+            var builder = new ConfigurationBuilder().SetBasePath(applicationExeDirectory).AddJsonFile("appsettings.json"); 
+             
             return builder.Build();
         }
     }
