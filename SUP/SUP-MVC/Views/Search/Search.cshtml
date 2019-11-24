@@ -578,80 +578,75 @@
 					$('.firstName').remove();
 					$('.lastName').remove();
                     $('.templateRow').hide();
-                    if (returnedData.length == 0)
-                    {
+                    if (returnedData.length == 0) {
                         $('.templateRow').show();
                     }
-                    for (var i = 0; i < returnedData.length; i++)
-                    {
-						var currentRow = returnedData[i];
-						var hasPermit = (currentRow['Permit_Num'] != "");
-						if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) {
+                    else {
 
-							var Row = $('.templateRow').clone();
-							Row.removeClass('templateRow').addClass('removableRow').show();
-							Row.find('.rowFirstName').val(currentRow['First_Name']);
-							Row.find('.rowLastName').val(currentRow['Last_Name']);
+                        for (var i = 0; i < returnedData.length; i++) {
+                            var currentRow = returnedData[i];
+                            var hasPermit = (currentRow['Permit_Num'] != "");
+                            if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) {
 
-							if (currentRow['Email'] != null) {
-								Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
-							}
-							if (currentRow['Phone'] != null) {
-								Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
-							}
-							if (currentRow['Org'] != null) {
-								Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
-								Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
-							}
-							var clientId = currentRow['ID']
-							Row.find('.rowViewButton').val(clientId);
+                                var Row = $('.templateRow').clone();
+                                Row.removeClass('templateRow').addClass('removableRow').show();
+                                Row.find('.rowFirstName').val(currentRow['First_Name']);
+                                Row.find('.rowLastName').val(currentRow['Last_Name']);
 
-							//autocomplete
-							var firstNameRow = $('.firstNameTemplate').clone();
-							firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
-							firstNameRow.text(currentRow['First_Name']);
-							$('.firstNamesList').append(firstNameRow);
-
-							var lastNameRow = $('.lastNameTemplate').clone();
-							lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
-							lastNameRow.text(currentRow['Last_Name']);
-							$('.lastNamesList').append(lastNameRow);
-
-
-							$('.checkedId').each(function (index) {
-								if ($(this).text() == clientId) {
-									Row.find('.rowSelected').prop('checked', true);
-								}
-							});
-							$('.templateRow').parent().append(Row);
-						}
-                    }
-                    $('.rowViewButton').unbind('click').click(function ()
-                    {
-                        editClient($(this).val());
-                    });
-                    $('.rowSelected').unbind('click');
-                    $('.rowSelected').click(function ()
-                    {
-                        var clientId = $(this).parent().parent().find('.rowViewButton').val();
-                        if ($(this).prop('checked') == true)
-                        {
-                            var Row = $('.checkedIdTemplate').clone();
-                            Row.removeClass('checkedIdTemplate').addClass('checkedId');
-                            Row.text(clientId);
-                            $('.checkedIdsDiv').append(Row);
-                        }
-                        else
-                        {
-                            $('.checkedId').each(function (index)
-                            {
-                                if ($(this).text() == clientId)
-                                {
-                                    $(this).remove();
+                                if (currentRow['Email'] != null) {
+                                    Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
                                 }
-                            });
+                                if (currentRow['Phone'] != null) {
+                                    Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
+                                }
+                                if (currentRow['Org'] != null) {
+                                    Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+                                    Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
+                                }
+                                var clientId = currentRow['ID']
+                                Row.find('.rowViewButton').val(clientId);
+
+                                //autocomplete
+                                var firstNameRow = $('.firstNameTemplate').clone();
+                                firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
+                                firstNameRow.text(currentRow['First_Name']);
+                                $('.firstNamesList').append(firstNameRow);
+
+                                var lastNameRow = $('.lastNameTemplate').clone();
+                                lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
+                                lastNameRow.text(currentRow['Last_Name']);
+                                $('.lastNamesList').append(lastNameRow);
+
+
+                                $('.checkedId').each(function (index) {
+                                    if ($(this).text() == clientId) {
+                                        Row.find('.rowSelected').prop('checked', true);
+                                    }
+                                });
+                                $('.templateRow').parent().append(Row);
+                            }
                         }
-                    });
+                        $('.rowViewButton').unbind('click').click(function () {
+                            editClient($(this).val());
+                        });
+                        $('.rowSelected').unbind('click');
+                        $('.rowSelected').click(function () {
+                            var clientId = $(this).parent().parent().find('.rowViewButton').val();
+                            if ($(this).prop('checked') == true) {
+                                var Row = $('.checkedIdTemplate').clone();
+                                Row.removeClass('checkedIdTemplate').addClass('checkedId');
+                                Row.text(clientId);
+                                $('.checkedIdsDiv').append(Row);
+                            }
+                            else {
+                                $('.checkedId').each(function (index) {
+                                    if ($(this).text() == clientId) {
+                                        $(this).remove();
+                                    }
+                                });
+                            }
+                        });
+                    }
                 },
                 async: true,
                 processData: false

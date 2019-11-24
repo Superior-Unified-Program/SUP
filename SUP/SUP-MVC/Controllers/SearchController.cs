@@ -18,7 +18,14 @@ namespace SUP_MVC.Controllers
         // GET: Search
         public ActionResult Index()
         {
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         // GET: Search/Details/5
@@ -218,9 +225,8 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
-
-			return View();
-		}
+            return View();
+        }
 
         [HttpGet]
         public ActionResult DownloadExcel(string fileName)
