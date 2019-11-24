@@ -30,6 +30,8 @@ namespace SUP_Library.DBComponent
         public string Middle_initial { get; set; }
 
         public Organization Org { get; set; }
+
+        public List<Organization> Organization; // don't use this yet
         public Address Address { get; set; }
 
         public EmailAddress Email { get; set; }
@@ -61,9 +63,11 @@ namespace SUP_Library.DBComponent
         public Client()
         {
             Org = new Organization(); // classes probably should be initialized and not null
+
             Address = new Address();
             Email = new EmailAddress();
             Phone = new PhoneNumber();
+            Organization = new List<Organization>();
             setSortCriteria(SortBy.Last_Name, true); // set to sort ascending and by last name by default
         }
 
