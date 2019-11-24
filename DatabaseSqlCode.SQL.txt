@@ -7,7 +7,7 @@ IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'S
 GO
 
 /* create User If possible */
---CREATE LOGIN teamRADGSHAUser
+--CREATE LOGIN User
 USE [master]
 IF EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser') DROP LOGIN [SUPuser]
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
