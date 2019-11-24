@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SUP_Library;
+using Microsoft.AspNetCore.Session;
 
 namespace SUP_MVC.Controllers
 {
@@ -109,7 +110,11 @@ namespace SUP_MVC.Controllers
                 var hashedPassword = separatedArgs[1];
                 
                 var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, hashedPassword);
-
+                if (LoginSuccessful)
+                {
+                    //TODO: STORE SESSION HERE
+                    TempData["UserID"] = userName;
+                }
                 // if searching for active clients only, remove inactive clients.
                 var json = JsonConvert.SerializeObject(LoginSuccessful);
 

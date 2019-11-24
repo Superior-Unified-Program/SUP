@@ -8,28 +8,29 @@
     <meta charset="utf-8">
     <title>Search</title>
     <style>
-		@@media only screen and (max-width: 600px) {
-			#ribbonDiv {
-				margin-left: -25%;
-			}
-			#mainWindow {
-				left: -15%;
-				position: absolute;
-			}
-		}
+        @@media only screen and (max-width: 600px) {
+            #ribbonDiv {
+                margin-left: -25%;
+            }
 
-		#mainWindow {
-			 position: absolute;
-			 left: 15%;
-			 top: 10%;
-			 width: 85%;
-		}
+            #mainWindow {
+                left: -15%;
+                position: absolute;
+            }
+        }
 
-		.templateTable {
-		width: 100%;
-        position:relative;
-        border-collapse:collapse;
-		}
+        #mainWindow {
+            position: absolute;
+            left: 15%;
+            top: 10%;
+            width: 85%;
+        }
+
+        .templateTable {
+            width: 100%;
+            position: relative;
+            border-collapse: collapse;
+        }
 
         .organize {
             width: 100%;
@@ -72,69 +73,67 @@
             width: 100%;
             height: 100px;
             align-items: center;
-            flex-direction: row;    
+            flex-direction: row;
             justify-content: center;
         }
 
         .sidebar-left {
-         align-self:center;
+            align-self: center;
             width: 33.3%;
             margin: 5px;
-            padding:10px;
-
+            padding: 10px;
         }
+
         .sidebar-middle {
-            align-self:center;
-            width:33.3%;
-            margin: 5px;
-            padding:10px;
-
-
-        } 
-           .sidebar-right{
-            align-self:center;
+            align-self: center;
             width: 33.3%;
             margin: 5px;
-            padding:10px;
-
+            padding: 10px;
         }
 
-        .searchResult{
-        height: 420px;
-        overflow-y:scroll; 
-        overflow-x: auto; 
-        width: 80%; 
-        margin-left: 10%; 
+        .sidebar-right {
+            align-self: center;
+            width: 33.3%;
+            margin: 5px;
+            padding: 10px;
         }
 
-    
-        .flex-select{
-        width: 14.3%; 
-        float: right;
-        margin-right: 9.8%;
-        margin-left: 75.9%;
+        .searchResult {
+            height: 420px;
+            overflow-y: scroll;
+            overflow-x: auto;
+            width: 80%;
+            margin-left: 10%;
         }
 
-		.flex-colum {
-		align-content:center;
-		overflow: auto;
-		width: calc((73%-79px)/6); 
-        height: 29px;
-        float: left;
-        overflow: hidden; 
-		}
 
-        .flex-view{
-        margin-left:10%;
-        width: 56px; 
-        float: left;
+        .flex-select {
+            width: 14.3%;
+            float: right;
+            margin-right: 9.8%;
+            margin-left: 75.9%;
         }
 
-		.flex-checkBox{
-        margin-right:11%;
-        width:13px; 
-        float:right;
-		}
+        .flex-colum {
+            align-content: center;
+            overflow: auto;
+            width: calc((73%-79px)/6);
+            height: 29px;
+            float: left;
+            overflow: hidden;
+        }
+
+        .flex-view {
+            margin-left: 10%;
+            width: 56px;
+            float: left;
+        }
+
+        .flex-checkBox {
+            margin-right: 11%;
+            width: 13px;
+            float: right;
+        }
 
         .yellowizedSelect {
             box-shadow: inset 0px 1px 0px 0px #fcf6cf;
@@ -151,7 +150,7 @@
             text-decoration: none;
         }
 
-                 
+
         .auto_hidden {
             width: 200px;
             border: #E0E0E0;
@@ -210,10 +209,10 @@
             text-decoration: none;
         }
 
-        .yellowizedButton:hover {
-            background: linear-gradient(to bottom, #decc47 5%, #ffd146 100%);
-            background-color: #d1c060;
-        }
+            .yellowizedButton:hover {
+                background: linear-gradient(to bottom, #decc47 5%, #ffd146 100%);
+                background-color: #d1c060;
+            }
 
 
         .yellowizedTextField {
@@ -277,92 +276,97 @@
         }
 
         .custom-select {
-          position: relative;
-          font-family: Arial;
+            position: relative;
+            font-family: Arial;
         }
 
-        .custom-select select {
-          display: none; /*hide original SELECT element:*/
-        }
+            .custom-select select {
+                display: none; /*hide original SELECT element:*/
+            }
 
         .select-selected {
-          background-color: yellow;
+            background-color: yellow;
         }
 
-        /*style the arrow inside the select element:*/
-        .select-selected:after {
-          position: absolute;
-          content: "";
-          top: 14px;
-          right: 10px;
-          width: 0;
-          height: 0;
-          border: 6px solid transparent;
-          border-color: #fff transparent transparent transparent;
-        }
+            /*style the arrow inside the select element:*/
+            .select-selected:after {
+                position: absolute;
+                content: "";
+                top: 14px;
+                right: 10px;
+                width: 0;
+                height: 0;
+                border: 6px solid transparent;
+                border-color: #fff transparent transparent transparent;
+            }
 
-        /*point the arrow upwards when the select box is open (active):*/
-        .select-selected.select-arrow-active:after {
-          border-color: transparent transparent #fff transparent;
-          top: 7px;
-        }
+            /*point the arrow upwards when the select box is open (active):*/
+            .select-selected.select-arrow-active:after {
+                border-color: transparent transparent #fff transparent;
+                top: 7px;
+            }
 
         /*style the items (options), including the selected item:*/
-        .select-items div,.select-selected {
-          color: #ffffff;
-          padding: 8px 16px;
-          border: 1px solid transparent;
-          border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
-          cursor: pointer;
-          user-select: none;
+        .select-items div, .select-selected {
+            color: #ffffff;
+            padding: 8px 16px;
+            border: 1px solid transparent;
+            border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+            cursor: pointer;
+            user-select: none;
         }
 
         /*style items (options):*/
         .select-items {
-          position: absolute;
-          background-color: yellow;
-          top: 100%;
-          left: 0;
-          right: 0;
-          z-index: 99;
+            position: absolute;
+            background-color: yellow;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
         }
 
         /*hide the items when the select box is closed:*/
         .select-hide {
-          display: none;
+            display: none;
         }
 
         .select-items div:hover, .same-as-selected {
-          background-color: rgba(0, 0, 0, 0.1);
+            background-color: rgba(0, 0, 0, 0.1);
         }
 
         .customInput {
-          -webkit-box-sizing: content-box;
-          -moz-box-sizing: content-box;
-          box-sizing: content-box;
-          padding: 8px 8px 8px 8px;
-          border-top: 1px solid #b7b7b7;
-          border-right: 2px solid #b7b7b7;
-          border-bottom: 1px solid #b7b7b7;
-          border-left: 2px solid #b7b7b7;
-          -webkit-border-radius: 5px / 40px;
-          border-radius: 5px / 40px;
-          font: normal 16px/normal Arial, Helvetica, sans-serif;
-          color: rgba(0,0,0,1);
-          -o-text-overflow: clip;
-          text-overflow: clip;
-          background: rgba(255,255,224,1);
-          -webkit-box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
-          box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
-          text-shadow: 1px 1px 0 rgba(254,255,242,1) ;
+            -webkit-box-sizing: content-box;
+            -moz-box-sizing: content-box;
+            box-sizing: content-box;
+            padding: 8px 8px 8px 8px;
+            border-top: 1px solid #b7b7b7;
+            border-right: 2px solid #b7b7b7;
+            border-bottom: 1px solid #b7b7b7;
+            border-left: 2px solid #b7b7b7;
+            -webkit-border-radius: 5px / 40px;
+            border-radius: 5px / 40px;
+            font: normal 16px/normal Arial, Helvetica, sans-serif;
+            color: rgba(0,0,0,1);
+            -o-text-overflow: clip;
+            text-overflow: clip;
+            background: rgba(255,255,224,1);
+            -webkit-box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+            box-shadow: 2px 2px 0 0 rgba(0,0,0,0.2) inset;
+            text-shadow: 1px 1px 0 rgba(254,255,242,1);
         }
+    </style>
 
-            </style>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>
+    <link rel='stylesheet' href='https://fonts.googleapis.com/icon?family=Material+Icons'>
+
+    <link rel="stylesheet" href="css/style.css">
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script>
-    
-       
+
+
     //CUSTOM SELECT BOX
         var x, i, j, selElmnt, a, b, c;
         /*look for any elements with the class "custom-select":*/
@@ -604,86 +608,81 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-                     
-                     
+
+
                     $('.removableRow').remove();
 					$('.firstName').remove();
 					$('.lastName').remove();
                     $('.templateRow').hide();
-                    if (returnedData.length == 0)
-                    {
+                    if (returnedData.length == 0) {
                         $('.templateRow').show();
                     }
-                    for (var i = 0; i < returnedData.length; i++)
-                    {
-						var currentRow = returnedData[i];
-						var hasPermit = (currentRow['Permit_Num'] != "");
-						if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) {
+                    else {
 
-							var Row = $('.templateRow').clone();
-							Row.removeClass('templateRow').addClass('removableRow').show();
-							Row.find('.rowFirstName').val(currentRow['First_Name']);
-							Row.find('.rowLastName').val(currentRow['Last_Name']);
+                        for (var i = 0; i < returnedData.length; i++) {
+                            var currentRow = returnedData[i];
+                            var hasPermit = (currentRow['Permit_Num'] != "");
+                            if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) {
 
-							if (currentRow['Email'] != null) {
-								Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
-							}
-							if (currentRow['Phone'] != null) {
-								Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
-							}
-							if (currentRow['Org'] != null) {
-								Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
-								Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
-							}
-							var clientId = currentRow['ID']
-							Row.find('.rowViewButton').val(clientId);
+                                var Row = $('.templateRow').clone();
+                                Row.removeClass('templateRow').addClass('removableRow').show();
+                                Row.find('.rowFirstName').val(currentRow['First_Name']);
+                                Row.find('.rowLastName').val(currentRow['Last_Name']);
 
-							//autocomplete
-							var firstNameRow = $('.firstNameTemplate').clone();
-							firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
-							firstNameRow.text(currentRow['First_Name']);
-							$('.firstNamesList').append(firstNameRow);
-
-							var lastNameRow = $('.lastNameTemplate').clone();
-							lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
-							lastNameRow.text(currentRow['Last_Name']);
-							$('.lastNamesList').append(lastNameRow);
-
-
-							$('.checkedId').each(function (index) {
-								if ($(this).text() == clientId) {
-									Row.find('.rowSelected').prop('checked', true);
-								}
-							});
-							$('.templateRow').parent().append(Row);
-						}
-                    }
-                    $('.rowViewButton').unbind('click').click(function ()
-                    {
-                        editClient($(this).val());
-                    });
-                    $('.rowSelected').unbind('click');
-                    $('.rowSelected').click(function ()
-                    {
-                        var clientId = $(this).parent().parent().find('.rowViewButton').val();
-                        if ($(this).prop('checked') == true)
-                        {
-                            var Row = $('.checkedIdTemplate').clone();
-                            Row.removeClass('checkedIdTemplate').addClass('checkedId');
-                            Row.text(clientId);
-                            $('.checkedIdsDiv').append(Row);
-                        }
-                        else
-                        {
-                            $('.checkedId').each(function (index)
-                            {
-                                if ($(this).text() == clientId)
-                                {
-                                    $(this).remove();
+                                if (currentRow['Email'] != null) {
+                                    Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
                                 }
-                            });
+                                if (currentRow['Phone'] != null) {
+                                    Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
+                                }
+                                if (currentRow['Org'] != null) {
+                                    Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+                                    Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
+                                }
+                                var clientId = currentRow['ID']
+                                Row.find('.rowViewButton').val(clientId);
+
+                                //autocomplete
+                                var firstNameRow = $('.firstNameTemplate').clone();
+                                firstNameRow.removeClass('firstNameTemplate').addClass('firstName');
+                                firstNameRow.text(currentRow['First_Name']);
+                                $('.firstNamesList').append(firstNameRow);
+
+                                var lastNameRow = $('.lastNameTemplate').clone();
+                                lastNameRow.removeClass('lastNameTemplate').addClass('lastName');
+                                lastNameRow.text(currentRow['Last_Name']);
+                                $('.lastNamesList').append(lastNameRow);
+
+
+                                $('.checkedId').each(function (index) {
+                                    if ($(this).text() == clientId) {
+                                        Row.find('.rowSelected').prop('checked', true);
+                                    }
+                                });
+                                $('.templateRow').parent().append(Row);
+                            }
                         }
-                    });
+                        $('.rowViewButton').unbind('click').click(function () {
+                            editClient($(this).val());
+                        });
+                        $('.rowSelected').unbind('click');
+                        $('.rowSelected').click(function () {
+                            var clientId = $(this).parent().parent().find('.rowViewButton').val();
+                            if ($(this).prop('checked') == true) {
+                                var Row = $('.checkedIdTemplate').clone();
+                                Row.removeClass('checkedIdTemplate').addClass('checkedId');
+                                Row.text(clientId);
+                                $('.checkedIdsDiv').append(Row);
+                            }
+                            else {
+                                $('.checkedId').each(function (index) {
+                                    if ($(this).text() == clientId) {
+                                        $(this).remove();
+                                    }
+                                });
+                            }
+                        });
+                    }
                 },
                 async: true,
                 processData: false
@@ -759,9 +758,9 @@
         }
         function AutoComplete(input, node_Div, repeat)
         {
-            this.input = $(input);        
+            this.input = $(input);
             this.node_Div = $(node_Div);
-            this.noRepeat = repeat;        
+            this.noRepeat = repeat;
             this.index = -1;          //index on div
             this.searchValue = "";   //save searching input
         }
@@ -989,7 +988,7 @@
             }
 		}
 
-     
+
 
             /**/</script>
 </head>
@@ -1006,69 +1005,71 @@
         <p class="lastNameTemplate"></p>
     </div>
     <div id="mainWindow">
-		<div style="width: 80%; margin-left: 10%;" align="right">
-			<form>
-				<div class="flex-container">
-					<div class="sidebar-left">
-						<a>First Name</a><br />
-						<input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
-						<div class="auto_hidden" id="auto"></div>
-						<script>
-							var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
-						</script>
-					</div>
-					<div class="sidebar-middle">
-						<a>Last Name</a><br />
-						<input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
-						<div class="auto_hidden" id="autoLastName"></div>
-						<script>
-							var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
-						</script>
-					</div>
+        <div style="width: 80%; margin-left: 10%;" align="right">
+            <form>
+                <div class="flex-container">
+                    <div class="sidebar-left">
+                        <a>First Name</a><br />
+                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
+                        <div class="auto_hidden" id="auto"></div>
+                        <script>
+                            var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
+                        </script>
+                    </div>
+                    <div class="sidebar-middle">
+                        <a>Last Name</a><br />
+                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
+                        <div class="auto_hidden" id="autoLastName"></div>
+                        <script>
+                            var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
+                        </script>
+                    </div>
 
-					<div class="sidebar-right">
-						<a>Organization Type</a><br />
-						<select multiple title="Press Ctrl while clicking multiple selections in Windows (use Command + click on Mac)" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
-							<!--We need to keep an empty option to allow searches that do not include organization-->
-							<option value=""></option>
-							<option value="business">Business</option>
-							<option value="electedOfficial">Elected Official</option>
-							<option value="educationAll">Education - All</option>
-							<option value="elementary">Elementary School</option>
-							<option value="middle">Middle School</option>
-							<option value="highSchool">High School</option>
-							<option value="higherEd">Higher Education</option>
-							<option value="nonProfit">Non-profit</option>
-							<option value="UWSystem">UW-System</option>
-							<option value="boardOfRegent">Board of Regent</option>
-							<option value="advancement">Advancement & Alumni</option>
-							<option value="government">Government</option>
-							<option value="other">Other</option>
-						</select>
-					</div>
+                    <div class="sidebar-right">
+                        <a>Organization Type</a><br /><selction>
+                            <select  multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
+                                <!--We need to keep an empty option to allow searches that do not include organization-->
+                                <option value="business">Business</option>
+                                <option value="electedOfficial">Elected Official</option>
+                                <option value="educationAll">Education - All</option>
+                                <option value="elementary">Elementary School</option>
+                                <option value="middle">Middle School</option>
+                                <option value="highSchool">High School</option>
+                                <option value="higherEd">Higher Education</option>
+                                <option value="nonProfit">Non-profit</option>
+                                <option value="UWSystem">UW-System</option>
+                                <option value="boardOfRegent">Board of Regent</option>
+                                <option value="advancement">Advancement & Alumni</option>
+                                <option value="government">Government</option>
+                                <option value="other">Other</option>
+                            </select>
 
-				</div>
+                            <script src="js/index.js"></script>
+                        </selction>
+                    </div>
 
-			</form>
-			<div style="float:left; display: flex; width: 100%">
-				<div style="display: flex; width: 25%">
-					<p style="float:left;">Display Inactive: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
-				</div>
-				<div style="display: flex; width: 25%">
-					<p style="float:left;">Has Permit: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
-				</div>
-				<div style="display: flex; width: 25%">
-					<p style="float:left;">Holiday Card Recipient: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
-				</div>
-				<div style="display: flex; width: 25%">
-					<p style="float:left;">Community Breakfast Attendee: </p>
-					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
-				</div>
-			</div>
-		</div>
+                </div>
+
+            </form>
+            <div style="float:left; display: flex; width: 100%">
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Display Inactive: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Has Permit: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Holiday Card Recipient: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
+                </div>
+                <div style="display: flex; width: 25%">
+                    <p style="float:left;">Community Breakfast Attendee: </p>
+                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
+                </div>
+            </div>
+        </div>
         <div class="flex-select">
             <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
             <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
