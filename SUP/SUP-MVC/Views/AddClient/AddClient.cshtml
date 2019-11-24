@@ -87,7 +87,7 @@
         }
 
         .noteCell {
-            width: 100%;
+            width: 75%;
             text-align: left;
 			overflow: hidden;
         }
@@ -98,8 +98,10 @@
         }
 
         .saveEditCell {
-            width: calc(100% - 50px);
-            text-align: right;
+            width: 25%;
+			padding-left: 50px;
+			margin: 0px;
+			vertical-align: bottom;
             padding-top: 10px;
             padding-right: 20px;
         }
@@ -589,9 +591,9 @@
 				</div>
 				<div class="row">
 					<div class="noteCell">
-						Note<br /><textarea style="width: 75%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
+						Note<br /><textarea style="width: 100%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
 					</div>
-					<div class="cell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
+					<div class="saveEditCell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
 				</div>
 			</div>
 		</form>

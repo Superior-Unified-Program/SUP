@@ -590,7 +590,8 @@
 		function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
-            var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
+			var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
+			console.log(organization);
             var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
             $.ajax({
