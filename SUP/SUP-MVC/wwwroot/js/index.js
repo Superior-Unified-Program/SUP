@@ -169,4 +169,3 @@ var myDrop = new drop({
    selector:  '#myMulti',
  
 });
- myDrop.toggle();
