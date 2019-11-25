@@ -625,11 +625,11 @@
                         for (var i = 0; i < returnedData.length; i++) {
                             var currentRow = returnedData[i];
 							var hasPermit = (currentRow['Permit_Num'] != "");
-							var breakfastAttendee = (currentRow['Community_Breakfast'] != "false");
-							var holidayCardRecipient = (currentRow['Holiday_Card'] != "false");
-							if ($('.displayOnlyHasPermit').prop('checked') == false || hasPermit &&
-								$('.displayOnlyHBreakfastAttendee').prop('checked') == false || breakfastAttendee &&
-								$('.displayOnlyHolidayCard').prop('checked') == false || holidayCardRecipient) {
+							var breakfastAttendee = (currentRow['Community_Breakfast'] != false);
+							var holidayCardRecipient = (currentRow['Holiday_Card'] != false);
+							if (($('.displayOnlyHasPermit').prop('checked') == false || hasPermit) &&
+								($('.displayOnlyHBreakfastAttendee').prop('checked') == false || breakfastAttendee) &&
+								($('.displayOnlyHolidayCard').prop('checked') == false || holidayCardRecipient)) {
 
                                 var Row = $('.templateRow').clone();
                                 Row.removeClass('templateRow').addClass('removableRow').show();
