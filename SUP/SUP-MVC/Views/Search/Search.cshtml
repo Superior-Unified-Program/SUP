@@ -614,7 +614,10 @@
 					$('.firstName').remove();
 					$('.lastName').remove();
                     $('.templateRow').hide();
-                    if (returnedData.length == 0) {
+                    if(returnedData == null){
+                        alert("There is no such person.");
+                    }
+                    else if (returnedData.length == 0) {
                         $('.templateRow').show();
                     }
                     else {
