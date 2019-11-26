@@ -181,12 +181,12 @@ namespace SUP_MVC.Controllers
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
                         Client_ID = intClientId,
-                        Email = Email
+                        Business_Email = Email
                     };
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
                         Client_ID = intClientId,
-                        Number = Phone
+                        Business_Phone = Phone
                     };
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
@@ -210,11 +210,11 @@ namespace SUP_MVC.Controllers
                     Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        Email = Email
+                        Business_Email = Email
                     };
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        Number = Phone
+                        Business_Phone = Phone
                     };
                     Client.Notes = Note;
 					Client.Active = (Active == "true");

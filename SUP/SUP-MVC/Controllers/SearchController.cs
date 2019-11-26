@@ -213,7 +213,7 @@ namespace SUP_MVC.Controllers
                 //List<string> templateNames = Merge.getTemplateNames();
                 string zipFile = "";
                 //if (templateNames.Count >= 1) 
-				Merge.merge(clientArray, fileName, out zipFile);
+				int documentsGenerated = Merge.merge(clientArray, fileName, out zipFile);
                 //else return "No person selected !!!!";
 
                 var json = JsonConvert.SerializeObject(zipFile);
