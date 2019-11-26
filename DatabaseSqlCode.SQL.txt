@@ -2,12 +2,12 @@ USE [master]
 GO
 
 /*Create database*/
-IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdbTEST' OR name = 'SUPdbTEST')
-   exec('CREATE DATABASE [SUPdbTEST] CONTAINMENT = NONE')
+IF NOT EXISTS (SELECT * FROM master.dbo.sysdatabases WHERE '[' + name + ']' = 'SUPdb' OR name = 'SUPdb')
+   exec('CREATE DATABASE [SUPdb] CONTAINMENT = NONE')
 GO
 
 /* create User If possible */
---CREATE LOGIN User
+--CREATE LOGIN teamRADGSHAUser
 USE [master]
 IF EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser') DROP LOGIN [SUPuser]
 IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPuser')
@@ -15,7 +15,7 @@ IF NOT EXISTS (SELECT name FROM master.sys.server_principals WHERE name = 'SUPus
 GO
 
 --create user
-USE [SUPdbTEST]
+USE [SUPdb]
 IF USER_ID('SUPuser') IS NULL exec('CREATE USER [SUPuser] FOR LOGIN [SUPuser]')
 GO
 
@@ -164,7 +164,7 @@ END')
 --creation of any views
 -----------------------------------------------------------------------------------------------------------------------------
 --creates a view that is used in the queryClientFull SP
-USE [SUPdbTEST]
+USE [SUPdb]
 IF OBJECT_ID('viewall', 'V') IS NOT NULL
 DROP VIEW viewAll
 GO
@@ -285,8 +285,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT
 GO
 ALTER PROCEDURE queryClientFull
 	-- Add the parameters for the stored procedure here
-	@lastName varchar(50) = '', @firstName nvarchar(30) = '',
-	@orgType varchar(30) = '', @title varchar(20) = ''
+	@lastName varchar(50) = '', @firstName nvarchar(30) = ''
 
 AS
 BEGIN
@@ -295,10 +294,8 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-	IF @orgType IS NULL SET @orgType = ''
 	IF @lastName IS NULL SET @lastName = ''
 	IF @firstName IS NULL SET @firstName = ''
-	IF @title IS NULL SET @title = ''
 
 
 	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit,
@@ -315,7 +312,7 @@ BEGIN
 	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
 	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
 
-	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card_Sent, Community_Breakfast_Invite, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', Org_Name, Org_Type, Title, 
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card, Community_Breakfast, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, ID AS 'Client_ID', 
 		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
 	WHERE First_Name LIKE (@firstName + '%') 
 		AND Last_Name LIKE (@lastName + '%') 
@@ -383,8 +380,8 @@ BEGIN
 
 	-- set values into the tables. dont repeat adding to organization table in the case that the organization and type already exist in the database
 	/*IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
-	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@ID, @orgName, @orgType, @title, 1)
-	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)*/
+	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@ID, @orgName, @orgType, @title, 1)*/
+	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
 
 	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'business', @Business_phoneNumber)
 	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'personal', @Personal_phoneNumber)
@@ -646,7 +643,7 @@ BEGIN
 	UPDATE #searchResults SET Business_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'business')
 	UPDATE #searchResults SET Assistant_Phone = (SELECT Number FROM Phone WHERE Client_ID = ID AND Type = 'assistant')
 
-	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card_Sent, Community_Breakfast_invite, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, 
+	SELECT ID, Prefix, Last_Name, First_Name, Middle_initial, Permit_Num, Assistant_First_Name, Assisntant_Last_Name, Active, Holiday_Card, Community_Breakfast, Notes, ID AS 'Client_ID', Line1, Line2, City, State, Zip, 
 		ID AS 'Client_ID', Personal_Email, Business_Email, Assistant_Email, ID AS 'Client_ID', Personal_Phone, Business_Phone, Assistant_Phone FROM #searchResults
 	WHERE ID = @Client_Id
 
@@ -729,6 +726,7 @@ ALTER PROCEDURE addOrganization
 AS
 BEGIN
 
+	IF (@primary = 1) UPDATE Associated_With SET [Primary] = 0 WHERE Client_ID = @clientID
 	IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
 	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@clientID, @orgName, @orgType, @title, @primary)
 
@@ -754,15 +752,16 @@ BEGIN
 	SET NOCOUNT ON;
 
     -- Insert statements for procedure here
-EXEC	addCLient
+DECLARE @ID int
+
+EXEC	@ID = addCLient
 		@Prefix = 'Mr.',
 		@firstName = N'Matt',
 		@lastName = N'Holcomb',
 		@middleInitial = N'J',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@notes = N'VIP',
-		@orgName = N'Foresty Dept',
-		@orgType = N'County',
-		@title = N'park worker',
 		@Personal_phoneNumber = N'1234564132',
 		@Business_phoneNumber = N'2132165466',
 		@Personal_Email = N'email@server.com',
@@ -777,13 +776,32 @@ EXEC	addCLient
 		@assistantFirstName = 'Billy',
 		@assistantLastName = 'Joe'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = 'Foresty Dept',
+		@orgType = 'Government',
+		@title = 'park worker',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = 'Hayward',
+		@orgType = 'High School',
+		@title = 'teacher',
+		@primary = 0
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Hayward High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Jim',
 		@lastName = N'Holcomb',
+		@communityBreakfast = 1,
+		@holidayCard = 0,
 		@notes = N'notes and such',
-		@orgName = N'FBI',
-		@orgType = N'Government',
-		@title = N'lead banker',
 		@Business_phoneNumber = N'1231475646',
 		@Personal_Email = N'thatOneGuy@server.com',
 		@line1 = N'149 Cranberry Lane',
@@ -792,15 +810,21 @@ EXEC	addCLient
 		@state = N'WI',
 		@zipCode = N'54880'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'FBI',
+		@orgType = N'Government',
+		@title = N'lead banker',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Alen',
 		@lastName = N'Johnson',
 		@middleInitial = N'Z',
 		@permitNum = N'Z699',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@notes = N'notes and other stuff',
-		@orgName = N'UW-super',
-		@orgType = N'UW-super',
-		@title = N'Professor',
 		@Business_phoneNumber = N'1231321459',
 		@Personal_Email = N'thatOneGuy@server.com',
 		@line1 = N'149 Dillingham Road',
@@ -808,14 +832,26 @@ EXEC	addCLient
 		@state = N'MN',
 		@zipCode = N'14285'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'UW-Superior',
+		@orgType = N'Higher Education',
+		@title = N'Professor',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'UW-Superior',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Jimmy',
 		@lastName = N'John',
 		@middleInitial = N'U',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@notes = N'things and such',
-		@orgName = N'FBI',
-		@orgType = N'Government',
-		@title = N'Inspector General',
 		@Personal_phoneNumber = N'1121588745',
 		@Personal_Email = N'MyAwsomeEmail@server.com',
 		@line1 = N'1258 West King Road',
@@ -823,13 +859,19 @@ EXEC	addCLient
 		@state = N'MN',
 		@zipCode = N'14458'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'FBI',
+		@orgType = N'Government',
+		@title = N'Inspector General',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@prefix = 'Miss',
 		@firstName = N'Timmy',
 		@lastName = N'Stark',
-		@orgName = N'Microsoft',
-		@orgType = N'Non-profit',
-		@title = N'Grunt',
+		@communityBreakfast = 1,
+		@holidayCard = 0,
 		@Personal_phoneNumber = N'5463151654',
 		@Business_phoneNumber = N'5454651654',
 		@Business_Email = N'BarbieGirl@server.com',
@@ -838,14 +880,20 @@ EXEC	addCLient
 		@state = N'TX',
 		@zipCode = N'97841'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Microsoft',
+		@orgType = N'Non-profit',
+		@title = N'Grunt',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Larson',
 		@lastName = N'Kitty',
 		@middleInitial = N'C',
 		@permitNum = N'H123',
-		@orgName = N'Sears',
-		@orgType = N'Non-profit',
-		@title = N'Worker of somekind',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'6573541245',
 		@Personal_Email = N'KingSlayer@server.com',
 		@line1 = N'18456 Darkshore road',
@@ -853,13 +901,19 @@ EXEC	addCLient
 		@state = N'CA',
 		@zipCode = N'91458'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Sears',
+		@orgType = N'Non-profit',
+		@title = N'Worker of somekind',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Timmmy',
 		@lastName = N'Slim',
 		@middleInitial = N'Y',
-		@orgName = N'Org.net',
-		@orgType = N'For-Profit',
-		@title = N'Head Of Sales',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'0123948547',
 		@Personal_Email = N'ForTheHorde@server.com',
 		@Personal_phoneNumber = N'2314564654',
@@ -869,14 +923,20 @@ EXEC	addCLient
 		@state = N'CA',
 		@zipCode = N'41547'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Org.net',
+		@orgType = N'Non-profit',
+		@title = N'Head Of Sales',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Izuku',
 		@lastName = N'Midoria',
 		@middleInitial = N'V',
 		@permitNum = N'P000',
-		@orgName = N'UA',
-		@orgType = N'Non-profit',
-		@title = N'Hero',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Personal_phoneNumber = N'4724561324',
 		@Business_Email = N'AllmightFanboy@server.com',
 		@line1 = N'18525 Noname road',
@@ -884,14 +944,18 @@ EXEC	addCLient
 		@state = N'WA',
 		@zipCode = N'64564'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'UA',
+		@orgType = N'Non-profit',
+		@title = N'Hero',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@Prefix = 'Lt Coln.',
 		@firstName = N'John',
 		@lastName = N'Johnson',
 		@middleInitial = N'Q',
-		@orgName = N'PlaceTheyWorkFor',
-		@orgType = N'Non-profit',
-		@title = N'TitleTheyEarned',
 		@Business_phoneNumber = N'5643617845',
 		@Personal_Email = N'ILikeToWin@server.com',
 		@line1 = N'454 Streetname road',
@@ -899,13 +963,17 @@ EXEC	addCLient
 		@state = N'KS',
 		@zipCode = N'54654'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'PlaceTheyWorkFor',
+		@orgType = N'Non-profit',
+		@title = N'TitleTheyEarned',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Johnson',
 		@lastName = N'Johnnyboy',
 		@middleInitial = N'O',
-		@orgName = N'Principal''s Office',
-		@orgType = N'High School',
-		@title = N'Cheif Executive Officer',
 		@Personal_phoneNumber = N'6543123216',
 		@Business_Email = N'IDontLikePie@server.com',
 		@line1 = N'4546 Slingshot road',
@@ -913,12 +981,32 @@ EXEC	addCLient
 		@state = N'MI',
 		@zipCode = N'79873'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Principal''s Office',
+		@orgType = N'High School',
+		@title = N'Cheif Executive Officer',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Senate',
+		@orgType = N'Elected Official',
+		@title = N'Government official',
+		@primary = 0
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'A High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Bo',
 		@lastName = N'Jangles',
 		@middleInitial = N'X',
-		@orgName = N'Snapple',
-		@orgType = N'distributor',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Personal_phoneNumber = N'5442135646',
 		@Business_Email = N'IDontLikePi@server.com',
 		@line1 = N'4546 Orange road',
@@ -926,13 +1014,19 @@ EXEC	addCLient
 		@state = N'WI',
 		@zipCode = N'64461'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'UW-Superior',
+		@orgType = N'Board of Regent',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@Prefix = 'Mr.',
 		@firstName = N'Apple',
 		@lastName = N'Orange',
 		@permitNum = N'W432',
-		@orgName = N'Superior DMV',
-		@orgType = N'State',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'7463215645',
 		@Personal_Email = N'single@server.com',
 		@line1 = N'1 Springbrook dr.',
@@ -940,15 +1034,20 @@ EXEC	addCLient
 		@state = N'WI',
 		@zipCode = N'46489'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Superior DMV',
+		@orgType = N'Government',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@Prefix = 'Private',
 		@firstName = N'Airbourne',
 		@lastName = N'Ranger',
 		@middleInitial = N'P',
+		@communityBreakfast = 1,
+		@holidayCard = 0,
 		@notes = N'Very cool person',
-		@orgName = N'Army',
-		@orgType = N'Business',
-		@title = N'BA',
 		@Personal_phoneNumber = N'1691584511',
 		@Personal_Email = N'coolGuy@server.com',
 		@line1 = N'123 Awsome Stree',
@@ -956,13 +1055,19 @@ EXEC	addCLient
 		@state = N'WI',
 		@zipCode = N'54880'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Army',
+		@orgType = N'Business',
+		@title = N'BA',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'TickleMe',
 		@lastName = N'Elmo',
 		@middleInitial = N'Y',
-		@orgName = N'Sesame Street',
-		@orgType = N'Elected Official',
-		@title = N'Tickleree',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'1234561846',
 		@Business_Email = N'tickleMeElmo@server.com',
 		@line1 = N'895 Sesame Street',
@@ -970,14 +1075,26 @@ EXEC	addCLient
 		@state = N'TN',
 		@zipCode = N'78445'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Sesame Street',
+		@orgType = N'Elected Official',
+		@title = N'Tickleree',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Winner',
+		@orgType = N'Other',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Cloud',
 		@lastName = N'Strife',
 		@middleInitial = N'J',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@notes = N'Winner',
-		@orgName = N'SOLDIER',
-		@orgType = N'High School',
-		@title = N'soldier',
 		@Business_phoneNumber = N'7695851425',
 		@Personal_Email = N'cloudStife@server.com',
 		@line1 = N'855 Anywhere Dr.',
@@ -985,14 +1102,24 @@ EXEC	addCLient
 		@state = N'WA',
 		@zipCode = N'58945'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'SOLDIER',
+		@orgType = N'High School',
+		@title = N'soldier',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'A High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Peter',
 		@lastName = N'Griffin',
 		@middleInitial = N'J',
 		@notes = N'Cool guy',
-		@orgName = N'Pawtucket Brewery',
-		@orgType = N'High School',
-		@title = N'line man',
 		@Personal_phoneNumber = N'7395811448',
 		@Personal_Email = N'birdIsTheWord@server.com',
 		@line1 = N'31 Spooner Street',
@@ -1004,14 +1131,26 @@ EXEC	addCLient
 		@assistantFirstName = 'Meg',
 		@assistantLastName = 'Griffin'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Pawtucket Brewery',
+		@orgType = N'High School',
+		@title = N'line man',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'A High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Louis',
 		@lastName = N'Griffin',
 		@middleInitial = N'E',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@notes = N'Wifey',
-		@orgName = N'StayAtHome',
-		@orgType = N'Foundation',
-		@title = N'MOM',
 		@Personal_phoneNumber = N'6982341584',
 		@Personal_Email = N'birdIsTheWord2@server.com',
 		@line1 = N'31 Spooner Street',
@@ -1019,13 +1158,20 @@ EXEC	addCLient
 		@state = N'RI',
 		@zipCode = N'45589'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'StayAtHome',
+		@orgType = N'Foundation',
+		@title = N'MOM',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Stewie',
 		@lastName = N'Griffin',
-		@middleInitial = N'E',
+		@middleInitial = N'Z',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@notes = N'very smart',
-		@orgName = N'TS Goverment Facility',
-		@orgType = N'Elementry',
 		@Business_phoneNumber = N'1253651452',
 		@Business_Email = N'birdIsTheWord3@server.com',
 		@line1 = N'31 Spooner Street',
@@ -1037,12 +1183,24 @@ EXEC	addCLient
 		@assistantFirstName = 'Yarez',
 		@assistantLastName = 'Rain'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'TS Goverment Facility',
+		@orgType = N'Elementry',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'That Elementry School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Stew',
 		@lastName = N'Griffin',
 		@middleInitial = N'E',
-		@orgName = N'TS Goverment Facility',
-		@orgType = N'Elementry',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Personal_phoneNumber = N'9872131321',
 		@Personal_Email = N'birdIsTheWord4@server.com',
 		@line1 = N'31 Spooner Street',
@@ -1050,12 +1208,22 @@ EXEC	addCLient
 		@state = N'RI',
 		@zipCode = N'45589'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'TS Goverment Facility',
+		@orgType = N'Elementry',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'An Elementry School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Sally',
 		@lastName = N'Sue',
 		@middleInitial = N'I',
-		@orgName = N'LocalCompany',
-		@orgType = N'Business',
 		@Personal_phoneNumber = N'6455645648',
 		@Personal_Email = N'mai1_1231@server.com',
 		@line1 = N'5646 Farangton Rd.',
@@ -1063,20 +1231,36 @@ EXEC	addCLient
 		@state = N'OH',
 		@zipCode = N'56465'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'LocalCompany',
+		@orgType = N'Business',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Sally',
 		@lastName = N'Stone',
-		@orgName = N'Hayward',
-		@orgType = N'High School',
 		@Personal_phoneNumber = N'9876581544',
 		@Personal_Email = N'mail_6546@server.com'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Hayward',
+		@orgType = N'High School',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Hayward High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Xion',
 		@lastName = N'Angler',
 		@middleInitial = N'E',
-		@orgName = N'LocalBusiness2',
-		@orgType = N'Business',
+		@communityBreakfast = 1,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'7853541654',
 		@Personal_Email = N'mail_123@server.com',
 		@line1 = N'1211 Elementy Road',
@@ -1084,21 +1268,37 @@ EXEC	addCLient
 		@state = N'OH',
 		@zipCode = N'45614'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'LocalBusiness2',
+		@orgType = N'Business',
+		@primary = 1
+
+EXEC	@ID = addCLient
 		@firstName = N'Steven',
 		@lastName = N'Stone',
 		@middleInitial = N'Y',
-		@orgName = N'Spoontown',
-		@orgType = N'High School',
 		@Personal_phoneNumber = N'5641211312',
 		@Personal_Email = N'mailbox@server.com'
 
-EXEC	addCLient
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Spoontown',
+		@orgType = N'High School',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Spoontown High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
+EXEC	@ID = addCLient
 		@firstName = N'Steven',
 		@lastName = N'Stoney',
 		@middleInitial = N'Q',
-		@orgName = N'Superior',
-		@orgType = N'High School',
+		@communityBreakfast = 0,
+		@holidayCard = 1,
 		@Business_phoneNumber = N'4841215466',
 		@Business_Email = N'FRIDAY@server.com',
 		@line1 = N'124 Spring Street',
@@ -1109,6 +1309,19 @@ EXEC	addCLient
 		@Assistant_Email = 'assistantEmail95@server.com',
 		@assistantFirstName = 'Jim',
 		@assistantLastName = 'Bob'
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Superior',
+		@orgType = N'High School',
+		@primary = 1
+
+EXEC	addOrganization
+		@clientID = @ID,
+		@orgName = N'Superior High School',
+		@orgType = N'Education - All',
+		@primary = 0
+
 
 
 UPDATE Client SET Active = 0 WHERE Last_Name = 'Stoney'
@@ -1126,5 +1339,4 @@ UPDATE Client SET Active = 0 WHERE First_Name = 'Bo'
 UPDATE Client SET Active = 0 WHERE First_Name = 'Sally'
 
 END
-
 GO

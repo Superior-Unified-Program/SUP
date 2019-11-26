@@ -19,19 +19,48 @@ namespace SUP_Library.DBComponent
         private static SortBy sortBy;
         private static int asc;
         public int ID { get; set; }
-
         public string Prefix { get; set; }
-        //public string Company { get; set; }
         public string Permit_Num { get; set; }
-        //public string PhoneNumber { get; set; }
-        //public string EmailAddress { get; set; }
         public string First_Name { get; set; }
         public string Last_Name { get; set; }
         public string Middle_initial { get; set; }
 
-        public Organization Org { get; set; }
+        public Organization Org
+        {
+            get
+            {
+                return Primary_Organization;
+            }
 
-        public List<Organization> Organization; // don't use this yet
+            set
+            {
+                Primary_Organization = value;
+            }
+        }
+
+        public List<Organization> Organizations; // don't use this yet
+
+        public Organization Primary_Organization
+        {
+            get
+            {
+                foreach (Organization org in Organizations)
+                {
+                    if (org.Primary == true) return org;
+                }
+                return new Organization(); // there is no primary organization, return an empty organization, because it is better than causing a crash
+            }
+            set
+            {
+                foreach (Organization org in Organizations)
+                {
+                    if (org.Primary == true) org.Primary=false;
+                }
+                value.Primary = true;
+                Organizations.Add(value);
+            }
+      
+        }
         public Address Address { get; set; }
 
         public EmailAddress Email { get; set; }
@@ -62,12 +91,13 @@ namespace SUP_Library.DBComponent
 
         public Client()
         {
-            Org = new Organization(); // classes probably should be initialized and not null
+            Organizations = new List<Organization>();
+            //Org = new Organization(); // classes probably should be initialized and not null
 
             Address = new Address();
             Email = new EmailAddress();
             Phone = new PhoneNumber();
-            Organization = new List<Organization>();
+           
             setSortCriteria(SortBy.Last_Name, true); // set to sort ascending and by last name by default
         }
 
@@ -75,21 +105,21 @@ namespace SUP_Library.DBComponent
         {
             return CompareTo((Client)client);
         }
-        private int CompareTo(Client client)
+        private int CompareTo(Client client) // change Org to Primary_Organization
         {
             if (client == null) return asc * 1;
             switch (sortBy)
             {
                 case SortBy.Org_Title:
-                    if (client.Org.Title == null || client.Org.Title.Trim() == "") return asc * -1;
-                    if (Org.Title == null || Org.Title.Trim() == "") return asc * 1;
-                    if (Org.Title == client.Org.Title) return asc * Last_Name.CompareTo(Last_Name);
-                    return asc * Org.Title.CompareTo(client.Org.Title);
+                    if (client.Primary_Organization.Title == null || client.Primary_Organization.Title.Trim() == "") return asc * -1;
+                    if (Primary_Organization.Title == null || Primary_Organization.Title.Trim() == "") return asc * 1;
+                    if (Primary_Organization.Title == client.Primary_Organization.Title) return asc * Last_Name.CompareTo(Last_Name);
+                    return asc * Primary_Organization.Title.CompareTo(client.Primary_Organization.Title);
                 case SortBy.Org_Name:
-                    if (client.Org.Org_Name == null) return asc * -1;
-                    if (Org.Org_Name == null) return asc * 1;
-                    if (Org.Org_Name == client.Org.Org_Name) return asc * Last_Name.CompareTo(Last_Name);
-                    return asc * Org.Org_Name.CompareTo(client.Org.Org_Name);
+                    if (client.Primary_Organization.Org_Name == null) return asc * -1;
+                    if (Primary_Organization.Org_Name == null) return asc * 1;
+                    if (Primary_Organization.Org_Name == client.Primary_Organization.Org_Name) return asc * Last_Name.CompareTo(Last_Name);
+                    return asc * Primary_Organization.Org_Name.CompareTo(client.Primary_Organization.Org_Name);
                 case SortBy.Business_Phone:
                     if (client.Phone.Business_Phone == null) return asc * -1;
                     if (Phone.Business_Phone == null) return asc * 1;
@@ -120,108 +150,5 @@ namespace SUP_Library.DBComponent
                           Address.Line2.ToString() + " " + Address.City.ToString() + " " + Address.State.ToString() + " " + Address.Zip.ToString() + " " + Org.Org_Name + " " + Org.Org_Type + " " +
                           Org.Title + " P:" + Email.Personal_Email + " B:" + Email.Business_Email + " A:" + Email.Assistant_Email + " P:" + Phone.Personal_Phone + " B:" + Phone.Business_Phone + " A:" + Phone.Assistant_Phone;
         }
-
-        /*
-        public Client(int Id)
-        {
-         //   this.Id = Id;
-            //setId(Id);
-        }
-        public Client(int Id, string FirstName, string LastName)
-        {
-           // this.Id = Id;
-           // this.FirstName = FirstName;
-           // this.LastName = LastName;
-            
-            setId(Id);
-            setFirstName(FirstName);
-            setLastName(LastName);
-            
-        }
-        */
-        /* public Client(int Id, string Prefix, string FirstName, string LastName)
-         {
-             this.Id = Id;
-             this.FirstName = FirstName;
-             this.LastName = LastName;
-             this.Prefix = Prefix;
-
-             setId(Id);
-             setFirstName(FirstName);
-             setLastName(LastName);
-             setPrefix(Prefix);
-
-         }*/
-        /*public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName)
-        {
-            this.Id = Id;
-            this.FirstName = FirstName;
-            this.LastName = LastName;
-            this.Prefix = Prefix;
-            this.MiddleInitial = MiddleInitial;
-            
-            setId(Id);
-            setFirstName(FirstName);
-            setLastName(LastName);
-            setPrefix(Prefix);
-            setMiddleInitial(MiddleInitial);
-        }*/
-        /* public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company)
-         {
-             this.Id = Id;
-             this.FirstName = FirstName;
-             this.LastName = LastName;
-             this.Prefix = Prefix;
-             this.MiddleInitial = MiddleInitial;
-             this.Company = Company;
-
-             setId(Id);
-             setFirstName(FirstName);
-             setLastName(LastName);
-             setPrefix(Prefix);
-             setMiddleInitial(MiddleInitial);
-             setCompany(Company);
-
-         }
-         public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company, string PhoneNumber)
-         {
-             this.Id = Id;
-             this.FirstName = FirstName;
-             this.LastName = LastName;
-             this.Prefix = Prefix;
-             this.MiddleInitial = MiddleInitial;
-             this.Company = Company;
-             this.PhoneNumber = PhoneNumber;
-
-             setId(Id);
-             setFirstName(FirstName);
-             setLastName(LastName);
-             setPrefix(Prefix);
-             setMiddleInitial(MiddleInitial);
-             setCompany(Company);
-             setPhoneNumber(PhoneNumber);
-
-         }
-         public Client(int Id, string Prefix, string FirstName, char MiddleInitial, string LastName, string Company, string PhoneNumber, string EmailAddress)
-         {
-             this.Id = Id;
-             this.FirstName = FirstName;
-             this.LastName = LastName;
-             this.Prefix = Prefix;
-             this.MiddleInitial = MiddleInitial;
-             this.Company = Company;
-             this.PhoneNumber = PhoneNumber;
-             this.EmailAddress = EmailAddress;
-
-             setId(Id);
-             setFirstName(FirstName);
-             setLastName(LastName);
-             setPrefix(Prefix);
-             setMiddleInitial(MiddleInitial);
-             setCompany(Company);
-             setPhoneNumber(PhoneNumber);
-             setEmailAddress(EmailAddress);
-
-         }*/
     }
 }
