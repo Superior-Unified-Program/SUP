@@ -165,6 +165,22 @@
                 else {
                     $(this).prop('disabled', true);
                 }
+			});
+			$(".cardRecipientInput").each(function () {
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
+						});
+			$(".breakfastAttendee").each(function () {
+                if ($(this).prop('disabled') == true) {
+                    $(this).prop('disabled', false);
+                }
+                else {
+                    $(this).prop('disabled', true);
+                }
             });
             $("textarea").each(function () {
                 if ($(this).prop('disabled') == true) {
