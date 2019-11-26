@@ -353,15 +353,20 @@
             var Email = $('.emailInput').val();
             var Note = $('.noteInput').val();
             var Phone = $(".phoneInput").val();
-            var Active = $(".activeInput").prop("checked");
+			var Active = $(".activeInput").prop("checked");
+
+			var BreakfastAttendee = $(".breakfastAttendee").prop("checked");
+			var HolidayCardRecipient = $(".cardRecipientInput").prop("checked");
+
             var Permit = $(".permitInput").val();
 
             var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
-            var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
-                organization + ',' + company + ',' + title +
-                ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
-                ',' + Email + ',' + Note + ',' + Phone + ',' + Active + ',' + Permit;
+			var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
+				organization + ',' + company + ',' + title +
+				',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
+				',' + Email + ',' + Note + ',' + Phone + ',' + Active + ',' + Permit + ',' +
+				BreakfastAttendee + ',' + HolidayCardRecipient;
             $.ajax({
                 url: '/AddClient/UpdateClient',
                 type: 'POST',
@@ -591,8 +596,8 @@
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Holiday Card Recipient<br /><input type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Community Breakfast Attendee<br /><input type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Holiday Card Recipient<br /><input class="cardRecipientInput" type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="18" checked="checked"></div>
 					<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
 				</div>
 				<div class="row">

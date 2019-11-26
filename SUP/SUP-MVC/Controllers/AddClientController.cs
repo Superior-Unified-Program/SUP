@@ -159,6 +159,8 @@ namespace SUP_MVC.Controllers
                 var Phone = separatedArgs[14];
                 var Active = separatedArgs[15];
 				var Permit = separatedArgs[16];
+				var Breakfast = separatedArgs[17];
+				var HolidayCard = separatedArgs[18];
 				var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
