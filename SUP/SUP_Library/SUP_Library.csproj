@@ -167,6 +167,7 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+    <None Include="Templates\5160_Mail_Merge_Template.docx" />
     <None Include="Templates\Guest_Parking_Letter_Template_Two.docx" />
     <None Include="Templates\Guest_Parking_Letter_Template.docx" />
     <None Include="Templates\Incompatible\Guest_Parking_Letter_Template_Original.docx" />

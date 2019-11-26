@@ -24,13 +24,13 @@ namespace SUP_Library
     /// </summary>
     public class Merge
     {
-		//private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-		//private static string savePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
-		//private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
+		private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+        private static string savePath = ""; // (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+		private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
 
-		private static string templatePath = @"C:\Users\Public\Documents\Templates";
-		private static string savePath = @"C:\Users\Public\Documents\Temp";
-		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";
+		/*private static string templatePath = @"C:\Users\Public\Documents\Templates";
+		private static string savePath = ""; // @"C:\Users\Public\Documents\Temp";
+		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";*/
 		private struct token
         {
             public string open;
@@ -39,51 +39,107 @@ namespace SUP_Library
         private static token mergeToken;
           
         private static string replaceValue(Client client, string match)
-        {
+        {           
             string r;
             switch (match)
             {
+                case "Prefix":
+                    r = client?.Prefix;
+                    break;
+                case "Primary_Addressee":
+                    r = "";
+                    if (client?.Prefix?.Trim() != "") r = client?.Prefix + " ";
+                    r += client?.First_Name + " ";
+                    r += client?.Last_Name;
+                    break;
+                case "Firstname":
                 case "firstname":
-                    r = client.First_Name;
+                    r = client?.First_Name;
                     break;
+                case "Lastname":
                 case "lastname":
-                    r = client.Last_Name;
+                    r = client?.Last_Name;
                     break;
+                case "Title":
+                    r = client?.Primary_Organization?.Title;
+                    break;
+                case "Organization":
                 case "organization":
-                    r = client.Org.Org_Name;
+                    r = client?.Primary_Organization?.Org_Name;
                     break;
+                case "Permit":
                 case "permit":
                     r = client?.Permit_Num;
                     break;
+                case "Addr1":
                 case "address1":
-                    r = client.Address.Line1;
+                    r = client?.Address?.Line1;
                     break;
+                case "Addr2":
                 case "address2":
-                    r = client.Address.Line2;
+                    r = client?.Address?.Line2;
                     break;
+                case "City":
                 case "city":
-                    r = client.Address.City;
+                    r = client?.Address?.City;
                     break;
+                case "State":
                 case "state":
-                    r = client.Address.State;
+                    r = client?.Address?.State;
                     break;
+                case "Zip":
                 case "zipcode":
-                    r = client.Address.Zip;
+                    r = client?.Address?.Zip;
                     break;
+                case "AddressBlock": 
+                    r = client?.First_Name + " " + client?.Last_Name + "<w:br/>";
+                    r += client?.Address.Line1 + "<w:br/>";
+                    if (client?.Address.Line2.Trim() != "") r += "<w:t>" + client?.Address.Line2 + "<w:br/>";
+                    r += client?.Address.City + ", " + client?.Address.State + " " + client?.Address?.Zip + "<w:br/>";
+                    break;
+                case "Email_Personal":
+                    r = client?.Email?.Personal_Email;
+                    break;
+                case "Phone_Personal":
+                    r = client?.Phone?.Personal_Phone;
+                    break;
+                case "Email_Business":
+                case "Email":
                 case "email":
-                    r = client.Email?.Business_Email;
+                    r = client?.Email?.Business_Email;
                     break;
+                case "Phone_Business":
+                case "Phone":
                 case "phone":
-                    r = client.Phone?.Business_Phone;
+                    r = client?.Phone?.Business_Phone;
                     break;
+                case "Date":
                 case "date":
                     CultureInfo info = new CultureInfo( "en-US",false );
                     r = info.DateTimeFormat.GetMonthName(DateTime.Now.Month);
                     r += " " + DateTime.Now.Day;
                     r += ", " + DateTime.Now.Year;
                     break;
-                default:
+                case "Assistant_Firstname":
+                    r = client?.Assistant_First_Name;
+                    break;
+                case "Assistant_Lastname":
+                    r = client?.Assistant_Last_Name;
+                    break;
+                case "Assistant_Phone":
+                    r = client?.Phone?.Assistant_Phone;
+                    break;
+                case "Assistant_Email":
+                    r = client?.Email?.Assistant_Email;
+                    break;
+                case "Assistant_Name":
+                    r = client?.Assistant_First_Name + " " + client?.Assistant_Last_Name;
+                    break;
+                case "Next Record":
                     r = "";
+                    break;
+                default:
+                    r = "Not Found";
                     break;
 
             }
@@ -103,13 +159,21 @@ namespace SUP_Library
                 Directory.CreateDirectory(savePath);
             }
             const string EXTENSION = ".docx";
-            string fileName = templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + EXTENSION;
+            string fileName = templateName.Substring(0, templateName.Length - EXTENSION.Length);
+            fileName = fileName.Replace("Template", "");
+            if (!fileName.EndsWith("_")) fileName += "_";
+            fileName += client.Last_Name + "_" + client.First_Name + EXTENSION;
             fileName = savePath + "\\" + fileName;
 
             
             for(int i=2; File.Exists(fileName); i++) // file already exists...is there more than one db entry with this name?
             {
-                fileName = savePath + "\\" + templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + i + EXTENSION;
+                //fileName = savePath + "\\" + templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + i + EXTENSION;
+                fileName = templateName.Substring(0, templateName.Length - EXTENSION.Length);
+                fileName = fileName.Replace("Template", "");
+                if (!fileName.EndsWith("_")) fileName += "_";
+                fileName += client.Last_Name + "_" + client.First_Name + i + EXTENSION;
+                fileName = savePath + "\\" + fileName;
             }   
 
             try
@@ -127,14 +191,17 @@ namespace SUP_Library
         {
             string zipShortName = templateName.Substring(0, templateName.Length - 5);
 
-            string zipPathLong = zipPath + @"\" + zipShortName + "_" + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".zip";
+            zipShortName = zipShortName.Replace("Template", "");
+            if (!zipShortName.EndsWith("_")) zipShortName += "_";
+
+            string zipPathLong = zipPath + @"\" + zipShortName + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".zip";
              
             ZipFile.CreateFromDirectory(savePath, zipPathLong);
 
             return zipPathLong;
             
         }
-        public static void merge(List<Client> clientList, string template, out string exportFile)
+        public static int merge(List<Client> clientList, string template, out string exportFile) // returns the number of documents created
         {
             List<String> fileNames = new List<string>();
             bool searched = false;
@@ -144,8 +211,14 @@ namespace SUP_Library
             mergeToken.open = "&lt;";
             mergeToken.close = "&gt;";
 
-            foreach (Client client in clientList)
+            var rand = new Random();
+            savePath = zipPath + "\\TEMP" + rand.Next(0, 1000);
+
+            //foreach (Client client in clientList)
+            for (int c = 0; c < clientList.Count; c++)
             {
+                Client client = clientList[c];
+
                 string newFile = createFileFromTemplate(template, client);
                 if (newFile == null) throw new Exception("Error Creating File!");
                 fileNames.Add(newFile);
@@ -174,7 +247,8 @@ namespace SUP_Library
                             mr.Result = r.Replace(p, "");
                             mr.Start = mc[i].Index;
                             mr.End = mc[i].Index + mc[i].Length;
-                            matches.Add(mr);
+                            if (replaceValue(client,mr.Result)!="Not Found")
+                                matches.Add(mr);
                         }
                         searched = true;
                     }
@@ -188,6 +262,17 @@ namespace SUP_Library
                             s = matches[i].End;
                             sw.Write(toWrite + tag);
 
+                            if (matches[i].Result== "Next Record")
+                            {
+                                if (c < clientList.Count - 1)
+                                    client = clientList[++c];
+                                else if (c == clientList.Count - 1)
+                                {
+                                    client = new Client(); // this should blank all remaining fields
+                                    
+                                }
+                            }
+
                         }
                        
                         sw.Write(docText.Substring(s, docText.Length - s));
@@ -195,9 +280,27 @@ namespace SUP_Library
                 }
     
             }
-
+            if (fileNames.Count == 1) // we performed a merge with multiple clients on a single document
+            {
+                const string EXTENSION = ".docx";
+                string fileName = template.Substring(0, template.Length - EXTENSION.Length);
+                fileName = fileName.Replace("Template", "");
+                if (fileName.EndsWith("_")) fileName = fileName.Substring(0,fileName.Length-1);
+                fileName += EXTENSION;
+                fileName = savePath + "\\" + fileName;
+                try
+                {
+                    File.Move(fileNames[0], fileName);
+                    fileNames.RemoveAt(0);
+                    fileNames.Add(fileName);
+                }
+                catch (Exception e) { }
+                
+            }
             exportFile = compress(template);
             deleteTempFiles(fileNames);
+            Directory.Delete(savePath);
+            return fileNames.Count;
         }
         private static void deleteTempFiles(List<string> files)
         {
