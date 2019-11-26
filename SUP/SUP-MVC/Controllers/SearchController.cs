@@ -115,9 +115,10 @@ namespace SUP_MVC.Controllers
                 }
 
                 var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
+				Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
-                // if searching for active clients only, remove inactive clients.
-                if (separatedArgs[3] == "true")
+				// if searching for active clients only, remove inactive clients.
+				if (separatedArgs[3] == "true")
                 {
                     var clientCount = Clients.Count();
                     for (var i = 0; i < clientCount; i++)

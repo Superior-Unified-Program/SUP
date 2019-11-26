@@ -140,9 +140,7 @@
     <script language="javascript">
 
         function toggleEdit() {
-            console.log($("input[type='text']"))
             $("input[type='text']").each(function () {
-                console.log(this)
                 if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                     $(".saveButton").prop('value', "Save");
@@ -191,7 +189,6 @@
                 }
             });
             $("select").each(function () {
-                console.log(this)
                 if ($(this).prop('disabled') == true) {
                     $(this).prop('disabled', false);
                 }
@@ -214,16 +211,13 @@
 
         function getClientIdFromURL() {
             var args = location.href.split('?');
-            console.log(args);
             var params = "";
             if (args.length > 1) {
                 params = args[1].split('=');
-                console.log(params);
             }
             var clientId = "";
             if (params.length > 1) {
                 clientId = params[1];
-                console.log(clientId);
             }
 
             if (clientId != "") {
@@ -243,7 +237,6 @@
         }
 
         function loadClientData(clientId) {
-            console.log(clientId);
             var dataPost = clientId;
             $.ajax({
                 url: '/AddClient/GetClient',
@@ -264,7 +257,8 @@
                     var prefix = currentClient["Prefix"];
                     var organization = currentClient["Org"];
                     var permit = currentClient["Permit_Num"];
-                    if (currentClient['Email'] != null) {
+					if (currentClient['Email'] != null) {
+						console.log($('.personalEmailInput').val(currentClient['Email']['Personal_Email']))
                         $('.personalEmailInput').val(currentClient['Email']['Personal_Email']);
                     }
                     if (currentClient['Email'] != null) {
@@ -354,17 +348,15 @@
             if (id) { clientId = id }
             else {
                 var args = location.href.split('?');
-                console.log(args);
                 var params = "";
                 if (args.length > 1) {
                     params = args[1].split('=');
-                    console.log(params);
                 }
                 if (params.length > 1) {
                     clientId = params[1];
-                    console.log(clientId);
                 }
-            }
+			}
+			var prefix = $('.prefixInput').val();
             var firstName = $('.firstNameInput').val();
             var lastName = $('.lastNameInput').val();
             var middleInitial = $('.middleInitialInput').val();
@@ -376,9 +368,20 @@
             var City = $('.cityInput').val();
             var State = $('.stateInput').val();
             var Zip = $('.zipInput').val();
-            var Email = $('.emailInput').val();
+			//var Email = $('.emailInput').val();
+
+			var PersonalEmail = $('.personalEmailInput').val();
+			var BusinessEmail = $('.businessEmailInput').val();
+			var AssistantEmail = $('.assistantEmailInput').val();
+			var PersonalPhone = $('.personalPhoneInput').val();
+			var BusinessPhone = $('.businessPhoneInput').val();
+			var AssistantPhone = $('.assistantPhoneInput').val();
+
+			var AssistantLastName = $('.assistantLastNameInput').val();
+			var AssistantFirstName = $('.assistantFirstNameInput').val();
+
             var Note = $('.noteInput').val();
-            var Phone = $(".phoneInput").val();
+            //var Phone = $(".phoneInput").val();
 			var Active = $(".activeInput").prop("checked");
 
 			var BreakfastAttendee = $(".breakfastAttendee").prop("checked");
@@ -391,8 +394,9 @@
 			var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
 				organization + ',' + company + ',' + title +
 				',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
-				',' + Email + ',' + Note + ',' + Phone + ',' + Active + ',' + Permit + ',' +
-				BreakfastAttendee + ',' + HolidayCardRecipient;
+				',' + PersonalEmail + ',' + Note + ',' + PersonalPhone + ',' + Active + ',' + Permit + ',' +
+				BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
+				AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix;
             $.ajax({
                 url: '/AddClient/UpdateClient',
                 type: 'POST',
