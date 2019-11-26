@@ -190,6 +190,8 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Notes = Note;
                     Client.Active = (Active == "true");
+					Client.Holiday_Card = (HolidayCard == "true");
+					Client.Community_Breakfast = (Breakfast == "true");
 					Client.Permit_Num = Permit;
 					return DatabaseConnection.updateClient(Client);
                 }
@@ -216,6 +218,8 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Notes = Note;
 					Client.Active = (Active == "true");
+					Client.Holiday_Card = (HolidayCard == "true");
+					Client.Community_Breakfast = (Breakfast == "true");
 					return DatabaseConnection.addClient(Client);
                 }
             }

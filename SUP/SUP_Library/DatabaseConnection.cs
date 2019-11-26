@@ -211,8 +211,12 @@ namespace SUP_Library
                     par.Add("@assistantLastName", client?.Assistant_Last_Name);
                     par.Add("@assistant_phoneNumber", client.Phone?.Assistant_Phone);
                     par.Add("@assistant_Email", client.Email?.Assistant_Email);
-                    par.Add("@communityBreakfast", client?.Community_Breakfast);
-                    par.Add("@holidayCard", client?.Holiday_Card);
+					// temp as stored procedure for update does not have these two fields
+					//if (newClient)
+					//{
+						par.Add("@communityBreakfast", client?.Community_Breakfast);
+						par.Add("@holidayCard", client?.Holiday_Card);
+					//}
                     par.Add("result", 0, direction: ParameterDirection.ReturnValue);
 
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);

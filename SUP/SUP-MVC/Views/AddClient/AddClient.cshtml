@@ -295,7 +295,9 @@
                         $('.zipInput').val(currentClient['Address']['Zip']);
                     }
                     var company = currentClient["Company"];
-                    var isActive = currentClient["Active"];
+					var isActive = currentClient["Active"];
+					var cardRecipient = currentClient["Holiday_Card"];
+					var breakfastAttendee = currentClient["Community_Breakfast"];
                     var note = currentClient["Notes"];
                     $('.firstNameInput').val(firstName);
                     $('.middleInitialInput').val(middleinitial);
@@ -309,9 +311,17 @@
 
 
                     if (isActive) {
-                        console.log(isActive);
                         $(".activeInput").prop("checked", true);
+					}
+
+					if (cardRecipient) {
+                        $(".cardRecipientInput").prop("checked", true);
                     }
+
+					if (breakfastAttendee) {
+                        $(".breakfastAttendee").prop("checked", true);
+                    }
+
                     $('.noteInput').val(note);
                 },
                 async: true,
@@ -596,8 +606,8 @@
 				<div class="tableHeader">Miscellaneous</div>
 				<div class="row">
 					<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Holiday Card Recipient<br /><input class="cardRecipientInput" type="checkbox" tabindex="18" checked="checked"></div>
-					<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="18" checked="checked"></div>
+					<div class="cell">Holiday Card Recipient<br /><input class="cardRecipientInput" type="checkbox" tabindex="18"></div>
+					<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="18"></div>
 					<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
 				</div>
 				<div class="row">
