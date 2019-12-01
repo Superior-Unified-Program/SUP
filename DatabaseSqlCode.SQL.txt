@@ -513,9 +513,13 @@ ALTER PROCEDURE updateClient
 	@ID int, @prefix varchar(10) = null, @firstName varchar(50) = null,
 	@lastName varchar(50) = null, @middleInitial varchar(1) = null,
 	@permitNum varchar(50) = null,
-	@active bit = null, @notes varchar(30) = null,
-	@orgName varchar(30) = null, @orgType varchar(20) = null,
-	@title varchar(20) = null, @Personal_phoneNumber varchar(11) = null,
+	@active bit = null, 
+	@holidayCard bit = 0,
+	@communityBreakfast bit = 0,
+	----------------------------------------------------------------------------------  
+	@notes varchar(30) = null,
+	/*@orgName varchar(30) = null, @orgType varchar(20) = null,
+	@title varchar(20) = null,*/ @Personal_phoneNumber varchar(11) = null,
 	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
 	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
 	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
@@ -542,17 +546,24 @@ BEGIN
 		UPDATE Client SET Permit_Num = @permitNum WHERE ID = @ID
 	IF @active IS NOT NULL 
 		UPDATE Client SET Active = @active WHERE ID = @ID
+	IF @holidayCard IS NOT NULL 
+		UPDATE Client SET Holiday_Card = @holidayCard WHERE ID = @ID
+	IF @communityBreakfast IS NOT NULL 
+		UPDATE Client SET Community_Breakfast = @communityBreakfast WHERE ID = @ID
+	------------------------------------------------------------------------------------------
 	IF @notes IS NOT NULL 
 		UPDATE Client SET Notes = @notes WHERE ID = @ID
-	-- 
-	IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 AND (@orgName IS NOT NULL OR @orgType IS NOT NULL )
+	
+	
+	-- \/ this is done in updateOrganization now  \/
+	/*IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 AND (@orgName IS NOT NULL OR @orgType IS NOT NULL )
 		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
 	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
 		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
 			WHERE [Name] = @orgName AND [Type] = @orgType
 	IF @title IS NOT NULL 
 		UPDATE Works_For SET Title = @title 
-			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType*/
 
 
 	--------------------------------------------------------------------------------------------
