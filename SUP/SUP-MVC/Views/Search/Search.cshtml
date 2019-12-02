@@ -612,9 +612,13 @@
 		function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
-			var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
-			var organization = $('.item').first().text();
-			console.log(organization);
+			var organizationDivs = $('.item:not(".remove"):not(".hide")');
+			var organization = "";
+			organizationDivs.each(function () {
+				var org = $(this).text()
+				organization += org.substring(0,(org.length-1)) + ";";
+			})
+			organization = organization.substring(0, (organization.length - 1));
 			var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
             $.ajax({

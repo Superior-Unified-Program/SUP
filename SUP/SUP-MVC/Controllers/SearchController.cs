@@ -114,26 +114,32 @@ namespace SUP_MVC.Controllers
                     throw(new Exception("Oopsie"));
                 }
 
-                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
-				Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+				List<Client> AllClients = new List<Client>();
+				var organizations = separatedArgs[2].Split(';');
+				foreach (string organization in organizations)
+				{
+					var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organization);
+					AllClients = AllClients.Union(Clients).ToList();
 
-				// if searching for active clients only, remove inactive clients.
-				if (separatedArgs[3] == "true")
-                {
-                    var clientCount = Clients.Count();
-                    for (var i = 0; i < clientCount; i++)
-                    {
-                        var client = Clients.ElementAt(i);
-                        if (!client.Active)
-                        {
-                            Clients.Remove(client);
-                            clientCount-=1;
-                            i -= 1;
-                        }
-                    }
-                }
+					// if searching for active clients only, remove inactive clients.
+					if (separatedArgs[3] == "true")
+					{
+						var clientCount = Clients.Count();
+						for (var i = 0; i < clientCount; i++)
+						{
+							var client = Clients.ElementAt(i);
+							if (!client.Active)
+							{
+								Clients.Remove(client);
+								clientCount -= 1;
+								i -= 1;
+							}
+						}
+					}
+				}
+				AllClients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
-				var json = JsonConvert.SerializeObject(Clients);
+				var json = JsonConvert.SerializeObject(AllClients);
                 
                 return json;
             }
