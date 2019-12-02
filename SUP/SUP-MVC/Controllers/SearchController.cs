@@ -133,7 +133,7 @@ namespace SUP_MVC.Controllers
                     }
                 }
 
-                var json = JsonConvert.SerializeObject(Clients);
+				var json = JsonConvert.SerializeObject(Clients);
                 
                 return json;
             }
@@ -286,6 +286,34 @@ namespace SUP_MVC.Controllers
 				throw e;
 				//return "FAAAAAILLL";
 			}
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> UploadFile(IFormFile file)
+		{
+			bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
+			if (isDocx)
+				{
+				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+				var filePath = templatePath + "\\" + file.FileName;
+				long size = file.Length;
+				//var filePath = file.Name;
+
+
+				if (size > 0)
+				{
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);
+					}
+				}
+
+
+				// process uploaded files
+				// Don't rely on or trust the FileName property without validation.
+				return RedirectToAction("Search");
+			}
+			return Ok(new { Error = "File was not a .docx file."});
 		}
 	}
 }

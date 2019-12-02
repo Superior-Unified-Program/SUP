@@ -589,12 +589,31 @@
                 async: true,
                 processData: false
             });
-        }
+		}
+
+		function UploadTemplate() {
+			var dataPost = "";
+            $.ajax({
+                url: '/Search/UploadFile',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+					returnedData = JSON.parse(result);
+                },
+                async: true,
+                processData: false
+            });
+		}
 
 		function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
 			var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
+			var organization = $('.item').first().text();
 			console.log(organization);
 			var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
@@ -1011,148 +1030,148 @@
     <div class="lastNamesList" style="display:none;">
         <p class="lastNameTemplate"></p>
     </div>
-    <div id="mainWindow">
-        <div style="width: 80%; margin-left: 10%;" align="right">
-            <form>
-                <div class="flex-container">
-                    <div class="sidebar-left">
-                        <a>First Name</a><br />
-                        <input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
-                        <div class="auto_hidden" id="auto"></div>
-                        <script>
-                            var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
-                        </script>
-                    </div>
-                    <div class="sidebar-middle">
-                        <a>Last Name</a><br />
-                        <input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
-                        <div class="auto_hidden" id="autoLastName"></div>
-                        <script>
-                            var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
-                        </script>
-                    </div>
+	<div id="mainWindow">
+		<div style="width: 80%; margin-left: 10%;" align="right">
+			<form>
+				<div class="flex-container">
+					<div class="sidebar-left">
+						<a>First Name</a><br />
+						<input class="customInput yellowizedTextField searchFirstName" id="search_FirstName" property="firstNameBeginText" type="text" onKeyUp="Search(),autoComplete.start(event)" placeholder="First Name" style="width:100%">
+						<div class="auto_hidden" id="auto"></div>
+						<script>
+							var autoComplete = new AutoComplete('search_FirstName', 'auto', {});//returnedData caused sort, event error
+						</script>
+					</div>
+					<div class="sidebar-middle">
+						<a>Last Name</a><br />
+						<input class="customInput yellowizedTextField searchLastName" id="search_LastName" type="text" property="lastNameBeginText" onKeyUp="Search(),autoCompleteLast.startLast(event)" placeholder="Last Name" style="width:100%">
+						<div class="auto_hidden" id="autoLastName"></div>
+						<script>
+							var autoCompleteLast = new AutoComplete('search_LastName', 'autoLastName', {});//returnedData caused sort, event error
+						</script>
+					</div>
 
-                    <div class="sidebar-right">
-                        <a>Organization Type</a><br /><selction>
-                            <select  multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
-                                <!--We need to keep an empty option to allow searches that do not include organization-->
-                                <option value="business">Business</option>
-                                <option value="electedOfficial">Elected Official</option>
-                                <option value="educationAll">Education - All</option>
-                                <option value="elementary">Elementary School</option>
-                                <option value="middle">Middle School</option>
-                                <option value="highSchool">High School</option>
-                                <option value="higherEd">Higher Education</option>
-                                <option value="nonProfit">Non-profit</option>
-                                <option value="UWSystem">UW-System</option>
-                                <option value="boardOfRegent">Board of Regent</option>
-                                <option value="advancement">Advancement & Alumni</option>
-                                <option value="government">Government</option>
-                                <option value="other">Other</option>
-                            </select>
+					<div class="sidebar-right">
+						<a>Organization Type</a><br /><selction>
+							<select multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
+								<!--We need to keep an empty option to allow searches that do not include organization-->
+								<option value="business">Business</option>
+								<option value="electedOfficial">Elected Official</option>
+								<option value="educationAll">Education - All</option>
+								<option value="elementary">Elementary School</option>
+								<option value="middle">Middle School</option>
+								<option value="highSchool">High School</option>
+								<option value="higherEd">Higher Education</option>
+								<option value="nonProfit">Non-profit</option>
+								<option value="UWSystem">UW-System</option>
+								<option value="boardOfRegent">Board of Regent</option>
+								<option value="advancement">Advancement & Alumni</option>
+								<option value="government">Government</option>
+								<option value="other">Other</option>
+							</select>
 
-                            <script src="js/index.js"></script>
-                        </selction>
-                    </div>
+							<script src="js/index.js"></script>
+						</selction>
+					</div>
 
-                </div>
+				</div>
 
-            </form>
-            <div style="float:left; display: flex; width: 100%">
-                <div style="display: flex; width: 25%">
-                    <p style="float:left;">Display Inactive: </p>
-                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
-                </div>
-                <div style="display: flex; width: 25%">
-                    <p style="float:left;">Has Permit: </p>
-                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
-                </div>
-                <div style="display: flex; width: 25%">
-                    <p style="float:left;">Holiday Card Recipient: </p>
-                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
-                </div>
-                <div style="display: flex; width: 25%">
-                    <p style="float:left;">Community Breakfast Attendee: </p>
-                    <input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
-                </div>
-            </div>
-        </div>
-        <div class="flex-select">
-            <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
-            <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
-        </div>
-        <div class="flex-view">
-            <p></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>First Name</b></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>Last Name</b></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>Job Title</b></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>Organization Name</b></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>Email</b></p>
-        </div>
-        <div class="flex-colum">
-            <p><b>Phone #</b></p>
-        </div>
-        
-        <div class="searchResult" align="right">
-            <table class="templateTable" cellpadding="0px">
-                <tbody style="width:100%">
-                    <tr class="templateRow" style="width:100%">
-                        <td style="overflow:hidden;">
-                            <button class="yellowizedButton rowViewButton dataCell" value="0">View</button>
-                        </td>
-                        <td style="overflow:hidden;">
-                            <input class="yellowizedTextField rowFirstName dataCell" type="text" value="" disabled>
-                        </td>
-                        <td style="overflow:hidden;">
-                            <input class="yellowizedTextField rowLastName dataCell" type="text" value="" disabled>
-                        </td>
-                        <td style="overflow:hidden;">
-                            <input class="yellowizedTextField rowJobTitle dataCell" type="text" value="" disabled>
-                        </td>
-                        <td style="overflow:hidden;">
-                            <input class="yellowizedTextField rowOrganization dataCell" type="text" value="" disabled>
-                        </td>
-                        <td style="overflow:hidden;">
-                            <input class="yellowizedTextField rowEmailAddress dataCell" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="yellowizedTextField rowPhoneNumber dataCell" type="text" value="" disabled>
-                        </td>
-                        <td>
-                            <input class="rowSelected selectionCell" type="checkbox" name="choice" id="choice" />
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div style="width: 100%; margin-top: 5px;">
-            <button class="yellowizedButton template" onclick="popSetup(); LoadTemplates();">Select Template</button>
-            <button style="margin-left: 20%" class="yellowizedButton excel" onclick="Export()">Export to Excel</button>
-        </div>
-        <div class="setup" id="setup">
-            <div class="topRow">
-                <img src="superior_logo.jpg" style="max-height: 100%">
-                <img src="logo.jpg" style="max-height: 100%">
-            </div>
-            <div class="searchRow">
-                <form action="middlewareHere">
-                    <div>
-                        <input type="text" style="width: 80%">
-                        <input type="submit" value="search" style="width: 15%">
-                    </div>
-                </form>
-            </div>
-            <div class="resultRow">
+			</form>
+			<div style="float:left; display: flex; width: 100%">
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Display Inactive: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyActiveClientsInput" />
+				</div>
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Has Permit: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHasPermit" />
+				</div>
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Holiday Card Recipient: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHolidayCard" />
+				</div>
+				<div style="display: flex; width: 25%">
+					<p style="float:left;">Community Breakfast Attendee: </p>
+					<input style="margin-left:12px; margin-top:12px;" type="checkbox" onchange="Search()" class="yellowizedTextField displayOnlyHBreakfastAttendee" />
+				</div>
+			</div>
+		</div>
+		<div class="flex-select">
+			<a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
+			<a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
+		</div>
+		<div class="flex-view">
+			<p></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>First Name</b></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>Last Name</b></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>Job Title</b></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>Organization Name</b></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>Email</b></p>
+		</div>
+		<div class="flex-colum">
+			<p><b>Phone #</b></p>
+		</div>
+
+		<div class="searchResult" align="right">
+			<table class="templateTable" cellpadding="0px">
+				<tbody style="width:100%">
+					<tr class="templateRow" style="width:100%">
+						<td style="overflow:hidden;">
+							<button class="yellowizedButton rowViewButton dataCell" value="0">View</button>
+						</td>
+						<td style="overflow:hidden;">
+							<input class="yellowizedTextField rowFirstName dataCell" type="text" value="" disabled>
+						</td>
+						<td style="overflow:hidden;">
+							<input class="yellowizedTextField rowLastName dataCell" type="text" value="" disabled>
+						</td>
+						<td style="overflow:hidden;">
+							<input class="yellowizedTextField rowJobTitle dataCell" type="text" value="" disabled>
+						</td>
+						<td style="overflow:hidden;">
+							<input class="yellowizedTextField rowOrganization dataCell" type="text" value="" disabled>
+						</td>
+						<td style="overflow:hidden;">
+							<input class="yellowizedTextField rowEmailAddress dataCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="yellowizedTextField rowPhoneNumber dataCell" type="text" value="" disabled>
+						</td>
+						<td>
+							<input class="rowSelected selectionCell" type="checkbox" name="choice" id="choice" />
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="width: 100%; margin-top: 5px;">
+			<button class="yellowizedButton template" onclick="popSetup(); LoadTemplates();">Select Template</button>
+			<button style="margin-left: 20%" class="yellowizedButton excel" onclick="Export()">Export to Excel</button>
+		</div>
+		<div class="setup" id="setup">
+			<div class="topRow">
+				<img src="superior_logo.jpg" style="max-height: 100%">
+				<img src="logo.jpg" style="max-height: 100%">
+			</div>
+			<div class="searchRow">
+				<form action="middlewareHere">
+					<div>
+						<input type="text" style="width: 80%">
+						<input type="submit" value="search" style="width: 15%">
+					</div>
+				</form>
+			</div>
+			<div class="resultRow">
 				<table id="poptable" class="templatePopupTable">
 					<tr>
 						<th>&nbsp;</th>
@@ -1167,48 +1186,48 @@
 						<td id="colSet" class="rowTemplateUser"></td>
 					</tr>
 				</table>
-            </div>
-            <div class="buttonRow">
-                <button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
-            </div>
-            <div class="buttonRow">
-                <form action="middlewareHere" method="POST" enctype="multipart/form-data">
-                    <input type="file" class="browse" name="browse" style="width: 500px;">
-                    <input type="button" class="yellowizedButton addTemplate" value="Add Template">
-                </form>
-                <input class="yellowizedButton closeButton" onclick="closeSetup()" value="Close">
-            </div>
-        </div>
+			</div>
+			<div class="buttonRow">
+				<button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
+			</div>
+			<div class="buttonRow">
+				<form asp-controller="Search" asp-action="UploadFile" enctype="multipart/form-data" method="post" class="fileSelecterButton" role="form">
+					<input type="file" class="browse fileSelecterButton" name="file" style="width: 500px;">
+					<button type="submit" value="Upload Small File" class="yellowizedButton addTemplate" id="UploadSmallFile">Upload File</button>
+					</form>
+				<input class="yellowizedButton closeButton" onclick="closeSetup()" value="Close">
+			</div>
+		</div>
 
-        <div class="confirmation" id="confirmation">
-            <div class="topRow">
-                <img src="superior_logo.jpg" style="max-height: 100%">
-                <img src="logo.jpg" style="max-height: 100%">
-            </div>
-            <div class="resultRow">
-                <table id="poptable">
-                    <tr>
-                        <th>Result</th>
-                    </tr>
-                    <tr>
-                        <td id="colSet">Generated 17 parking permits.</td>
-                    </tr>
-                </table>
-            </div>
-            <div class="buttonRow">
-                
-                <button type="submit" class="yellowizedButton continue" onclick="TemplateMerge()">Generate Output</button>
-                
-            </div>
-            <div class="buttonRow">
-                <a href="middlewareHere" download>
-                    <button class="yellowizedButton browse">Download Output</button>
-                </a>
-                <button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
+		<div class="confirmation" id="confirmation">
+			<div class="topRow">
+				<img src="superior_logo.jpg" style="max-height: 100%">
+				<img src="logo.jpg" style="max-height: 100%">
+			</div>
+			<div class="resultRow">
+				<table id="poptable">
+					<tr>
+						<th>Result</th>
+					</tr>
+					<tr>
+						<td id="colSet">Generated 17 parking permits.</td>
+					</tr>
+				</table>
+			</div>
+			<div class="buttonRow">
 
-                <button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
-            </div>
-        </div>
-    </div>
+				<button type="submit" class="yellowizedButton continue" onclick="TemplateMerge()">Generate Output</button>
+
+			</div>
+			<div class="buttonRow">
+				<a href="middlewareHere" download>
+					<button class="yellowizedButton browse">Download Output</button>
+				</a>
+				<button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
+
+				<button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
