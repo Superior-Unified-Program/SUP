@@ -415,13 +415,15 @@
               e.stopPropagation();
               closeAllSelect(this);
               this.nextSibling.classList.toggle("select-hide");
+              Search();
               this.classList.toggle("select-arrow-active");
             });
         }
         function closeAllSelect(elmnt) {
           /*a function that will close all select boxes in the document,
           except the current select box:*/
-          var x, y, i, arrNo = [];
+            var x, y, i, arrNo = [];
+            Search();
           x = document.getElementsByClassName("select-items");
           y = document.getElementsByClassName("select-selected");
           for (i = 0; i < y.length; i++) {
@@ -444,11 +446,8 @@
     //_________________________
 
 		$(document).ready(function () {
-			Search();
+            Search();
 
-            $('.searchOrganization').change(function () {
-                Search();
-            });
             $('.checkAll').click(function () {
                 var checkedAll = false;
                 checkedAll = $('.checkAll').prop('checked');
@@ -459,6 +458,8 @@
                 });
             })
         })
+
+
 
         function Export() {
             var dataPost = "";
