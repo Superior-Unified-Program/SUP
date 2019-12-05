@@ -41,45 +41,41 @@ namespace SUP_Library
         private static string replaceValue(Client client, string match)
         {           
             string r;
+            match = match.ToLower();
             switch (match)
             {
-                case "Prefix":
+                case "prefix":
                     r = client?.Prefix;
                     break;
-                case "Primary_Addressee":
+                case "primary_addressee":
                     r = "";
                     if (client?.Prefix?.Trim() != "") r = client?.Prefix + " ";
                     r += client?.First_Name + " ";
                     r += client?.Last_Name;
                     break;
-                case "Firstname":
                 case "firstname":
                     r = client?.First_Name;
                     break;
-                case "Lastname":
                 case "lastname":
                     r = client?.Last_Name;
                     break;
                 case "Title":
                     r = client?.Primary_Organization?.Title;
                     break;
-                case "Organization":
                 case "organization":
                     r = client?.Primary_Organization?.Org_Name;
                     break;
-                case "Permit":
                 case "permit":
                     r = client?.Permit_Num;
                     break;
-                case "Addr1":
+                case "addr1":
                 case "address1":
                     r = client?.Address?.Line1;
                     break;
-                case "Addr2":
+                case "addr2":
                 case "address2":
                     r = client?.Address?.Line2;
                     break;
-                case "City":
                 case "city":
                     r = client?.Address?.City;
                     break;
@@ -87,55 +83,52 @@ namespace SUP_Library
                 case "state":
                     r = client?.Address?.State;
                     break;
-                case "Zip":
+                case "zip":
                 case "zipcode":
                     r = client?.Address?.Zip;
                     break;
-                case "AddressBlock": 
+                case "addressblock": 
                     r = client?.First_Name + " " + client?.Last_Name + "<w:br/>";
                     r += client?.Address.Line1 + "<w:br/>";
                     if (client?.Address.Line2.Trim() != "") r += "<w:t>" + client?.Address.Line2 + "<w:br/>";
                     r += client?.Address.City + ", " + client?.Address.State + " " + client?.Address?.Zip + "<w:br/>";
                     break;
-                case "Email_Personal":
+                case "email_personal":
                     r = client?.Email?.Personal_Email;
                     break;
-                case "Phone_Personal":
+                case "phone_personal":
                     r = client?.Phone?.Personal_Phone;
                     break;
-                case "Email_Business":
-                case "Email":
+                case "email_business":
                 case "email":
                     r = client?.Email?.Business_Email;
                     break;
-                case "Phone_Business":
-                case "Phone":
+                case "phone_business":
                 case "phone":
                     r = client?.Phone?.Business_Phone;
                     break;
-                case "Date":
                 case "date":
                     CultureInfo info = new CultureInfo( "en-US",false );
                     r = info.DateTimeFormat.GetMonthName(DateTime.Now.Month);
                     r += " " + DateTime.Now.Day;
                     r += ", " + DateTime.Now.Year;
                     break;
-                case "Assistant_Firstname":
+                case "assistant_firstname":
                     r = client?.Assistant_First_Name;
                     break;
-                case "Assistant_Lastname":
+                case "assistant_lastname":
                     r = client?.Assistant_Last_Name;
                     break;
-                case "Assistant_Phone":
+                case "assistant_phone":
                     r = client?.Phone?.Assistant_Phone;
                     break;
-                case "Assistant_Email":
+                case "assistant_email":
                     r = client?.Email?.Assistant_Email;
                     break;
-                case "Assistant_Name":
+                case "assistant_name":
                     r = client?.Assistant_First_Name + " " + client?.Assistant_Last_Name;
                     break;
-                case "Next Record":
+                case "next record":                 //Duy: should it be _ between ?
                     r = "";
                     break;
                 default:

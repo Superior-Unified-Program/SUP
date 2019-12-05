@@ -493,6 +493,26 @@
             document.getElementById("matchFoundPopup").style.display = "flex";
         }
 
+        function addOrg() {
+            var table = document.getElementById("OrgTable");
+            var rowlen = table.rows.length + 1;
+            var row = table.insertRow(rowlen);
+            row.id = "rowOrg_" + rowlen;
+            var arr = ['textboxfiledname'];
+            for (i = 0; i < 2; i++) {
+                var x = row.insertCell(i)
+                if (i == 1) {
+                    x.innerHTML = "<input type='button' onclick='removeCell(" + row.id + ")' value=Delete>"
+                }
+                else {
+                    x.innerHTML = "<label>" + arr[i] + ":</label><input type='text' name='" + arr[i] + "'>"
+                }
+            }
+        }
+        function removeOrg(rowid) {
+            var table = document.getElementById(rowid).remove();
+        }
+
 
     </script>
 
@@ -514,36 +534,49 @@
 					<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
 				</div>
 				<hr class="breakLine" />
-				<div class="row">
-					<table style="width:50%;">
-						<tr>
-							<td class="cell">
-								Organization Type<br />
-								<select multip id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
-									<option value=""></option>
-									<option value="business">Business</option>
-									<option value="electedOfficial">Elected Official</option>
-									<option value="educationAll">Education - All</option>
-									<option value="elementary">Elementary School</option>
-									<option value="middle">Middle School</option>
-									<option value="highSchool">High School</option>
-									<option value="higherEd">Higher Education</option>
-									<option value="nonProfit">Non-profit</option>
-									<option value="UWSystem">UW-System</option>
-									<option value="boardOfRegent">Board of Regent</option>
-									<option value="advancement">Advancement & Alumni</option>
-									<option value="government">Government</option>
-									<option value="other">Other</option>
-								</select>
-							</td>
-							<td class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></td>
-						</tr>
-						<tr>
-							<td colspan="2"><input type="button" class="yellowizedButton" value="Add Organization" id="addOrgButton" style="padding-top: 5px; padding-left: 25px;"></td>
-						</tr>
-					</table>
-					<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
-				</div>
+
+                <!-- #region Multi-Organization Container-->
+
+                <div class="container">
+                    <input type="button" class="yellowizedButton" value="Add Organization" id="addOrg()" onclick="addOrg" style="padding-top: 5px; padding-left: 25px;">
+                    <!--
+                       <input type="button" class="yellowizedButton" value="Delete Organization" id="deleteOrgButton()" onclick="removeOrg" style="padding-top: 5px; padding-left: 25px;">
+
+                    -->
+
+                    <table id="OrgTable" style="width:50%;">
+                        <row id="rowOrg_1">
+                            <tr>
+                                <td class="cell">
+                                    Organization Type<br />
+                                    <select multip id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
+                                        <option value=""></option>
+                                        <option value="business">Business</option>
+                                        <option value="electedOfficial">Elected Official</option>
+                                        <option value="educationAll">Education - All</option>
+                                        <option value="elementary">Elementary School</option>
+                                        <option value="middle">Middle School</option>
+                                        <option value="highSchool">High School</option>
+                                        <option value="higherEd">Higher Education</option>
+                                        <option value="nonProfit">Non-profit</option>
+                                        <option value="UWSystem">UW-System</option>
+                                        <option value="boardOfRegent">Board of Regent</option>
+                                        <option value="advancement">Advancement & Alumni</option>
+                                        <option value="government">Government</option>
+                                        <option value="other">Other</option>
+                                    </select>
+                                </td>
+                                <td class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></td>
+                                <td class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></td>
+                            </tr>
+                        </row>
+                    </table>
+                </div>
+
+                <hr class="breakLine" />
+
+                <!-- #endregion -->
+
 				<div class="tableHeader">Contact Information</div>
 				<div class="row">
 					<div class="cell">Address Line1<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" tabindex="8"></div>
