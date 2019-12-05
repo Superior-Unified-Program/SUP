@@ -167,5 +167,6 @@ var drop = function(info){var o = {
 //Set up some data
 var myDrop = new drop({
    selector:  '#myMulti',
- 
+    
 });
+
