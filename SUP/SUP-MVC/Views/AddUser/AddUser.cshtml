@@ -77,6 +77,31 @@
         }
     }
 
+    function addUser() {
+        var username = $('.Username').val();
+        var password = $('.Password').val();
+
+        var dataPost = username + "," + password;
+        $.ajax({
+            url: '/AddUser/SubmitUserData',
+            type: 'POST',
+            data: JSON.stringify(dataPost),
+            contentType: 'application/json; charset=utf-8',
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            },
+            success: function (result) {
+                var returnedData = JSON.parse(result);
+                var currentClient = returnedData;
+                console.log("successfully added");
+                //var firstName = currentClient["First_Name"];
+                //$('.firstNameInput').val(firstName);
+            },
+            async: true,
+            processData: false
+        });
+    }
+
 </script>
 
 
@@ -86,8 +111,8 @@
 
             <div class="box">
                 <div class="cell">User name*<br /><input class="Username" type="text" placeholder="" required></div>
-                <div class="cell">Password*<br /><input type="Password" name="pw1" placeholder="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" value="" required></div>
-                <div class="cell">Confirm Password*<br /><input type="Password" name="pw2" placeholder="confirm password" required> </div>
+                <div class="cell">Password*<br /><input class="Password" type="Password" name="pw1" placeholder="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" value="" required></div>
+                <div class="cell">Confirm Password*<br /><input class="ConfirmPassword" type="Password" name="pw2" placeholder="confirm password" required> </div>
                 <div class="cell">
                     User type*<br /><select class="Usertype" name="state" tabindex="11">
                         <option value=""></option>
@@ -104,7 +129,7 @@
              
                     </select>
                 </div>
-                <div class="cell"><input type="button" class="submitNewUser yellowizedButton" value="Save" /></div>
+                <div class="cell"><input type="button" class="submitNewUser yellowizedButton" value="Save" onclick="addUser()" /></div>
             </div>
 
         </form>
