@@ -4,14 +4,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUP_Library.DBComponent
+namespace SUP_Library
 {
     public class Account
     {
-        public string username { get; set; } 
-        public string password { get; set; } 
-        public string lastname { get; set; } 
-        public string firstname { get; set; } 
-        public string officeType { get; set; } 
+        public string Username { get; set; } 
+        public string Password { get; set; } 
+        public string Lastname { get; set; } 
+        public string Firstname { get; set; } 
+        public string OfficeType { get; set; }
+        public int SessionIsValid()
+        {
+
+            var LoginSuccessful = DatabaseConnection.verifiedLogIn(Username, Password);
+            return 1;
+        }
     }
 }

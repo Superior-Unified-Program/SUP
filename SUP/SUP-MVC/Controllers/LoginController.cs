@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using SUP_Library;
 using Microsoft.AspNetCore.Session;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SUP_MVC.Controllers
 {
@@ -93,7 +95,13 @@ namespace SUP_MVC.Controllers
             }
         }
 
-        [HttpPost]
+		public static byte[] GetHash(string inputString)
+		{
+			HashAlgorithm algorithm = SHA256.Create();
+			return algorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(inputString));
+		}
+
+		[HttpPost]
         public string AuthenticateUser([FromBody] string args)
         {
             try
@@ -107,9 +115,9 @@ namespace SUP_MVC.Controllers
                 var password = separatedArgs[1];
 
                 //TODO: HASH HERE
-                var hashedPassword = separatedArgs[1];
-                
-                var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, hashedPassword);
+                var hashedBytes = GetHash(password);
+				var hashedPassword = Encoding.UTF8.GetString(hashedBytes, 0, hashedBytes.Length).Replace("'","");
+				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, hashedPassword);
                 if (LoginSuccessful)
                 {
                     //TODO: STORE SESSION HERE
@@ -128,6 +136,7 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Login()
 		{
+            TempData["UserID"] = null;
 			return View();
 		}
 	}

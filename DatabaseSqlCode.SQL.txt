@@ -1,4 +1,5 @@
 USE [master]
+
 GO
 
 /*Create database*/
@@ -274,6 +275,7 @@ BEGIN
 	DROP TABLE #results
 
 END
+
 GO
 
 -- =============================================
@@ -321,6 +323,7 @@ BEGIN
 	DROP TABLE #searchResults
 
 END
+
 GO
 
 -- =============================================
@@ -396,6 +399,7 @@ BEGIN
 	RETURN @ID
 
 END
+
 GO
 
 -- =============================================
@@ -420,6 +424,7 @@ BEGIN
 	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 3 AND DIFFERENCE(@lastName, Last_Name) > 3
 
 END
+
 GO
 
 -- =============================================
@@ -706,15 +711,23 @@ BEGIN
 	DECLARE @org_name varchar(30) = null
 	DECLARE @org_type varchar(30) = null
 
+	--create temp table
+	CREATE TABLE #temp (org_name varchar(30), org_type varchar(30))
+	--populate temp table
+	INSERT INTO #temp SELECT Org_Name, Org_Type FROM Associated_With WHERE Client_ID = @ID
+	--delete values where client ID matches
+	DELETE FROM Associated_With WHERE Client_ID = @ID
+
 	-- check if they are in Associated_With
-	if (SELECT COUNT(*) from Associated_With Where Client_ID = @ID) = 1
+	/*if (SELECT COUNT(*) from Associated_With Where Client_ID = @ID) = 1
 	BEGIN
 		-- store Org_Name for later use
 		SET @org_name = (SELECT Org_Name From Associated_With Where Client_ID = @ID)
 		-- store Org_Type for later use
 		SET @org_type = (SELECT Org_Type From Associated_With Where Client_ID = @ID)
 		DELETE from Associated_With Where Client_ID = @ID
-	END
+	END*/
+	
 
 	DELETE from [Address] Where Client_ID = @ID
 
@@ -727,8 +740,19 @@ BEGIN
 	DELETE from Client Where ID = @ID
 
 	-- if no other client work for that orginization delete it
-	if (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
-		DELETE from Organization Where [Name] = @org_name AND [Type] = @org_type
+	/*if (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
+		DELETE from Organization Where [Name] = @org_name AND [Type] = @org_type*/
+
+	--this should remove all organizations where name and type match with values in the temp table
+	WHILE ((SELECT Count(*) FROM #temp) != 0)
+	BEGIN
+		SET @org_name = (SELECT TOP 1 org_name FROM #temp)
+		SET @org_type = (SELECT TOP 1 org_type FROM #temp)
+		IF (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
+			DELETE FROM Organization WHERE [Name] = @org_name AND [Type] = @org_type
+		DELETE FROM #temp WHERE org_name = @org_name AND org_type = @org_type
+	END
+	DROP TABLE #temp
 END
 
 GO
@@ -750,6 +774,7 @@ BEGIN
 	SELECT * FROM Associated_With WHERE Client_ID = @ID
 
 END
+
 GO
 
 /****** Object:  StoredProcedure [dbo].[addOrganization]    Script Date: 11/22/2019 9:42:15 AM ******/
@@ -770,6 +795,7 @@ BEGIN
 	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@clientID, @orgName, @orgType, @title, @primary)
 
 END
+
 GO
 
 
@@ -1378,4 +1404,13 @@ UPDATE Client SET Active = 0 WHERE First_Name = 'Bo'
 UPDATE Client SET Active = 0 WHERE First_Name = 'Sally'
 
 END
+
+GO
+
+EXEC	@return_value = addAccount
+		@userName = N'admin',
+		@password = N'password',
+		@userType = N'A',
+		@office = NULL
+		
 GO

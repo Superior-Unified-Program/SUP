@@ -18,14 +18,7 @@ namespace SUP_MVC.Controllers
         // GET: Search
         public ActionResult Index()
         {
-            if (TempData["UserID"] != null)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login");
-            }
+            return View();
         }
 
         // GET: Search/Details/5
@@ -114,34 +107,46 @@ namespace SUP_MVC.Controllers
                     throw(new Exception("Oopsie"));
                 }
 
-				List<Client> AllClients = new List<Client>();
 				var organizations = separatedArgs[2].Split(';');
-				foreach (string organization in organizations)
-				{
-					var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organization);
-					AllClients = AllClients.Union(Clients).ToList();
+                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
+                // if searching for active clients only, remove inactive clients.
+                if (separatedArgs[3] == "true")
+                {
+                    var clientCount = Clients.Count();
+                    for (var i = 0; i < clientCount; i++)
+                    {
+                        var client = Clients.ElementAt(i);
+                        if (!client.Active)
+                        {
+                            Clients.Remove(client);
+                            clientCount -= 1;
+                            i -= 1;
+                        }
+                    }
+                }
+                Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
-					// if searching for active clients only, remove inactive clients.
-					if (separatedArgs[3] == "true")
-					{
-						var clientCount = Clients.Count();
-						for (var i = 0; i < clientCount; i++)
-						{
-							var client = Clients.ElementAt(i);
-							if (!client.Active)
-							{
-								Clients.Remove(client);
-								clientCount -= 1;
-								i -= 1;
-							}
-						}
-					}
-				}
-				AllClients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
-				var json = JsonConvert.SerializeObject(AllClients);
-                
-                return json;
+                // filter by organization
+
+                List<Client> filteredClients = new List<Client>();
+                foreach (string organization in organizations)
+                {
+                    foreach (var client in Clients)
+                    {
+                        var stringifiedOrganizations = client.Organizations.Select(o => o.Org_Type);
+                        if (stringifiedOrganizations.Contains(organization))
+                        {
+                            if (!filteredClients.Contains(client))
+                            {
+                                filteredClients.Add(client);
+                            }
+                        }
+                    }
+                }
+
+			var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
+            return json;
             }
             catch(Exception e)
             {
@@ -235,7 +240,15 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
         }
 
         [HttpGet]
