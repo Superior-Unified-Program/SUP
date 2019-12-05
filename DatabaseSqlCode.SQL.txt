@@ -1,4 +1,5 @@
 USE [master]
+
 GO
 
 /*Create database*/
@@ -274,6 +275,7 @@ BEGIN
 	DROP TABLE #results
 
 END
+
 GO
 
 -- =============================================
@@ -321,6 +323,7 @@ BEGIN
 	DROP TABLE #searchResults
 
 END
+
 GO
 
 -- =============================================
@@ -396,6 +399,7 @@ BEGIN
 	RETURN @ID
 
 END
+
 GO
 
 -- =============================================
@@ -420,6 +424,7 @@ BEGIN
 	SELECT ID, First_Name, Last_Name FROM Client WHERE DIFFERENCE(@firstName, First_Name) > 3 AND DIFFERENCE(@lastName, Last_Name) > 3
 
 END
+
 GO
 
 -- =============================================
@@ -769,6 +774,7 @@ BEGIN
 	SELECT * FROM Associated_With WHERE Client_ID = @ID
 
 END
+
 GO
 
 /****** Object:  StoredProcedure [dbo].[addOrganization]    Script Date: 11/22/2019 9:42:15 AM ******/
@@ -789,6 +795,7 @@ BEGIN
 	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@clientID, @orgName, @orgType, @title, @primary)
 
 END
+
 GO
 
 
@@ -1397,4 +1404,13 @@ UPDATE Client SET Active = 0 WHERE First_Name = 'Bo'
 UPDATE Client SET Active = 0 WHERE First_Name = 'Sally'
 
 END
+
+GO
+
+EXEC	@return_value = addAccount
+		@userName = N'admin',
+		@password = N'password',
+		@userType = N'A',
+		@office = NULL
+		
 GO
