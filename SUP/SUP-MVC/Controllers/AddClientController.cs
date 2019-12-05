@@ -258,7 +258,15 @@ namespace SUP_MVC.Controllers
         
         public ActionResult AddClient()
 		{
-			return View();
-		}
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
 	}
 }

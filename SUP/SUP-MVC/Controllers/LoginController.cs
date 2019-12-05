@@ -128,6 +128,7 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Login()
 		{
+            TempData["UserID"] = null;
 			return View();
 		}
 	}

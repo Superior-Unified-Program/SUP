@@ -15,7 +15,15 @@ namespace SUP_MVC.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         // GET: AddUser/Details/5
@@ -95,7 +103,15 @@ namespace SUP_MVC.Controllers
 
         public ActionResult AddUser()
         {
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
         }
 
         [HttpPost]

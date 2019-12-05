@@ -18,14 +18,7 @@ namespace SUP_MVC.Controllers
         // GET: Search
         public ActionResult Index()
         {
-            if (TempData["UserID"] != null)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login");
-            }
+            return View();
         }
 
         // GET: Search/Details/5
@@ -247,7 +240,15 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
         }
 
         [HttpGet]
