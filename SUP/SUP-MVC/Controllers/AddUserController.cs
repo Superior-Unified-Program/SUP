@@ -97,6 +97,23 @@ namespace SUP_MVC.Controllers
         {
             return View();
         }
-        
+
+        [HttpPost]
+        public string SubmitUserData([FromBody] string args)
+        {
+            string[] separatedArgs = args.Split(',');
+            if (separatedArgs.Length < 2)
+            {
+                throw (new Exception("Illegal number of arguments"));
+            }
+            var username = separatedArgs[0];
+            var password = separatedArgs[1];
+
+            //var listOfPossibleMatches = SUP_Library.DatabaseConnection.addUser(username, password);
+            var result = true;
+            var json = JsonConvert.SerializeObject(result);
+
+            return json;
+        }
     }
 }
