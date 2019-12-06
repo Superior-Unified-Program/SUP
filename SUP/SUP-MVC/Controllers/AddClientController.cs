@@ -188,7 +188,7 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        Client_ID = intClientId,
+                       // Client_ID = intClientId,
                         Business_Email = BusinessEmail,
 						Personal_Email = PersonalEmail,
 						Assistant_Email = AssistantEmail
@@ -196,7 +196,7 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        Client_ID = intClientId,
+                       // Client_ID = intClientId,
                         Business_Phone = BusinessPhone,
 						Personal_Phone = PersonalPhone,
 						Assistant_Phone = AssistantPhone
