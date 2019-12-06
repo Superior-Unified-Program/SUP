@@ -38,7 +38,13 @@ namespace SUP_Library.DBComponent
             }
         }
 
-        public List<Organization> Organizations; // don't use this yet
+        public List<Organization> Organizations
+        {
+            get;
+
+            set;
+            
+        } 
 
         public Organization Primary_Organization
         {

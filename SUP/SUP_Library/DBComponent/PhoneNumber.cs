@@ -8,7 +8,7 @@ namespace SUP_Library.DBComponent
 {
     public class PhoneNumber
     {
-        public int Client_ID { get; set; }
+       // public int Client_ID { get; set; }
 
         public string Personal_Phone { get; set; }
 

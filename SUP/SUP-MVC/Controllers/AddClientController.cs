@@ -173,19 +173,19 @@ namespace SUP_MVC.Controllers
                     }
                     Client.Org = new SUP_Library.DBComponent.Organization
                     {
-                        Client_ID = intClientId,
+                       // Client_ID = intClientId,
                         Org_Name = companyName,
                         Org_Type = organization,
                         Title = title
                     };
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        Client_ID = intClientId,
+                        //Client_ID = intClientId,
                         Business_Email = Email
                     };
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        Client_ID = intClientId,
+                        //Client_ID = intClientId,
                         Business_Phone = Phone
                     };
                     Client.Notes = Note;

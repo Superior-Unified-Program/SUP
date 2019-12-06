@@ -8,7 +8,7 @@ namespace SUP_Library.DBComponent
 {
     public class Address
     {
-        public string Client_ID { get; set;  }
+       // public int Client_ID { get; set;  }
         public string Line1 { get; set; }
         public string Line2 { get; set; }
         public string City { get; set; }
@@ -20,7 +20,7 @@ namespace SUP_Library.DBComponent
         {
 
         }
-        public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,null,City,State,Zipcode)
+        public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,"",City,State,Zipcode)
         {
             // For now if we call constructor without Address LineTwo, we just pass on to the constructor with an empty LineTwo
         }
