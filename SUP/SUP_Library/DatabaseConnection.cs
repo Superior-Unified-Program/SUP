@@ -96,6 +96,34 @@ namespace SUP_Library
             return false;
         }
 
+		public static bool addAccount(string theUsername, string thePassword, char isAdmin, string theOffice)
+		{
+			try
+			{
+				using (IDbConnection connection = new SqlConnection(getConnectionString()))
+				{
+					string sql = "addAccount"; //name of stored procedure
+					// Parameters to send to addClient/updateClient stored proedure
+					var par = new DynamicParameters();
+
+					// Client base class parameters
+					par.Add("@userName", theUsername); // updateClient needs the client ID
+					par.Add("@password", thePassword);
+					par.Add("@userType", isAdmin);
+					par.Add("@office", theOffice);
+
+					connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+					return true;
+				}
+			}
+			catch (Exception exc)
+			{
+				return false;
+				System.Diagnostics.Debug.WriteLine(exc.Message);
+				throw exc;
+			}
+		}
+
         #endregion
 
         #region Address Connection
@@ -211,8 +239,12 @@ namespace SUP_Library
                     par.Add("@assistantLastName", client?.Assistant_Last_Name);
                     par.Add("@assistant_phoneNumber", client.Phone?.Assistant_Phone);
                     par.Add("@assistant_Email", client.Email?.Assistant_Email);
-                    par.Add("@communityBreakfast", client?.Community_Breakfast);
-                    par.Add("@holidayCard", client?.Holiday_Card);
+					// temp as stored procedure for update does not have these two fields
+					//if (newClient)
+					//{
+						par.Add("@communityBreakfast", client?.Community_Breakfast);
+						par.Add("@holidayCard", client?.Holiday_Card);
+					//}
                     par.Add("result", 0, direction: ParameterDirection.ReturnValue);
 
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
@@ -488,19 +520,19 @@ namespace SUP_Library
             return data;
         }
 
-        #endregion
+		#endregion
 
-        #region ContactInformation Connection
+		#region ContactInformation Connection
 
-        // all connections related to ContactInformation table go here
+		// all connections related to ContactInformation table go here
 
-        #endregion
+		#endregion
 
-        #region Organization Connection
+		#region Organization Connection
 
-        // all connections related to Organization table go here
+		// all connections related to Organization table go here
 
-        #endregion
-    }
+		#endregion
+
+	}
 }
- 

@@ -415,13 +415,15 @@
               e.stopPropagation();
               closeAllSelect(this);
               this.nextSibling.classList.toggle("select-hide");
+              Search();
               this.classList.toggle("select-arrow-active");
             });
         }
         function closeAllSelect(elmnt) {
           /*a function that will close all select boxes in the document,
           except the current select box:*/
-          var x, y, i, arrNo = [];
+            var x, y, i, arrNo = [];
+            Search();
           x = document.getElementsByClassName("select-items");
           y = document.getElementsByClassName("select-selected");
           for (i = 0; i < y.length; i++) {
@@ -444,11 +446,8 @@
     //_________________________
 
 		$(document).ready(function () {
-			Search();
+            Search();
 
-            $('.searchOrganization').change(function () {
-                Search();
-            });
             $('.checkAll').click(function () {
                 var checkedAll = false;
                 checkedAll = $('.checkAll').prop('checked');
@@ -459,6 +458,8 @@
                 });
             })
         })
+
+
 
         function Export() {
             var dataPost = "";
@@ -589,13 +590,36 @@
                 async: true,
                 processData: false
             });
-        }
+		}
+
+		function UploadTemplate() {
+			var dataPost = "";
+            $.ajax({
+                url: '/Search/UploadFile',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+					returnedData = JSON.parse(result);
+                },
+                async: true,
+                processData: false
+            });
+		}
 
 		function Search() {
             var firstName = $('.searchFirstName').val();
             var lastName = $('.searchLastName').val();
-			var organization = $(".searchOrganization option:selected").text(); //$('.searchOrganization').val();
-			console.log(organization);
+			var organizationDivs = $('.item:not(".remove"):not(".hide")');
+			var organization = "";
+			organizationDivs.each(function () {
+				var org = $(this).text()
+				organization += org.substring(0,(org.length-1)) + ";";
+			})
+			organization = organization.substring(0, (organization.length - 1));
 			var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
             $.ajax({
@@ -1034,7 +1058,7 @@
 
                     <div class="sidebar-right">
                         <a>Organization Type</a><br /><selction>
-                            <select  multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
+                            <select multiple="multiple" id="myMulti" onmousedown="javascript:return false;" class="custom-select searchOrganization" onKeyUp="Search()" name="category" size="1" style="width:100%">
                                 <!--We need to keep an empty option to allow searches that do not include organization-->
                                 <option value="business">Business</option>
                                 <option value="electedOfficial">Elected Official</option>
@@ -1102,7 +1126,7 @@
         <div class="flex-colum">
             <p><b>Phone #</b></p>
         </div>
-        
+
         <div class="searchResult" align="right">
             <table class="templateTable" cellpadding="0px">
                 <tbody style="width:100%">
@@ -1139,11 +1163,16 @@
             <button class="yellowizedButton template" onclick="popSetup(); LoadTemplates();">Select Template</button>
             <button style="margin-left: 20%" class="yellowizedButton excel" onclick="Export()">Export to Excel</button>
         </div>
+
+        <!-- #region Popup Template Windows -->
+
         <div class="setup" id="setup">
-            <div class="topRow">
-                <img src="superior_logo.jpg" style="max-height: 100%">
-                <img src="logo.jpg" style="max-height: 100%">
-            </div>
+            <!--
+         <div class="topRow">
+           <img src="superior_logo.jpg" style="max-height: 100%">
+           <img src="logo.jpg" style="max-height: 100%">
+         </div>
+        -->
             <div class="searchRow">
                 <form action="middlewareHere">
                     <div>
@@ -1153,52 +1182,54 @@
                 </form>
             </div>
             <div class="resultRow">
-				<table id="poptable" class="templatePopupTable">
-					<tr>
-						<th>&nbsp;</th>
-						<th>Name</th>
-						<th>Date modified</th>
-						<th>Uploaded by</th>
-					</tr>
-					<tr class="templateRowTemplate">
-						<td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
-						<td id="colSet" class="rowTemplateName"></td>
-						<td id="colSet" class="rowTemplateDate"></td>
-						<td id="colSet" class="rowTemplateUser"></td>
-					</tr>
-				</table>
+                <table id="poptable" class="templatePopupTable">
+                    <tr>
+                        <th>&nbsp;</th>
+                        <th>Name</th>
+                        <th>Date modified</th>
+                        <th>Uploaded by</th>
+                    </tr>
+                    <tr class="templateRowTemplate">
+                        <td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
+                        <td id="colSet" class="rowTemplateName"></td>
+                        <td id="colSet" class="rowTemplateDate"></td>
+                        <td id="colSet" class="rowTemplateUser"></td>
+                    </tr>
+                </table>
             </div>
             <div class="buttonRow">
                 <button class="yellowizedButton continue" onclick="popConfirm()">Continue</button>
             </div>
             <div class="buttonRow">
-                <form action="middlewareHere" method="POST" enctype="multipart/form-data">
-                    <input type="file" class="browse" name="browse" style="width: 500px;">
-                    <input type="button" class="yellowizedButton addTemplate" value="Add Template">
+                <form asp-controller="Search" asp-action="UploadFile" enctype="multipart/form-data" method="post" class="fileSelecterButton" role="form">
+                    <input type="file" class="browse fileSelecterButton" name="file" style="width: 500px;">
+                    <button type="submit" value="Upload Small File" class="yellowizedButton addTemplate" id="UploadSmallFile">Upload File</button>
                 </form>
                 <input class="yellowizedButton closeButton" onclick="closeSetup()" value="Close">
             </div>
         </div>
 
         <div class="confirmation" id="confirmation">
-            <div class="topRow">
-                <img src="superior_logo.jpg" style="max-height: 100%">
-                <img src="logo.jpg" style="max-height: 100%">
-            </div>
+            <!--
+         <div class="topRow">
+           <img src="superior_logo.jpg" style="max-height: 100%">
+           <img src="logo.jpg" style="max-height: 100%">
+         </div>
+        -->
             <div class="resultRow">
                 <table id="poptable">
                     <tr>
                         <th>Result</th>
                     </tr>
                     <tr>
-                        <td id="colSet">Generated 17 parking permits.</td>
+                        <td id="colSet"></td>
                     </tr>
                 </table>
             </div>
             <div class="buttonRow">
-                
+
                 <button type="submit" class="yellowizedButton continue" onclick="TemplateMerge()">Generate Output</button>
-                
+
             </div>
             <div class="buttonRow">
                 <a href="middlewareHere" download>
@@ -1209,6 +1240,9 @@
                 <button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
             </div>
         </div>
+
+        <!-- #endregion -->
+
     </div>
 </body>
 </html>

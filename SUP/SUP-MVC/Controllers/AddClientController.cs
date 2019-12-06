@@ -154,13 +154,21 @@ namespace SUP_MVC.Controllers
                 var City = separatedArgs[9];
                 var State = separatedArgs[10];
                 var Zip = separatedArgs[11];
-                var Email = separatedArgs[12];
+                var PersonalEmail = separatedArgs[12];
                 var Note = separatedArgs[13];
-                var Phone = separatedArgs[14];
+                var PersonalPhone = separatedArgs[14];
                 var Active = separatedArgs[15];
 				var Permit = separatedArgs[16];
 				var Breakfast = separatedArgs[17];
 				var HolidayCard = separatedArgs[18];
+				var BusinessEmail = separatedArgs[19];
+				var BusinessPhone = separatedArgs[20];
+				var AssistantEmail = separatedArgs[21];
+				var AssistantPhone = separatedArgs[22];
+				var AssistantFirstName = separatedArgs[23];
+				var AssistantLastName = separatedArgs[24];
+				var Prefix = separatedArgs[25];
+
 				var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
                 {
@@ -180,17 +188,27 @@ namespace SUP_MVC.Controllers
                     };
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        //Client_ID = intClientId,
-                        Business_Email = Email
+                        Client_ID = intClientId,
+                        Business_Email = BusinessEmail,
+						Personal_Email = PersonalEmail,
+						Assistant_Email = AssistantEmail
+
                     };
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        //Client_ID = intClientId,
-                        Business_Phone = Phone
+                        Client_ID = intClientId,
+                        Business_Phone = BusinessPhone,
+						Personal_Phone = PersonalPhone,
+						Assistant_Phone = AssistantPhone
                     };
-                    Client.Notes = Note;
-                    Client.Active = (Active == "true");
+					Client.Assistant_First_Name = AssistantFirstName;
+					Client.Assistant_Last_Name = AssistantLastName;
+					Client.Notes = Note;
+					Client.Active = (Active == "true");
+					Client.Holiday_Card = (HolidayCard == "true");
+					Client.Community_Breakfast = (Breakfast == "true");
 					Client.Permit_Num = Permit;
+					Client.Prefix = Prefix;
 					return DatabaseConnection.updateClient(Client);
                 }
                 else
@@ -199,7 +217,11 @@ namespace SUP_MVC.Controllers
 
                     Client.First_Name = firstName;
                     Client.Last_Name = lastName;
-                    Client.Org = new SUP_Library.DBComponent.Organization
+					if (MiddleInitial?.Length >= 1)
+					{
+						Client.Middle_initial = MiddleInitial.Substring(0, 1);
+					}
+					Client.Org = new SUP_Library.DBComponent.Organization
                     {
                         Org_Name = companyName,
                         Org_Type = organization,
@@ -208,14 +230,23 @@ namespace SUP_MVC.Controllers
                     Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
-                        Business_Email = Email
-                    };
+						Business_Email = BusinessEmail,
+						Personal_Email = PersonalEmail,
+						Assistant_Email = AssistantEmail
+					};
                     Client.Phone = new SUP_Library.DBComponent.PhoneNumber
                     {
-                        Business_Phone = Phone
-                    };
-                    Client.Notes = Note;
+						Business_Phone = BusinessPhone,
+						Personal_Phone = PersonalPhone,
+						Assistant_Phone = AssistantPhone
+					};
+					Client.Assistant_First_Name = AssistantFirstName;
+					Client.Assistant_Last_Name = AssistantLastName;
+					Client.Notes = Note;
 					Client.Active = (Active == "true");
+					Client.Holiday_Card = (HolidayCard == "true");
+					Client.Community_Breakfast = (Breakfast == "true");
+					Client.Prefix = Prefix;
 					return DatabaseConnection.addClient(Client);
                 }
             }
@@ -227,7 +258,15 @@ namespace SUP_MVC.Controllers
         
         public ActionResult AddClient()
 		{
-			return View();
-		}
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login");
+            }
+        }
 	}
 }

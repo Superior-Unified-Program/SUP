@@ -18,14 +18,7 @@ namespace SUP_MVC.Controllers
         // GET: Search
         public ActionResult Index()
         {
-            if (TempData["UserID"] != null)
-            {
-                return View();
-            }
-            else
-            {
-                return RedirectToAction("Login");
-            }
+            return View();
         }
 
         // GET: Search/Details/5
@@ -114,8 +107,8 @@ namespace SUP_MVC.Controllers
                     throw(new Exception("Oopsie"));
                 }
 
-                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], separatedArgs[2]);
-
+				var organizations = separatedArgs[2].Split(';');
+                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
                 // if searching for active clients only, remove inactive clients.
                 if (separatedArgs[3] == "true")
                 {
@@ -126,15 +119,34 @@ namespace SUP_MVC.Controllers
                         if (!client.Active)
                         {
                             Clients.Remove(client);
-                            clientCount-=1;
+                            clientCount -= 1;
                             i -= 1;
                         }
                     }
                 }
+                Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
-                var json = JsonConvert.SerializeObject(Clients);
-                
-                return json;
+
+                // filter by organization
+
+                List<Client> filteredClients = new List<Client>();
+                foreach (string organization in organizations)
+                {
+                    foreach (var client in Clients)
+                    {
+                        var stringifiedOrganizations = client.Organizations.Select(o => o.Org_Type);
+                        if (stringifiedOrganizations.Contains(organization))
+                        {
+                            if (!filteredClients.Contains(client))
+                            {
+                                filteredClients.Add(client);
+                            }
+                        }
+                    }
+                }
+
+			var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
+            return json;
             }
             catch(Exception e)
             {
@@ -228,7 +240,15 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
-            return View();
+            if (TempData["UserID"] != null)
+            {
+                TempData["UserID"] = TempData["UserID"];
+                return View();
+            }
+            else
+            {
+                return RedirectToAction("Login", "Login");
+            }
         }
 
         [HttpGet]
@@ -285,6 +305,35 @@ namespace SUP_MVC.Controllers
 				throw e;
 				//return "FAAAAAILLL";
 			}
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> UploadFile(IFormFile file)
+		{
+			bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
+			if (isDocx)
+				{
+				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
+                string fileName = Path.GetFileName(file.FileName);
+				string filePath = templatePath + "\\" + fileName;
+				long size = file.Length;
+				//var filePath = file.Name;
+
+
+				if (size > 0)
+				{
+					using (var stream = new FileStream(filePath, FileMode.Create))
+					{
+						await file.CopyToAsync(stream);
+					}
+				}
+
+
+				// process uploaded files
+				// Don't rely on or trust the FileName property without validation.
+				return RedirectToAction("Search");
+			}
+			return Ok(new { Error = "File was not a .docx file."});
 		}
 	}
 }
