@@ -9,7 +9,7 @@ namespace SUP_Library.DBComponent
     public class EmailAddress
     {
         
-            public int Client_ID { get; set; }
+            //public int Client_ID { get; set; }
             public string Personal_Email { get; set; }
             public string Assistant_Email { get; set; }
 

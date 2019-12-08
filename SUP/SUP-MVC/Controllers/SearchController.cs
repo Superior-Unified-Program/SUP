@@ -315,7 +315,8 @@ namespace SUP_MVC.Controllers
 			if (isDocx)
 				{
 				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-				var filePath = templatePath + "\\" + file.FileName;
+                string fileName = Path.GetFileName(file.FileName);
+				string filePath = templatePath + "\\" + fileName;
 				long size = file.Length;
 				//var filePath = file.Name;
 

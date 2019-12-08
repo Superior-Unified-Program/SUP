@@ -9,7 +9,7 @@ namespace SUP_Library.DBComponent
     public class Organization
     {
        // System.Int32 Client_ID, System.String Org_Name, System.String Org_Type, System.String Title) is required for SUP_Library.DBComponent.Organization materialization'
-        public int Client_ID { get; set; }
+        //public int Client_ID { get; set; }
         public string Org_Name { get; set; }
         public string Org_Type { get; set; }
 
