@@ -622,32 +622,32 @@
 			organization = organization.substring(0, (organization.length - 1));
 			var active = ($('.displayOnlyActiveClientsInput:checked').length < 1);
             var dataPost = firstName + ',' + lastName + ',' + organization + ',' + active;
-            $.ajax({
-                url: '/Search/SearchClients',
-                type: 'POST',
-                data: JSON.stringify(dataPost),
-                contentType: 'application/json; charset=utf-8',
-                error: function (xhr) {
-                    alert('Error: ' + xhr.statusText);
-                },
-                success: function (result) {
-                    returnedData = JSON.parse(result);
+			$.ajax({
+				url: '/Search/SearchClients',
+				type: 'POST',
+				data: JSON.stringify(dataPost),
+				contentType: 'application/json; charset=utf-8',
+				error: function (xhr) {
+					alert('Error: ' + xhr.statusText);
+				},
+				success: function (result) {
+					returnedData = JSON.parse(result);
 
 
-                    $('.removableRow').remove();
+					$('.removableRow').remove();
 					$('.firstName').remove();
 					$('.lastName').remove();
-                    $('.templateRow').hide();
-                    if(returnedData == null){
-                        alert("There is no such person.");
-                    }
-                    else if (returnedData.length == 0) {
-                        $('.templateRow').show();
-                    }
-                    else {
+					$('.templateRow').hide();
+					if (returnedData == null) {
+						alert("There is no such person.");
+					}
+					else if (returnedData.length == 0) {
+						$('.templateRow').show();
+					}
+					else {
 
-                        for (var i = 0; i < returnedData.length; i++) {
-                            var currentRow = returnedData[i];
+						for (var i = 0; i < returnedData.length; i++) {
+							var currentRow = returnedData[i];
 							var hasPermit = (currentRow['Permit_Num'] != "");
 							var breakfastAttendee = (currentRow['Community_Breakfast'] != false);
 							var holidayCardRecipient = (currentRow['Holiday_Card'] != false);
@@ -655,21 +655,24 @@
 								($('.displayOnlyHBreakfastAttendee').prop('checked') == false || breakfastAttendee) &&
 								($('.displayOnlyHolidayCard').prop('checked') == false || holidayCardRecipient)) {
 
-                                var Row = $('.templateRow').clone();
-                                Row.removeClass('templateRow').addClass('removableRow').show();
-                                Row.find('.rowFirstName').val(currentRow['First_Name']);
-                                Row.find('.rowLastName').val(currentRow['Last_Name']);
+								var Row = $('.templateRow').clone();
+								Row.removeClass('templateRow').addClass('removableRow').show();
+								Row.find('.rowFirstName').val(currentRow['First_Name']);
+								Row.find('.rowLastName').val(currentRow['Last_Name']);
 
-                                if (currentRow['Email'] != null) {
-                                    Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
-                                }
-                                if (currentRow['Phone'] != null) {
-                                    Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
-                                }
-                                if (currentRow['Org'] != null) {
-                                    Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
-                                    Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
-                                }
+								if (currentRow['Email'] != null) {
+									Row.find('.rowEmailAddress').val(currentRow['Email']['Email']);
+								}
+								if (currentRow['Phone'] != null) {
+									Row.find('.rowPhoneNumber').val(currentRow['Phone']['Number']);
+								}
+								// this returns primary (selected option)
+								if (currentRow['Org'] != null) {
+									Row.find('.rowOrganization').val(currentRow['Org']['Org_Name']);
+									Row.find('.rowJobTitle').val(currentRow['Org']['Title']);
+								}
+								//---------------------
+
                                 var clientId = currentRow['ID']
                                 Row.find('.rowViewButton').val(clientId);
 
