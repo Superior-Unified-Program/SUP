@@ -117,7 +117,7 @@ namespace SUP_MVC.Controllers
                 //TODO: HASH HERE
                 var hashedBytes = GetHash(password);
 				var hashedPassword = Encoding.UTF8.GetString(hashedBytes, 0, hashedBytes.Length).Replace("'","");
-				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, hashedPassword);
+				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, password);
                 if (LoginSuccessful)
                 {
                     //TODO: STORE SESSION HERE
