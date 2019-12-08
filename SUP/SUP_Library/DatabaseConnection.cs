@@ -96,20 +96,19 @@ namespace SUP_Library
             return false;
         }
 
-		public static bool addAccount(string theUsername, string thePassword, char isAdmin, string theOffice)
+		public static bool addAccount(string theUsername, string thePassword, char userType, string theOffice)
 		{
 			try
 			{
 				using (IDbConnection connection = new SqlConnection(getConnectionString()))
 				{
 					string sql = "addAccount"; //name of stored procedure
-					// Parameters to send to addClient/updateClient stored proedure
+					
 					var par = new DynamicParameters();
 
-					// Client base class parameters
-					par.Add("@userName", theUsername); // updateClient needs the client ID
+					par.Add("@userName", theUsername);
 					par.Add("@password", thePassword);
-					par.Add("@userType", isAdmin);
+					par.Add("@userType", userType);
 					par.Add("@office", theOffice);
 
 					connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
@@ -123,6 +122,26 @@ namespace SUP_Library
 				throw exc;
 			}
 		}
+        public static void deleteAccount(string userName) // this is very dangerous, proceed with caution!
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "deleteAccount"; //name of stored procedure
+                                               // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
+
+                    par.Add("@user_name", userName); // name of the user to be deleted
+                    
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+        }
 
         #endregion
 
@@ -262,11 +281,19 @@ namespace SUP_Library
                         foreach (Organization o in client.Organizations)
                         {
                             bool add = true;
+                            bool update = false;
                             foreach(Organization org in orgs)
                             {
-                                if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type) add = false;
+                                if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type)
+                                {
+                                    add = false;
+                                    if (org.Title != o.Title || org.Primary != o.Primary) update = true;
+                                }
+
+                                
                             }
                             if (add) addOrganization(client, o);
+                            else if (update) updateOrganization(client, o);
                         }
                     }
 
@@ -274,6 +301,34 @@ namespace SUP_Library
                     //int result = par.Get<int>("result");
                     System.Diagnostics.Debug.WriteLine("ID is: " + result);
                     return result;
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static void deleteClient(Client client)
+        {
+            deleteClient(client.ID);
+        }
+        public static void deleteClient(int clientID)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "deleteClient"; //name of stored procedure
+
+                    // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
+
+                    // organization parameters
+                    par.Add("@ID", clientID);
+               
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
 
                 }
             }
@@ -337,6 +392,34 @@ namespace SUP_Library
                     //int result = par.Get<int>("result");
                     //System.Diagnostics.Debug.WriteLine("ID is: " + result);
                     //return result;
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static void updateOrganization(Client client, Organization organization)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "updateOrganization"; //name of stored procedure
+
+                    // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
+
+                    // organization parameters
+                    par.Add("@id", client?.ID);
+                    par.Add("@orgName", organization?.Org_Name);
+                    par.Add("@orgType", organization?.Org_Type);
+                    par.Add("@title", organization?.Title);
+                    par.Add("@primary", organization?.Primary);
+
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
 
                 }
             }

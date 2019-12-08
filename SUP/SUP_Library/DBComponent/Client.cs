@@ -58,12 +58,32 @@ namespace SUP_Library.DBComponent
             }
             set
             {
-                foreach (Organization org in Organizations)
+                // This is a little complicated. We can access or set the primary organization. To set it, we have to add it to the list, but if the organization is
+                // Already on the list, we have to update it instead
+                
+                bool inList = false;
+                Organization org;
+
+                for (int i = 0; i< Organizations.Count; i++)
                 {
-                    if (org.Primary == true) org.Primary=false;
+                    org = Organizations[i];
+                    
+                    if (org?.Org_Name == value?.Org_Name && org.Org_Type == value.Org_Type)
+                    {
+                        org.Primary = true;
+                        org.Title = value.Title;
+                        inList = true;
+                    }
+                    else
+                    {
+                        if (org.Primary==true) org.Primary = false;
+                    }
                 }
-                value.Primary = true;
-                Organizations.Add(value);
+                if (!inList)
+                {
+                    value.Primary = true;
+                    Organizations.Add(value);
+                }
             }
       
         }
