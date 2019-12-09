@@ -25,11 +25,11 @@ namespace SUP_Library
     public class Merge
     {
 		private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-        private static string savePath = ""; // (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Temp");
+        private static string savePath = "";
 		private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
 
 		/*private static string templatePath = @"C:\Users\Public\Documents\Templates";
-		private static string savePath = ""; // @"C:\Users\Public\Documents\Temp";
+		private static string savePath = "";
 		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";*/
 		private struct token
         {
@@ -103,7 +103,7 @@ namespace SUP_Library
                     r = client?.Email?.Personal_Email;
                     break;
                 case "phone_personal":
-                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Personal_Phone);
+                    r = client.Phone.Personal_Phone_Formatted;
                     break;
                 case "email_business":
                 case "email":
@@ -111,7 +111,7 @@ namespace SUP_Library
                     break;
                 case "phone_business":
                 case "phone":
-                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Business_Phone);
+                    r = client.Phone.Business_Phone_Formatted;
                     break;
                 case "date":
                     CultureInfo info = new CultureInfo( "en-US",false );
@@ -126,7 +126,7 @@ namespace SUP_Library
                     r = client?.Assistant_Last_Name;
                     break;
                 case "assistant_phone":
-                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Assistant_Phone);
+                    r = client.Phone.Assistant_Phone_Formatted;
                     break;
                 case "assistant_email":
                     r = client?.Email?.Assistant_Email;
@@ -147,7 +147,6 @@ namespace SUP_Library
 
         private static string createFileFromTemplate(string templateName, Client client)
         {
-
             
             if (!Directory.Exists(zipPath))
             {
@@ -165,9 +164,8 @@ namespace SUP_Library
             fileName = savePath + "\\" + fileName;
 
             
-            for(int i=2; File.Exists(fileName); i++) // file already exists...is there more than one db entry with this name?
+            for(int i = 2; File.Exists(fileName); i++) // file already exists...is there more than one database entry with this name?
             {
-                //fileName = savePath + "\\" + templateName.Substring(0, templateName.Length - EXTENSION.Length) + "_" + client.Last_Name + "_" + client.First_Name + i + EXTENSION;
                 fileName = templateName.Substring(0, templateName.Length - EXTENSION.Length);
                 fileName = fileName.Replace("Template", "");
                 if (!fileName.EndsWith("_")) fileName += "_";
@@ -177,13 +175,13 @@ namespace SUP_Library
 
             try
             {
-                File.Copy(templatePath + "\\" + templateName, fileName);//savePath + "\\" + fileName);
+                File.Copy(templatePath + "\\" + templateName, fileName);
             }
             catch (Exception e)
             {
                 return null;
             }
-            return fileName;//savePath + "\\" + fileName;
+            return fileName;
 
         }
         public static string compress(string templateName)
@@ -191,6 +189,7 @@ namespace SUP_Library
             string zipShortName = templateName.Substring(0, templateName.Length - 5);
 
             zipShortName = zipShortName.Replace("Template", "");
+
             if (!zipShortName.EndsWith("_")) zipShortName += "_";
 
             string zipPathLong = zipPath + @"\" + zipShortName + DateTime.Now.Month + "_" + DateTime.Now.Day + "_" + DateTime.Now.Year + "_" + DateTime.Now.ToString("h_mm_ss_tt") + ".zip";
@@ -213,7 +212,6 @@ namespace SUP_Library
             var rand = new Random();
             savePath = zipPath + "\\TEMP" + rand.Next(0, 1000);
 
-            //foreach (Client client in clientList)
             for (int c = 0; c < clientList.Count; c++)
             {
                 Client client = clientList[c];
@@ -267,8 +265,7 @@ namespace SUP_Library
                                     client = clientList[++c];
                                 else if (c == clientList.Count - 1)
                                 {
-                                    client = new Client(); // this should blank all remaining fields
-                                    
+                                    client = new Client(); // create an empty client so that the remaining merge fields will be blank    
                                 }
                             }
 

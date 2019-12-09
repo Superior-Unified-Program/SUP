@@ -8,10 +8,31 @@ namespace SUP_Library.DBComponent
 {
     public class PhoneNumber
     {
-        // public int Client_ID { get; set; }
         private string _businessPhone;
         private string _personalPhone;
         private string _assistantPhone;
+
+        public string Personal_Phone_Formatted
+        {
+            get
+            {
+                return returnNumberWithFormatting(_personalPhone);
+            }
+        }
+        public string Business_Phone_Formatted
+        {
+            get
+            {
+                return returnNumberWithFormatting(_businessPhone);
+            }
+        }
+        public string Assistant_Phone_Formatted
+        {
+            get
+            {
+                return returnNumberWithFormatting(_assistantPhone);
+            }
+        }
         public string Personal_Phone
         {
             get
@@ -87,9 +108,11 @@ namespace SUP_Library.DBComponent
         }
         public PhoneNumber()
         {
-            _businessPhone = "";
-            _personalPhone = "";
-            _assistantPhone = ""; 
+            /* Initialize string values with empty strings
+             * to prevent issues with null values. It seems to work better when working across technologies to
+             * use empty strings instead of trying to use nulls
+             */
+            _businessPhone = _personalPhone = _assistantPhone = ""; 
         }
     }
 }

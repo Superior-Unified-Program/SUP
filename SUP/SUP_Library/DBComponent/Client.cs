@@ -17,6 +17,7 @@ namespace SUP_Library.DBComponent
             sortBy = sortByCriteria;
         }
         private static SortBy sortBy;
+
         private static int asc;
         public int ID { get; set; }
         public string Prefix { get; set; }
@@ -42,8 +43,7 @@ namespace SUP_Library.DBComponent
         {
             get;
 
-            set;
-            
+            set;  
         } 
 
         public Organization Primary_Organization
@@ -54,12 +54,13 @@ namespace SUP_Library.DBComponent
                 {
                     if (org.Primary == true) return org;
                 }
-                return new Organization(); // there is no primary organization, return an empty organization, because it is better than causing a crash
+                return new Organization(); // There is no primary organization, so return an empty organization.
             }
             set
             {
-                // This is a little complicated. We can access or set the primary organization. To set it, we have to add it to the list, but if the organization is
-                // Already on the list, we have to update it instead
+                /*  This is a little complicated. We can access or set the primary organization. To set it, we have to add it to the list, but if the organization is
+                 *  Already on the list, we have to update it instead
+                 */
                 
                 bool inList = false;
                 Organization org;
@@ -100,7 +101,9 @@ namespace SUP_Library.DBComponent
         public bool Community_Breakfast { get; set; }
 
         public string Assistant_First_Name { get; set; }
+
         public string Assistant_Last_Name { get; set; }
+
         public string Assisntant_Last_Name // allow dapper to pull in misspelled column in db
         { 
             get
@@ -117,10 +120,13 @@ namespace SUP_Library.DBComponent
 
         public Client()
         {
+            /* Initialize lists, classes, and string values with empty strings
+             * to prevent issues with null values. It seems to work better when working across technologies to
+             * use empty strings instead of trying to use nulls
+             */
 
             Organizations = new List<Organization>();
-            //Org = new Organization(); // classes probably should be initialized and not null
-
+            
             Address = new Address();
             Email = new EmailAddress();
             Phone = new PhoneNumber();
@@ -141,7 +147,7 @@ namespace SUP_Library.DBComponent
         {
             return CompareTo((Client)client);
         }
-        private int CompareTo(Client client) // change Org to Primary_Organization
+        private int CompareTo(Client client)
         {
             if (client == null) return asc * 1;
             switch (sortBy)

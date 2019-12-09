@@ -8,84 +8,28 @@ namespace SUP_Library.DBComponent
 {
     public class Address
     {
-       // public int Client_ID { get; set;  }
         public string Line1 { get; set; }
         public string Line2 { get; set; }
         public string City { get; set; }
         public string State { get; set; }
         public string Zip { get; set; }
 
-
         public Address()
         {
-            Line1 = "";Line2 = "";City = "";State = "";Zip = "";
+            Line1 = Line2 = City = State = Zip = "";
         }
-        public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,"",City,State,Zipcode)
-        {
-            // For now if we call constructor without Address LineTwo, we just pass on to the constructor with an empty LineTwo
-        }
+        public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne, "", City, State, Zipcode) { }
 
         public Address(string LineOne, string LineTwo, string City, string State, string Zipcode)
         {
-            this.Line1 = LineOne;
-            this.Line2 = LineTwo;
+            Line1 = LineOne;
+            Line2 = LineTwo;
             this.City = City;
             this.State = State;
-            this.Zip = Zipcode;
-            /* setLineOne(LineOne);
-            setLineTwo(LineTwo);
-            setCity(City);
-            setState(State);
-            setZipcode(Zipcode);
-            */
-
+            Zip = Zipcode;
         }
+       
         /*
-        public void setLineOne(string LineOne)
-        {
-            this.LineOne = LineOne;
-        }
-
-        public string getLineOne()
-        {
-            return LineOne;
-        }
-        public string getLineTwo()
-        {
-            return LineTwo;
-        }
-        public void setLineTwo(string LineTwo)
-        {
-            this.LineTwo = LineTwo;
-        }
-        public string getCity()
-        {
-            return City;
-        }
-        public void setCity(string City)
-        {
-            this.City = City;
-        }
-        public string getZipcode()
-        {
-            return Zipcode;
-        }
-        public void setZipcode(string Zipcode)
-        {
-            if (ValidZip(Zipcode))
-                this.Zipcode = Zipcode;
-            else
-                throw new Exception("Invalid Zipcode!");
-        }
-        public string getState()
-        {
-            return State;
-        }
-        public void setState(string State)
-        {
-            this.State = State;
-        }
-
         public static bool ValidZip(string Zipcode)
         {
             // Will there be non-US addresses? 
