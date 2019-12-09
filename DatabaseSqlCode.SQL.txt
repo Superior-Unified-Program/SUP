@@ -55,7 +55,7 @@ CREATE TABLE AccountAudits(
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
 CREATE TABLE Client ( ID int not null IDENTITY(1,1), Prefix varchar(10), Last_Name varchar(50),
-First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(30),
+First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(250),
 CONSTRAINT PK_Client PRIMARY KEY ( ID ))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
