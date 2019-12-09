@@ -80,8 +80,10 @@
     function addUser() {
         var username = $('.Username').val();
         var password = $('.Password').val();
+        var accountType = $( ".Usertype option:selected" ).text();
+        var office = $( ".Office option:selected" ).text();
 
-        var dataPost = username + "," + password;
+        var dataPost = username + "," + password + "," + accountType + "," + office;
         $.ajax({
             url: '/AddUser/SubmitUserData',
             type: 'POST',
@@ -93,9 +95,11 @@
             success: function (result) {
                 var returnedData = JSON.parse(result);
                 var currentClient = returnedData;
-                console.log("successfully added");
-                //var firstName = currentClient["First_Name"];
-                //$('.firstNameInput').val(firstName);
+                if (result) {
+                    console.log("Successfully added account");
+                } else {
+                    console.log("failed to add account");
+                }
             },
             async: true,
             processData: false

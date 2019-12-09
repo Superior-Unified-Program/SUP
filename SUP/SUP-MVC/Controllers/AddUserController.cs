@@ -124,9 +124,9 @@ namespace SUP_MVC.Controllers
             }
             var username = separatedArgs[0];
             var password = separatedArgs[1];
-
-            //var listOfPossibleMatches = SUP_Library.DatabaseConnection.addUser(username, password);
-            var result = true;
+            var accountType = separatedArgs[2];
+            var office = separatedArgs[3];
+            var result = SUP_Library.DatabaseConnection.addAccount(username, password,accountType[0],office);
             var json = JsonConvert.SerializeObject(result);
 
             return json;

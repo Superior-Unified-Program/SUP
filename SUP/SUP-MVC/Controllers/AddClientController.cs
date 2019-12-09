@@ -201,6 +201,13 @@ namespace SUP_MVC.Controllers
 						Personal_Phone = PersonalPhone,
 						Assistant_Phone = AssistantPhone
                     };
+                   
+                    Client.Address.Line1 = Line1;
+                    Client.Address.Line2 = Line2;
+                    Client.Address.City = City;
+                    Client.Address.State = State;
+                    Client.Address.Zip = Zip;
+                    
 					Client.Assistant_First_Name = AssistantFirstName;
 					Client.Assistant_Last_Name = AssistantLastName;
 					Client.Notes = Note;
@@ -265,7 +272,7 @@ namespace SUP_MVC.Controllers
             }
             else
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Login","Login");
             }
         }
 	}

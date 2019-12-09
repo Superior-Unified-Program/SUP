@@ -96,20 +96,19 @@ namespace SUP_Library
             return false;
         }
 
-		public static bool addAccount(string theUsername, string thePassword, char isAdmin, string theOffice)
+		public static bool addAccount(string theUsername, string thePassword, char userType, string theOffice)
 		{
 			try
 			{
 				using (IDbConnection connection = new SqlConnection(getConnectionString()))
 				{
 					string sql = "addAccount"; //name of stored procedure
-					// Parameters to send to addClient/updateClient stored proedure
+					
 					var par = new DynamicParameters();
 
-					// Client base class parameters
-					par.Add("@userName", theUsername); // updateClient needs the client ID
+					par.Add("@userName", theUsername);
 					par.Add("@password", thePassword);
-					par.Add("@userType", isAdmin);
+					par.Add("@userType", userType);
 					par.Add("@office", theOffice);
 
 					connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
@@ -123,56 +122,33 @@ namespace SUP_Library
 				throw exc;
 			}
 		}
-
-        #endregion
-
-        #region Address Connection
-
-        // all connections related to Address table go here
-
-        #endregion
-
-        #region Client Connection
-
-        // all connections related to Client table go here
-
-
-
-        /*
-        public static void addClient(Client newClient)
+        public static void deleteAccount(string userName) // this is very dangerous, proceed with caution!
         {
-            string conString = getConnectionString();
-
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
+                    string sql = "deleteAccount"; //name of stored procedure
+                                               // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
 
-                    Console.WriteLine(connection.State);
+                    par.Add("@user_name", userName); // name of the user to be deleted
                     
-
-                    string sql = "addClient";
-                    var affected = connection.Execute(sql,
-                       new
-                       {
-                           firstName = newClient.First_Name,
-                           lastName = newClient.Last_Name,
-                           middleInitial = newClient.Middle_initial,
-                           permitNum = newClient.Permit_Num,
-                           active = newClient.Active,
-                           notes = newClient.Notes
-                       },
-                        commandType: CommandType.StoredProcedure);
-           
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
                 }
             }
             catch (Exception exc)
             {
-             
                 throw exc;
             }
         }
-        */
+
+        #endregion
+
+
+        #region Client Connection
+
+        // all connections related to Client table go here
 
         // addClient and updateClient are very similar, so these methods are being passed to a larger method called alterClient which changes a few things depending on which stored proc they are calling 
         public static int addClient(Client newClient)
@@ -192,8 +168,6 @@ namespace SUP_Library
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
-
-                    // no support for assistant yet, until we figure out exactly how we are going to implement that
                     string sql; //name of stored procedure
 
                     if (newClient) // if newClient is true, then this method is being called from addClient
@@ -203,8 +177,6 @@ namespace SUP_Library
 
                     // Parameters to send to addClient/updateClient stored proedure
                     var par = new DynamicParameters();
-
-
 
                     // Client base class parameters
                     if (!newClient)
@@ -217,15 +189,11 @@ namespace SUP_Library
                     par.Add("@permitNum", client.Permit_Num);
                     par.Add("@active", client.Active);
                     par.Add("@notes", client.Notes);
-                    // Organization Parameters
-                   // par.Add("@orgName", client.Org?.Org_Name);
-                   // par.Add("@orgType", client.Org?.Org_Type);
-                   // par.Add("@title", client.Org?.Title);
+                   
                     // Phone
                     par.Add("@Business_phoneNumber", client.Phone?.Business_Phone);
                     par.Add("@Personal_phoneNumber", client.Phone?.Personal_Phone);
                     // Email
-                    //par.Add("@email", client.Email.Email);
                     par.Add("@Business_email", client.Email?.Business_Email);
                     par.Add("@Personal_email", client.Email?.Personal_Email);
                     // Address
@@ -239,12 +207,9 @@ namespace SUP_Library
                     par.Add("@assistantLastName", client?.Assistant_Last_Name);
                     par.Add("@assistant_phoneNumber", client.Phone?.Assistant_Phone);
                     par.Add("@assistant_Email", client.Email?.Assistant_Email);
-					// temp as stored procedure for update does not have these two fields
-					//if (newClient)
-					//{
-						par.Add("@communityBreakfast", client?.Community_Breakfast);
-						par.Add("@holidayCard", client?.Holiday_Card);
-					//}
+					par.Add("@communityBreakfast", client?.Community_Breakfast);
+					par.Add("@holidayCard", client?.Holiday_Card);
+					
                     par.Add("result", 0, direction: ParameterDirection.ReturnValue);
 
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
@@ -262,18 +227,53 @@ namespace SUP_Library
                         foreach (Organization o in client.Organizations)
                         {
                             bool add = true;
+                            bool update = false;
                             foreach(Organization org in orgs)
                             {
-                                if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type) add = false;
+                                if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type)
+                                {
+                                    add = false;
+                                    if (org.Title != o.Title || org.Primary != o.Primary) update = true;
+                                }
+
+                                
                             }
                             if (add) addOrganization(client, o);
+                            else if (update) updateOrganization(client, o);
                         }
                     }
 
                     // get ID and return it
-                    //int result = par.Get<int>("result");
                     System.Diagnostics.Debug.WriteLine("ID is: " + result);
                     return result;
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static void deleteClient(Client client)
+        {
+            deleteClient(client.ID);
+        }
+        public static void deleteClient(int clientID)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "deleteClient"; //name of stored procedure
+
+                    // Parameters to send to addClient/updateClient stored proedure
+                    var par = new DynamicParameters();
+
+                    // organization parameters
+                    par.Add("@ID", clientID);
+               
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
 
                 }
             }
@@ -312,127 +312,9 @@ namespace SUP_Library
                 throw exc;
             }
         }
-        public static void addOrganization(Client client, Organization organization)
-        {
-            // (clientID, orgName, orgType, title, primary)
-            try
-            {
-                using (IDbConnection connection = new SqlConnection(getConnectionString()))
-                {
-                    string sql="addOrganization"; //name of stored procedure
-
-                    // Parameters to send to addClient/updateClient stored proedure
-                    var par = new DynamicParameters();
-
-                    // organization parameters
-                    par.Add("@clientID", client?.ID);
-                    par.Add("@orgName", organization?.Org_Name);
-                    par.Add("@orgType", organization?.Org_Type);
-                    par.Add("@title", organization?.Title);
-                    par.Add("@primary", organization?.Primary);
-
-                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
-
-                    // get ID and return it
-                    //int result = par.Get<int>("result");
-                    //System.Diagnostics.Debug.WriteLine("ID is: " + result);
-                    //return result;
-
-                }
-            }
-            catch (Exception exc)
-            {
-                System.Diagnostics.Debug.WriteLine(exc.Message);
-                throw exc;
-            }
-        }
-        public static List<Organization> queryOrganization(int clientID)
-        {
-            try
-            {
-                using (IDbConnection connection = new SqlConnection(getConnectionString()))
-                {
-
-                    var sql = "queryOrganization";   // name of stored procedure              
-
-                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
-                    // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
-                    // The joined table is split at the Client_ID column
-                    var data = connection.Query<Organization>(sql, 
-                               new { ID = clientID }, null, true, commandType: CommandType.StoredProcedure).ToList();
-
-                    return data; // return (client) list of results;
-                }
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
-
-        }
-        public static List<Client> QueryClient(Client client)
-        {
-            return QueryClient(client.Last_Name, client.First_Name, client.Primary_Organization.Org_Type);
-        }
-        public static List<Client> QueryClient(string qLastName, string qFirstName, string qOrgType)
-        {
-            try
-            {
-                using (IDbConnection connection = new SqlConnection(getConnectionString()))
-                {
-                   
-                    var sql = "queryClient";   // name of stored procedure              
-
-                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
-                    // Stored procedure joins two tables, so we have Dapper put first table values into Client class and second into organization class found in client
-                    // The joined table is split at the Client_ID column
-                    var data = connection.Query<Client, Organization, Client>(sql, (client, org) => { client.Org = org; return client; }, 
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType },null,true,"Client_ID", commandType: CommandType.StoredProcedure).ToList();                                 
-
-                    return data ; // return (client) list of results;
-                }
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
-
-
-        }
-
         public static List<Client> QueryClientFull(Client client)
         {
             return QueryClientFull(client.Last_Name, client.First_Name, client.Primary_Organization.Org_Type, client.Primary_Organization.Title);
-        }
-        public static List<Client> QueryClientFullOld2(string qLastName, string qFirstName, string qOrgType, string qTitle = "")
-        {
-
-            try
-            {
-                using (IDbConnection connection = new SqlConnection(getConnectionString()))
-                {
-
-                    var sql = "queryClientFull";   // name of stored procedure              
-
-                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
-                    // Stored procedure joins five tables, so we have Dapper put first table values into Client class and into classes found within Client
-                    // The joined tables are split at the Client_ID column
-                    var data = connection.Query<Client, Address, Organization, EmailAddress, PhoneNumber, Client>(sql, (client, address, organization, email, phone) =>
-                    { client.Org = organization; client.Address = address; client.Email = email; client.Phone = phone; return client; },
-                               new { lastName = qLastName, firstName = qFirstName, orgType = qOrgType, title = qTitle }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
-
-
-                    System.Diagnostics.Debug.WriteLine("Client 0: " + data[0].Org.Org_Name + " " + data[0].Org.Org_Type + " " + data[0].Org.Title);
-
-                    return data; // return (client) list of results;
-                }
-            }
-            catch (Exception exc)
-            {
-                throw exc;
-            }
-
-
         }
         public static List<Client> QueryClientFull(string qLastName, string qFirstName, string qOrgType, string qTitle = "")
         {
@@ -444,18 +326,16 @@ namespace SUP_Library
 
                     var sql = "queryClientFull";   // name of stored procedure              
 
-                    // Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
-                    // Stored procedure joins five tables, so we have Dapper put first table values into Client class and into classes found within Client
-                    // The joined tables are split at the Client_ID column
+                    /* Send request for queryClient stored procedure with values for lastName, firstName and orgType provided
+                     * Stored procedure joins four tables, so we have Dapper put first table values into Client class and into classes found within Client
+                     * The joined tables are split at the Client_ID column
+                     */
+
                     data = connection.Query<Client, Address, EmailAddress, PhoneNumber, Client>(sql, (client, address, email, phone) =>
-                    {  client.Address = address; client.Email = email; client.Phone = phone; return client; },
-                               new { lastName = qLastName, firstName = qFirstName }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
+                          {  client.Address = address; client.Email = email; client.Phone = phone; return client; },
+                             new    { lastName = qLastName, firstName = qFirstName }, null, true, "Client_ID", commandType: CommandType.StoredProcedure).ToList();
 
-                    
-
-                    //System.Diagnostics.Debug.WriteLine("Client 0: " + data[0].Org.Org_Name + " " + data[0].Org.Org_Type + " " + data[0].Org.Title);
-
-                    //return data; // return (client) list of results;
+                   
                 }
             }
             catch (Exception exc)
@@ -517,22 +397,95 @@ namespace SUP_Library
             }
 
             if (data!=null) data.Organizations = queryOrganization(data.ID);
+
             return data;
         }
 
-		#endregion
+        #endregion
 
-		#region ContactInformation Connection
+        #region Organization Connection
 
-		// all connections related to ContactInformation table go here
+        // all connections related to Organization table go here
 
-		#endregion
+        public static void addOrganization(Client client, Organization organization)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "addOrganization"; //name of stored procedure
 
-		#region Organization Connection
+                    // Parameters to send to addOrganization stored proedure
+                    var par = new DynamicParameters();
 
-		// all connections related to Organization table go here
+                    // organization parameters
+                    par.Add("@clientID", client?.ID);
+                    par.Add("@orgName", organization?.Org_Name);
+                    par.Add("@orgType", organization?.Org_Type);
+                    par.Add("@title", organization?.Title);
+                    par.Add("@primary", organization?.Primary);
 
-		#endregion
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
 
-	}
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static void updateOrganization(Client client, Organization organization)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "updateOrganization"; //name of stored procedure
+
+                    // Parameters to send to updateOrganization stored proedure
+                    var par = new DynamicParameters();
+
+                    // organization parameters
+                    par.Add("@id", client?.ID);
+                    par.Add("@orgName", organization?.Org_Name);
+                    par.Add("@orgType", organization?.Org_Type);
+                    par.Add("@title", organization?.Title);
+                    par.Add("@primary", organization?.Primary);
+
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static List<Organization> queryOrganization(int clientID)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+
+                    var sql = "queryOrganization";   // name of stored procedure              
+                                        
+                    var data = connection.Query<Organization>(sql,
+                               new { ID = clientID }, null, true, commandType: CommandType.StoredProcedure).ToList();
+
+                    return data; // return list of organizations;
+                }
+            }
+            catch (Exception exc)
+            {
+                throw exc;
+            }
+
+        }
+
+        #endregion
+
+    }
 }
