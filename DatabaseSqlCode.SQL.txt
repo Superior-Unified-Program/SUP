@@ -636,7 +636,7 @@ ALTER PROCEDURE updateOrganization
 
 	@id int,
 	@orgName varchar(30) = null, @orgType varchar(20) = null,
-	@title varchar(20) = null
+	@title varchar(20) = null, @primary bit = null
 
 AS
 BEGIN
@@ -646,6 +646,16 @@ BEGIN
 	IF @title IS NOT NULL 
 		UPDATE Associated_With SET Title = @title 
 			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+
+	IF @primary IS NOT NULL 
+	BEGIN
+		UPDATE Associated_With SET [Primary] = 0 
+			WHERE Client_ID = @ID AND [Primary] = 1
+
+		UPDATE Associated_With SET [Primary] = 1 
+			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+
+	END
 
     return @ID
     
