@@ -371,10 +371,20 @@
                 var prefix = $('.prefixInput').val();
                 var firstName = $('.firstNameInput').val();
                 var lastName = $('.lastNameInput').val();
-                var middleInitial = $('.middleInitialInput').val();
-                var company = $('.companyInput').val();
-                var organization = $(".organizationInput option:selected").text();
-                var title = $('.titleInput').val();
+				var middleInitial = $('.middleInitialInput').val();
+
+                var primaryCompany = $('.companyInput').val();
+                var primaryOrganization = $(".organizationInput option:selected").text();
+				var primaryTitle = $('.titleInput').val();
+
+				var additionalOrganizations = "";
+				$('.removableRow').each(function () {
+					var company = $(this).find('.companyInput').val();
+					var organization = $(this).find('.organizationInput option:selected').text();
+					var title = $(this).find('.titleInput').val();
+					additionalOrganizations += organization + ";" + company + ";" + title + "|";
+				});
+
                 var Line1 = $('.addressLineOneInput').val();
                 var Line2 = $('.addressLineTwoInput').val();
                 var City = $('.cityInput').val();
@@ -404,11 +414,11 @@
                 var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
                 var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
-                    organization + ',' + company + ',' + title +
+                    primaryOrganization + ',' + primaryCompany + ',' + primaryTitle +
                     ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
                     ',' + PersonalEmail + ',' + Note + ',' + PersonalPhone + ',' + Active + ',' + Permit + ',' +
-                    BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
-                    AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix;
+					BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
+					AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix + "," + additionalOrganizations;
                 $.ajax({
                     url: '/AddClient/UpdateClient',
                     type: 'POST',

@@ -168,6 +168,23 @@ namespace SUP_MVC.Controllers
 				var AssistantFirstName = separatedArgs[23];
 				var AssistantLastName = separatedArgs[24];
 				var Prefix = separatedArgs[25];
+				var additionalOrganizationString = separatedArgs[26];
+				var splitOrganizations = additionalOrganizationString.Split("|");
+				List<SUP_Library.DBComponent.Organization> additionalOrganizations = new List<SUP_Library.DBComponent.Organization>();
+				foreach (string org in splitOrganizations)
+				{
+					if (org != "")
+					{
+						var orgParts = org.Split(";");
+						SUP_Library.DBComponent.Organization orgObj = new SUP_Library.DBComponent.Organization();
+						orgObj.Org_Type = orgParts[0];
+						orgObj.Org_Name = orgParts[1];
+						orgObj.Title = orgParts[2];
+						orgObj.Primary = false;
+						additionalOrganizations.Add(orgObj);
+					}
+				}
+				
 
 				var Client = DatabaseConnection.GetClientByIdFull(clientId);
                 if (Client != null)
@@ -179,13 +196,13 @@ namespace SUP_MVC.Controllers
                     {
                         Client.Middle_initial = MiddleInitial.Substring(0,1);
                     }
-                    Client.Org = new SUP_Library.DBComponent.Organization
-                    {
-                       // Client_ID = intClientId,
-                        Org_Name = companyName,
-                        Org_Type = organization,
-                        Title = title
-                    };
+					SUP_Library.DBComponent.Organization primaryOrg = new SUP_Library.DBComponent.Organization();
+					primaryOrg.Org_Type = organization;
+					primaryOrg.Org_Name = companyName;
+					primaryOrg.Title = title;
+					primaryOrg.Primary = true;
+					additionalOrganizations.Add(primaryOrg);
+					Client.Org = primaryOrg;
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
                        // Client_ID = intClientId,
@@ -201,6 +218,7 @@ namespace SUP_MVC.Controllers
 						Personal_Phone = PersonalPhone,
 						Assistant_Phone = AssistantPhone
                     };
+					Client.Organizations = additionalOrganizations;
                    
                     Client.Address.Line1 = Line1;
                     Client.Address.Line2 = Line2;
@@ -228,13 +246,15 @@ namespace SUP_MVC.Controllers
 					{
 						Client.Middle_initial = MiddleInitial.Substring(0, 1);
 					}
-					Client.Org = new SUP_Library.DBComponent.Organization
-                    {
-                        Org_Name = companyName,
-                        Org_Type = organization,
-                        Title = title
-                    };
-                    Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
+					SUP_Library.DBComponent.Organization primaryOrg = new SUP_Library.DBComponent.Organization();
+					primaryOrg.Org_Type = organization;
+					primaryOrg.Org_Name = companyName;
+					primaryOrg.Title = title;
+					primaryOrg.Primary = true;
+					additionalOrganizations.Add(primaryOrg);
+					Client.Org = primaryOrg;
+					Client.Organizations = additionalOrganizations;
+					Client.Address = new SUP_Library.DBComponent.Address(Line1, Line2, City, State, Zip);
                     Client.Email = new SUP_Library.DBComponent.EmailAddress
                     {
 						Business_Email = BusinessEmail,
