@@ -240,7 +240,6 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
-			return View();
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
