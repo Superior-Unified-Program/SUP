@@ -287,20 +287,33 @@
                         }
                         if (currentClient['Phone'] != null) {
                             $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
-                        }
+						}
                         if (currentClient['Org'] != null) {
                             var orgTypeText = currentClient['Org']['Org_Type'];
                             $(".organizationInput option").filter(function () {
                                 return this.text == orgTypeText;
                             }).attr('selected', true);
                             //$('.organizationInput').text(currentClient['Org']['Org_Type']);
-                        }
+						}
                         if (currentClient['Org'] != null) {
                             $('.companyInput').val(currentClient['Org']['Org_Name']);
                         }
                         if (currentClient['Org'] != null) {
                             $('.titleInput').val(currentClient['Org']['Title']);
-                        }
+						}
+						var organizationList = currentClient['Organizations']
+						for (var i = 0; i < organizationList.length; i++) {
+							if (organizationList[i]['Primary'] == false) {
+								var Row = $('.templateRow').clone();
+								Row.removeClass('templateRow').addClass('removableRow');
+								Row.find('.companyInput').val(organizationList[i]['Org_Name']);
+								Row.find('.titleInput').val(organizationList[i]['Title']);
+								Row.find('.organizationInput option').filter(function () {
+									return this.text == organizationList[i]['Org_Type'];
+								}).attr('selected', true);
+								$('.templateRow').parent().append(Row);
+							}
+						}
                         if (currentClient['Address'] != null) {
                             $('.addressLineOneInput').val(currentClient['Address']['Line1']);
                         }
