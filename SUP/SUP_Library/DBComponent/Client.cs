@@ -117,13 +117,23 @@ namespace SUP_Library.DBComponent
 
         public Client()
         {
+
             Organizations = new List<Organization>();
             //Org = new Organization(); // classes probably should be initialized and not null
 
             Address = new Address();
             Email = new EmailAddress();
             Phone = new PhoneNumber();
-           
+
+            Prefix = "";
+            Permit_Num = "";
+            First_Name = "";
+            Last_Name = "";
+            Middle_initial = "";
+
+            Assistant_First_Name = "";
+            Assistant_Last_Name = "";
+
             setSortCriteria(SortBy.Last_Name, true); // set to sort ascending and by last name by default
         }
 

@@ -26,6 +26,12 @@ namespace SUP_Library.DBComponent
                      Business_Email = value;
                 }
             }
+            public EmailAddress()
+        {
+            Personal_Email = "";
+            Assistant_Email = "";
+            Business_Email = "";
+        }
                    
     }
 }

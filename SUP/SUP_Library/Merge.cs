@@ -59,7 +59,7 @@ namespace SUP_Library
                 case "lastname":
                     r = client?.Last_Name;
                     break;
-                case "Title":
+                case "title":
                     r = client?.Primary_Organization?.Title;
                     break;
                 case "organization":
@@ -79,7 +79,6 @@ namespace SUP_Library
                 case "city":
                     r = client?.Address?.City;
                     break;
-                case "State":
                 case "state":
                     r = client?.Address?.State;
                     break;
@@ -87,17 +86,24 @@ namespace SUP_Library
                 case "zipcode":
                     r = client?.Address?.Zip;
                     break;
-                case "addressblock": 
+                case "addressblock":
+   
                     r = client?.First_Name + " " + client?.Last_Name + "<w:br/>";
-                    r += client?.Address.Line1 + "<w:br/>";
-                    if (client?.Address.Line2.Trim() != "") r += "<w:t>" + client?.Address.Line2 + "<w:br/>";
-                    r += client?.Address.City + ", " + client?.Address.State + " " + client?.Address?.Zip + "<w:br/>";
+                        
+                    r += client?.Address?.Line1 + "<w:br/>";
+                    if (client?.Address?.Line2 != null && client?.Address?.Line2.Trim() != "") r += client?.Address?.Line2 + "<w:br/>";
+
+                    if (client?.Address?.City.Trim() != "" && client?.Address?.State.Trim() != "")
+                        r += client?.Address?.City + ", " + client?.Address?.State + " " + client?.Address?.Zip + "<w:br/>";
+                    else
+                        r += client?.Address?.Zip + "<w:br/>";
+                    
                     break;
                 case "email_personal":
                     r = client?.Email?.Personal_Email;
                     break;
                 case "phone_personal":
-                    r = client?.Phone?.Personal_Phone;
+                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Personal_Phone);
                     break;
                 case "email_business":
                 case "email":
@@ -105,7 +111,7 @@ namespace SUP_Library
                     break;
                 case "phone_business":
                 case "phone":
-                    r = client?.Phone?.Business_Phone;
+                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Business_Phone);
                     break;
                 case "date":
                     CultureInfo info = new CultureInfo( "en-US",false );
@@ -120,7 +126,7 @@ namespace SUP_Library
                     r = client?.Assistant_Last_Name;
                     break;
                 case "assistant_phone":
-                    r = client?.Phone?.Assistant_Phone;
+                    r = client.Phone.returnNumberWithFormatting(client?.Phone?.Assistant_Phone);
                     break;
                 case "assistant_email":
                     r = client?.Email?.Assistant_Email;
@@ -128,7 +134,7 @@ namespace SUP_Library
                 case "assistant_name":
                     r = client?.Assistant_First_Name + " " + client?.Assistant_Last_Name;
                     break;
-                case "next record":                 //Duy: should it be _ between ?
+                case "next record":                 
                     r = "";
                     break;
                 default:
@@ -255,7 +261,7 @@ namespace SUP_Library
                             s = matches[i].End;
                             sw.Write(toWrite + tag);
 
-                            if (matches[i].Result== "Next Record")
+                            if (matches[i].Result.ToLower() == "next record")
                             {
                                 if (c < clientList.Count - 1)
                                     client = clientList[++c];

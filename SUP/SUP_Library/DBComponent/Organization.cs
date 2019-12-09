@@ -17,14 +17,14 @@ namespace SUP_Library.DBComponent
 
         public bool Primary { get; set; }
 
-       /* public Organization()
+        public Organization()
         {
             // initialize to empty values
-            Client_ID = -1;
+            //Client_ID = -1;
             Org_Name = "";
             Org_Type = "";
             Title = "";
             Primary = false;
-        }*/
+        }
     }
 }

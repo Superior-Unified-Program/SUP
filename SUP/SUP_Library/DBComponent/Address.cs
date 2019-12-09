@@ -18,7 +18,7 @@ namespace SUP_Library.DBComponent
 
         public Address()
         {
-
+            Line1 = "";Line2 = "";City = "";State = "";Zip = "";
         }
         public Address(string LineOne, string City, string State, string Zipcode) : this(LineOne,"",City,State,Zipcode)
         {
