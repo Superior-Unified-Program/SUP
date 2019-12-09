@@ -495,7 +495,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT
 GO
 ALTER PROCEDURE deleteAccount
 
-	@user_name int
+	@user_name varchar(25)
 
 AS
 BEGIN
