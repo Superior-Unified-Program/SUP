@@ -215,6 +215,7 @@ namespace SUP_Library
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
                     int result = par.Get<int>("result");
                     
+
                     if (newClient)
                     {
                         client.ID = result;
@@ -228,6 +229,7 @@ namespace SUP_Library
                         {
                             bool add = true;
                             bool update = false;
+                            
                             foreach(Organization org in orgs)
                             {
                                 if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type)
@@ -235,11 +237,21 @@ namespace SUP_Library
                                     add = false;
                                     if (org.Title != o.Title || org.Primary != o.Primary) update = true;
                                 }
-
+                                
                                 
                             }
                             if (add) addOrganization(client, o);
                             else if (update) updateOrganization(client, o);
+                        }
+                        
+                        foreach (Organization org in orgs)
+                        {
+                            bool delete = true;
+                            foreach (Organization o in client.Organizations)
+                            {
+                                if (org.Org_Name == o.Org_Name && org.Org_Type == o.Org_Type) delete = false;
+                            }
+                            if (delete) deleteOrganization(client.ID, org);
                         }
                     }
 
@@ -453,6 +465,32 @@ namespace SUP_Library
                     par.Add("@title", organization?.Title);
                     par.Add("@primary", organization?.Primary);
 
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+        public static void deleteOrganization(int clientID, Organization organization)
+        {
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql = "deleteOrganization"; //name of stored procedure
+
+                    // Parameters to send to updateOrganization stored proedure
+                    var par = new DynamicParameters();
+
+                    // organization parameters
+                    par.Add("@ID", clientID);
+                    par.Add("@org_name", organization?.Org_Name);
+                    par.Add("@org_type", organization?.Org_Type);
+                    
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
 
                 }
