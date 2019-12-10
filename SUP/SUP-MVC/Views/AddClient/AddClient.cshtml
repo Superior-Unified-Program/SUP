@@ -222,7 +222,23 @@
                     else {
                         $(this).prop('disabled', true);
                     }
-                });
+				});
+				$(".removeOrgButton").each(function () {
+					if ($(this).prop('disabled') == true) {
+                        $(this).prop('disabled', false);
+                    }
+                    else {
+                        $(this).prop('disabled', true);
+                    }
+				});
+				$(".addOrgButton").each(function () {
+					if ($(this).prop('disabled') == true) {
+                        $(this).prop('disabled', false);
+                    }
+                    else {
+                        $(this).prop('disabled', true);
+                    }
+				});
             }
             setTimeout(function () {
                 if (getClientIdFromURL()) {
@@ -642,7 +658,7 @@
 						<div class="cell"></div>
 						<div class="cell"></div>
 						<div class="cell"></div>
-						<div class="cell"><input type="button" class="yellowizedButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
+						<div class="cell"><input type="button" class="yellowizedButton addOrgButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
 					</div>
 
 					<hr class="breakLine" />
