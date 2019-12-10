@@ -321,7 +321,7 @@
 						}
                         if (currentClient['Org'] != null) {
                             var orgTypeText = currentClient['Org']['Org_Type'];
-                            $(".organizationInput option").filter(function () {
+                            $(".primaryOrganizationInput option").filter(function () {
                                 return this.text == orgTypeText;
                             }).attr('selected', true);
                             //$('.organizationInput').text(currentClient['Org']['Org_Type']);
@@ -339,6 +339,7 @@
 								Row.removeClass('templateRow').addClass('removableRow');
 								Row.find('.companyInput').val(organizationList[i]['Org_Name']);
 								Row.find('.titleInput').val(organizationList[i]['Title']);
+								Row.find('.primaryOrganizationInput').removeClass('primaryOrganizationInput').addClass('organizationInput');
 								Row.find('.organizationInput option').filter(function () {
 									return this.text == organizationList[i]['Org_Type'];
 								}).attr('selected', true);
@@ -420,7 +421,7 @@
 				var middleInitial = $('.middleInitialInput').val();
 
                 var primaryCompany = $('.companyInput').val();
-                var primaryOrganization = $(".organizationInput option:selected").text();
+                var primaryOrganization = $(".primaryOrganizationInput option:selected").text();
 				var primaryTitle = $('.titleInput').val();
 
 				var additionalOrganizations = "";
@@ -588,6 +589,7 @@
 				Row.children().find('.primaryLabel').remove();
 				Row.children().find('.companyInput').val("");
 				Row.children().find('.titleInput').val("");
+				Row.find('.primaryOrganizationInput').removeClass('primaryOrganizationInput').addClass('organizationInput');
 				$('.templateRow').parent().append(Row);
 			}
 
@@ -632,7 +634,7 @@
 					<div class="orgTable">
 						<div class="templateRow row">
 							<div class="shortCell">
-								<select id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
+								<select id="organizationInput" name="Organization" class="primaryOrganizationInput" size="1" tabindex="5">
 									<option value=""></option>
 									<option value="business">Business</option>
 									<option value="electedOfficial">Elected Official</option>
