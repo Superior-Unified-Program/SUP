@@ -8,8 +8,16 @@
         <meta charset="utf-8">
         <title>Search</title>
         <style>
+			.removableRow {
+				height: 35px;
+			}
+
+			.templateRow {
+				height: 35px;
+			}
+
 			.orgTable {
-				height: 100px;
+				height: 85px;
 				overflow-y: scroll;
 				overflow-x: auto;
 				left: 0;
@@ -74,7 +82,7 @@
                 font-weight: 900;
                 margin-left: -50px;
                 height: 45px;
-                padding-top: 20px;
+                padding-top: 12px;
             }
 
             .row {
@@ -93,6 +101,13 @@
                 text-align: left;
                 overflow: hidden;
             }
+
+			.shortCell {
+				width: 25%;
+				height: 30px;
+                text-align: left;
+                overflow: hidden;
+			}
 
             .noteCell {
                 width: 75%;
@@ -587,10 +602,14 @@
 	   <input type="button" class="yellowizedButton" value="Delete Organization" id="deleteOrgButton()" onclick="removeOrg" style="padding-top: 5px; padding-left: 25px;">
 
 	-->
+					<div class="row" style="height: 22px; padding-bottom: 5px;">
+						<div class="cell">Organization Type</div>
+						<div class="cell">Company name</div>
+						<div class="cell">Job title</div>
+					</div>
 					<div class="orgTable">
 						<div class="templateRow row">
-							<div class="cell">
-								Organization Type<br />
+							<div class="shortCell">
 								<select id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
 									<option value=""></option>
 									<option value="business">Business</option>
@@ -608,16 +627,16 @@
 									<option value="other">Other</option>
 								</select>
 							</div>
-							<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
-							<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
-							<div><input type="button" class="yellowizedButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 5px; padding-left: 25px; margin-top:25px;"></div>
+							<div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
+							<div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
+							<div class="shortCell"><input type="button" class="yellowizedButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 5px; padding-left: 25px; margin-top:0px;"></div>
 						</div>
 					</div>
 					<div class="row">
 						<div class="cell"></div>
 						<div class="cell"></div>
 						<div class="cell"></div>
-						<div class="cell"><input type="button" class="yellowizedButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="padding-top: 5px; padding-left: 25px; float:left;"></div>
+						<div class="cell"><input type="button" class="yellowizedButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
 					</div>
 
 					<hr class="breakLine" />
