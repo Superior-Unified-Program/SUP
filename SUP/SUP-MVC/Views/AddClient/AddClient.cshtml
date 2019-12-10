@@ -566,6 +566,7 @@
 			function addOrganization() {
 				var Row = $('.templateRow').clone();
 				Row.removeClass('templateRow').addClass('removableRow');
+				Row.children().find('.removeOrgButton').css('visibility', 'visible');
 				$('.templateRow').parent().append(Row);
 			}
 
@@ -629,7 +630,7 @@
 							</div>
 							<div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
 							<div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
-							<div class="shortCell"><input type="button" class="yellowizedButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 5px; padding-left: 25px; margin-top:0px;"></div>
+							<div class="shortCell"><input type="button" class="yellowizedButton removeOrgButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 5px; padding-left: 25px; margin-top:0px; visibility: hidden;"></div>
 						</div>
 					</div>
 					<div class="row">
