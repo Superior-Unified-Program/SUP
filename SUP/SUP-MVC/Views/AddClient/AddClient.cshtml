@@ -8,8 +8,16 @@
         <meta charset="utf-8">
         <title>Search</title>
         <style>
+			.removableRow {
+				height: 35px;
+			}
+
+			.templateRow {
+				height: 35px;
+			}
+
 			.orgTable {
-				height: 100px;
+				height: 85px;
 				overflow-y: scroll;
 				
                 float: left;
@@ -74,7 +82,7 @@
                 font-weight: 900;
                 margin-left: -50px;
                 height: 45px;
-                padding-top: 20px;
+                padding-top: 12px;
             }
 
             .row {
@@ -93,6 +101,13 @@
                 text-align: left;
                 overflow: hidden;
             }
+
+			.shortCell {
+				width: 25%;
+				height: 30px;
+                text-align: left;
+                overflow: hidden;
+			}
 
             .noteCell {
                 width: 75%;
@@ -207,7 +222,23 @@
                     else {
                         $(this).prop('disabled', true);
                     }
-                });
+				});
+				$(".removeOrgButton").each(function () {
+					if ($(this).prop('disabled') == true) {
+                        $(this).prop('disabled', false);
+                    }
+                    else {
+                        $(this).prop('disabled', true);
+                    }
+				});
+				$(".addOrgButton").each(function () {
+					if ($(this).prop('disabled') == true) {
+                        $(this).prop('disabled', false);
+                    }
+                    else {
+                        $(this).prop('disabled', true);
+                    }
+				});
             }
             setTimeout(function () {
                 if (getClientIdFromURL()) {
@@ -287,20 +318,36 @@
                         }
                         if (currentClient['Phone'] != null) {
                             $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
-                        }
+						}
                         if (currentClient['Org'] != null) {
                             var orgTypeText = currentClient['Org']['Org_Type'];
-                            $(".organizationInput option").filter(function () {
+                            $(".primaryOrganizationInput option").filter(function () {
                                 return this.text == orgTypeText;
                             }).attr('selected', true);
                             //$('.organizationInput').text(currentClient['Org']['Org_Type']);
-                        }
+						}
                         if (currentClient['Org'] != null) {
                             $('.companyInput').val(currentClient['Org']['Org_Name']);
                         }
                         if (currentClient['Org'] != null) {
                             $('.titleInput').val(currentClient['Org']['Title']);
-                        }
+						}
+						var organizationList = currentClient['Organizations']
+						for (var i = 0; i < organizationList.length; i++) {
+							if (organizationList[i]['Primary'] == false) {
+								var Row = $('.templateRow').clone();
+								Row.removeClass('templateRow').addClass('removableRow');
+								Row.find('.companyInput').val(organizationList[i]['Org_Name']);
+								Row.find('.titleInput').val(organizationList[i]['Title']);
+								Row.find('.primaryOrganizationInput').removeClass('primaryOrganizationInput').addClass('organizationInput');
+								Row.find('.organizationInput option').filter(function () {
+									return this.text == organizationList[i]['Org_Type'];
+								}).attr('selected', true);
+								Row.children().find('.removeOrgButton').css('visibility', 'visible');
+								Row.children().find('.primaryLabel').remove();
+								$('.templateRow').parent().append(Row);
+							}
+						}
                         if (currentClient['Address'] != null) {
                             $('.addressLineOneInput').val(currentClient['Address']['Line1']);
                         }
@@ -371,10 +418,20 @@
                 var prefix = $('.prefixInput').val();
                 var firstName = $('.firstNameInput').val();
                 var lastName = $('.lastNameInput').val();
-                var middleInitial = $('.middleInitialInput').val();
-                var company = $('.companyInput').val();
-                var organization = $(".organizationInput option:selected").text();
-                var title = $('.titleInput').val();
+				var middleInitial = $('.middleInitialInput').val();
+
+                var primaryCompany = $('.companyInput').val();
+                var primaryOrganization = $(".primaryOrganizationInput option:selected").text();
+				var primaryTitle = $('.titleInput').val();
+
+				var additionalOrganizations = "";
+				$('.removableRow').each(function () {
+					var company = $(this).find('.companyInput').val();
+					var organization = $(this).find('.organizationInput option:selected').text();
+					var title = $(this).find('.titleInput').val();
+					additionalOrganizations += organization + ";" + company + ";" + title + "|";
+				});
+
                 var Line1 = $('.addressLineOneInput').val();
                 var Line2 = $('.addressLineTwoInput').val();
                 var City = $('.cityInput').val();
@@ -404,11 +461,11 @@
                 var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
                 var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
-                    organization + ',' + company + ',' + title +
+                    primaryOrganization + ',' + primaryCompany + ',' + primaryTitle +
                     ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
                     ',' + PersonalEmail + ',' + Note + ',' + PersonalPhone + ',' + Active + ',' + Permit + ',' +
-                    BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
-                    AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix;
+					BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
+					AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix + "," + additionalOrganizations;
                 $.ajax({
                     url: '/AddClient/UpdateClient',
                     type: 'POST',
@@ -527,9 +584,12 @@
 
 			function addOrganization() {
 				var Row = $('.templateRow').clone();
-                Row.removeClass('templateRow').addClass('removableRow');
-                Row.find("*").css("visibility", "visible");
-                console.log(Row.children());
+				Row.removeClass('templateRow').addClass('removableRow');
+				Row.children().find('.removeOrgButton').css('visibility', 'visible');
+				Row.children().find('.primaryLabel').remove();
+				Row.children().find('.companyInput').val("");
+				Row.children().find('.titleInput').val("");
+				Row.find('.primaryOrganizationInput').removeClass('primaryOrganizationInput').addClass('organizationInput');
 				$('.templateRow').parent().append(Row);
 			}
 
@@ -563,39 +623,43 @@
 				<!--
 	<input type="button" class="yellowizedButton" value="Delete Organization" id="deleteOrgButton()" onclick="removeOrg" style="padding-top: 5px; padding-left: 25px;">
 
--->
-			<div class="orgTable">
-				<div class="templateRow row">
-					<div class="cell">
-						Organization Type<br />
-						<select id="organizationInput" name="Organization" class="organizationInput" size="1" tabindex="5">
-							<option value=""></option>
-							<option value="business">Business</option>
-							<option value="electedOfficial">Elected Official</option>
-							<option value="educationAll">Education - All</option>
-							<option value="elementary">Elementary School</option>
-							<option value="middle">Middle School</option>
-							<option value="highSchool">High School</option>
-							<option value="higherEd">Higher Education</option>
-							<option value="nonProfit">Non-profit</option>
-							<option value="UWSystem">UW-System</option>
-							<option value="boardOfRegent">Board of Regent</option>
-							<option value="advancement">Advancement & Alumni</option>
-							<option value="government">Government</option>
-							<option value="other">Other</option>
-						</select>
+	-->
+					<div class="row" style="height: 22px; padding-bottom: 5px;">
+						<div class="cell">Organization Type</div>
+						<div class="cell">Company name</div>
+						<div class="cell">Job title</div>
 					</div>
-					<div class="cell">Company name<br /><input type="text" class="companyInput" tabindex="6"></div>
-					<div class="cell">Job title<br /><input type="text" class="titleInput" tabindex="7"></div>
-					<div><input type="button" class="yellowizedButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 5px; padding-left: 25px; margin-top:25px; visibility:hidden"></div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"></div>
-				<div class="cell"><input type="button" class="yellowizedButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="padding-top: 5px; padding-left: 25px; float:left;"></div>
-			</div>
+					<div class="orgTable">
+						<div class="templateRow row">
+							<div class="shortCell">
+								<select id="organizationInput" name="Organization" class="primaryOrganizationInput" size="1" tabindex="5">
+									<option value=""></option>
+									<option value="business">Business</option>
+									<option value="electedOfficial">Elected Official</option>
+									<option value="educationAll">Education - All</option>
+									<option value="elementary">Elementary School</option>
+									<option value="middle">Middle School</option>
+									<option value="highSchool">High School</option>
+									<option value="higherEd">Higher Education</option>
+									<option value="nonProfit">Non-profit</option>
+									<option value="UWSystem">UW-System</option>
+									<option value="boardOfRegent">Board of Regent</option>
+									<option value="advancement">Advancement & Alumni</option>
+									<option value="government">Government</option>
+									<option value="other">Other</option>
+								</select>
+							</div>
+							<div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
+							<div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
+							<div class="shortCell"><span class="primaryLabel">Primary Organization</span><input type="button" class="yellowizedButton removeOrgButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 2px; padding-left: 25px; margin-top:0px; visibility: hidden;"></div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="cell"></div>
+						<div class="cell"></div>
+						<div class="cell"></div>
+						<div class="cell"><input type="button" class="yellowizedButton addOrgButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
+					</div>
 
 			<hr class="breakLine" />
 

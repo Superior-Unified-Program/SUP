@@ -55,7 +55,7 @@ CREATE TABLE AccountAudits(
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Client')
 CREATE TABLE Client ( ID int not null IDENTITY(1,1), Prefix varchar(10), Last_Name varchar(50),
-First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(30),
+First_Name varchar(50), Middle_initial varchar(1), Permit_Num varchar(10), Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(250),
 CONSTRAINT PK_Client PRIMARY KEY ( ID ))
 
 IF NOT EXISTS (SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'Address')
@@ -301,7 +301,7 @@ BEGIN
 
 
 	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10), Active bit,
-	Holiday_Card bit, Community_Breakfast bit, Notes varchar(30), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
+	Holiday_Card bit, Community_Breakfast bit, Notes varchar(250), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
 
 	INSERT INTO #searchResults SELECT * FROM [viewLess]
 
@@ -340,7 +340,7 @@ ALTER PROCEDURE addClient
 	@lastName varchar(50), @middleInitial varchar(1) = '',
 	@permitNum varchar(50) = '',
 	@active bit = 1, @holidayCard bit = 0,
-	@communityBreakfast bit = 0,  @notes varchar(30) = '',
+	@communityBreakfast bit = 0,  @notes varchar(250) = '',
 	/*@orgName varchar(30), @orgType varchar(20),
 	@title varchar(20) = '',*/ @Personal_phoneNumber varchar(11) = '',
 	@Business_phoneNumber varchar(11) = '', @Personal_Email varchar(30) = '',
@@ -495,7 +495,7 @@ IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT
 GO
 ALTER PROCEDURE deleteAccount
 
-	@user_name int
+	@user_name varchar(25)
 
 AS
 BEGIN
@@ -522,7 +522,7 @@ ALTER PROCEDURE updateClient
 	@holidayCard bit = 0,
 	@communityBreakfast bit = 0,
 	----------------------------------------------------------------------------------  
-	@notes varchar(30) = null,
+	@notes varchar(250) = null,
 	/*@orgName varchar(30) = null, @orgType varchar(20) = null,
 	@title varchar(20) = null,*/ @Personal_phoneNumber varchar(11) = null,
 	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
@@ -636,7 +636,7 @@ ALTER PROCEDURE updateOrganization
 
 	@id int,
 	@orgName varchar(30) = null, @orgType varchar(20) = null,
-	@title varchar(20) = null
+	@title varchar(20) = null, @primary bit = null
 
 AS
 BEGIN
@@ -646,6 +646,16 @@ BEGIN
 	IF @title IS NOT NULL 
 		UPDATE Associated_With SET Title = @title 
 			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+
+	IF @primary IS NOT NULL 
+	BEGIN
+		UPDATE Associated_With SET [Primary] = 0 
+			WHERE Client_ID = @ID AND [Primary] = 1
+
+		UPDATE Associated_With SET [Primary] = 1 
+			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType
+
+	END
 
     return @ID
     
@@ -674,7 +684,7 @@ BEGIN
 
 	
 	CREATE TABLE #searchResults (ID int, Prefix varchar(10), Last_Name varchar(50), First_Name varchar(50), Middle_initial varchar(1), Assistant_First_Name varchar(50), Assisntant_Last_Name varchar(50), Permit_Num varchar(10),
-	Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(30), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
+	Active bit, Holiday_Card bit, Community_Breakfast bit, Notes varchar(250), Line1 varchar(35), Line2 varchar(35), City varchar(25), State varchar(2), Zip varChar(5))
 
 	INSERT INTO #searchResults SELECT * FROM [viewLess]
 
@@ -793,6 +803,27 @@ BEGIN
 	IF (@primary = 1) UPDATE Associated_With SET [Primary] = 0 WHERE Client_ID = @clientID
 	IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
 	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@clientID, @orgName, @orgType, @title, @primary)
+
+END
+
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('deleteOrganization'))
+   exec('CREATE PROCEDURE deleteOrganization AS BEGIN SET NOCOUNT ON END')
+GO
+
+ALTER PROCEDURE deleteOrganization
+
+	@ID int, @org_name varchar(30),
+	@org_type varchar(30)
+
+AS
+BEGIN
+
+	DELETE FROM Associated_With WHERE Client_ID = @ID AND Org_Name = @org_name AND Org_Type = @org_type
+
+	IF (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
+		DELETE FROM Organization WHERE [Name] = @org_name AND [Type] = @org_type
 
 END
 
