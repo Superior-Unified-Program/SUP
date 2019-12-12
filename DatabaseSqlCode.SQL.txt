@@ -254,7 +254,7 @@ BEGIN
 	ELSE SET @isValid = 0
 
 	-- check for lockout and revoke validity if too many failed logins
-	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) > 5)
+	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) >= 5)
 	BEGIN
 		SET @isValid = 0
 		SET @isLocked = 1
@@ -263,7 +263,7 @@ BEGIN
 	-- update failed logins
 	IF @isValid = 0
 	BEGIN
-		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL OR (SELECT Failed_login FROM Account WHERE User_Name = @userName) = 0) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
+		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
 		ELSE UPDATE Account SET Failed_Login = 1
 	END
 	ELSE UPDATE ACCOUNT SET Failed_Login = 0 WHERE User_Name = @userName
