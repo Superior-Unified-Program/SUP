@@ -229,7 +229,9 @@ BEGIN
 	SET @dateTimeNow = GETDATE()
 	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE User_Name = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
 	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
-
+	
+	-- removes all entries from audit table that have a time greater than 15 minutes to keep the audit table managable
+	DELETE FROM AccountAudits WHERE [User_Name] IN (SELECT DISTINCT([User_Name]) FROM AccountAudits WHERE DATEDIFF(minute, updated_at, @dateTimeNow) > 15)
 
 	-- get salt and hashed password
 	SELECT @Salt = Salt, @PwdHash = [Password] FROM Account WHERE User_Name = @userName
@@ -500,7 +502,13 @@ ALTER PROCEDURE deleteAccount
 AS
 BEGIN
 
-	DELETE from Account Where [User_Name] = @user_name
+	IF ((SELECT [User_Name] FROM Account WHERE [User_Name] = @user_name) IS NOT NULL)
+	BEGIN
+		DELETE FROM Account WHERE [User_Name] = @user_name
+		DELETE FROM AccountAudits WHERE [User_Name] = @user_name
+		RETURN 1
+	END
+	ELSE RETURN 0
 
 END
 
