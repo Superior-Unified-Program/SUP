@@ -12,12 +12,17 @@ Layout = null;
 	<meta http-equive="Content-Type" charset="utf-8">
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
+	<script src="~/js/jsencrypt.js"></script>
 
 	<script>
-        function Login() {
+		function Login() {
+			var publicKey = $('.publicKey').html();
+			var encrypt = new JSEncrypt();
+			encrypt.setPublicKey(publicKey);
             var username = $('.bt_username').val();
-            var password = $('.bt_password').val();
-            var dataPost = username + "," + password;
+			var password = $('.bt_password').val();
+			var encryptedPassword = encrypt.encrypt(password);
+            var dataPost = username + "," + encryptedPassword;
             $.ajax({
                 url: '/Login/AuthenticateUser',
                 type: 'POST',
@@ -41,6 +46,23 @@ Layout = null;
                 processData: false
 			});
 		}
+		function getPublicKey() {
+			var dataPost = "";
+			$.ajax({
+                url: '/Login/GetPublicKey',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+				success: function (result) {
+                    $(".publicKey").html(result);
+                },
+                async: true,
+                processData: false
+			});
+		}
 		$(document).ready(function () {
 			var passwordInput = document.getElementById("passwordInput");
 			console.log(passwordInput);
@@ -57,6 +79,7 @@ Layout = null;
 					document.getElementById("loginButton").click();
 				}
 			});
+			getPublicKey();
 		})
 	</script>
 	<link href="~/css/site.css" rel="stylesheet" type="text/css">
@@ -78,6 +101,8 @@ Layout = null;
 
 <body>
 	<div class="body yellow">
+		<div class="publicKey" style="height: 0px;" hidden></div>
+		<div class="privateKey" style="height: 0px;" hidden></div>
 		<form>
 			<img src="../../logo.jpg" />
 			<br />
