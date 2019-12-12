@@ -26,6 +26,7 @@ Layout = null;
             var hashedPass = sjcl.codec.hex.fromBits(hp);
 			var encryptedPassword = encrypt.encrypt(password);
             var dataPost = username + "," + encryptedPassword;
+            localStorage.setItem('username', username);
             $.ajax({
                 url: '/Login/AuthenticateUser',
                 type: 'POST',
