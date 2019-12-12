@@ -226,10 +226,10 @@ BEGIN
 	DECLARE @cnt INT = 0
 
 	-- removes all entries from audit table that have a time greater than 15 minutes to keep the audit table managable
+	SET @dateTimeNow = GETDATE()
 	DELETE FROM AccountAudits WHERE [User_Name] IN (SELECT DISTINCT([User_Name]) FROM AccountAudits WHERE DATEDIFF(minute, updated_at, @dateTimeNow) > 15)
 
 	-- reset failed login if time since last attempt is >= 15 minutes OR if username is no longer in the audit table.
-	SET @dateTimeNow = GETDATE()
 	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE User_Name = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
 	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
 	ELSE IF ((SELECT DISTINCT(User_Name) FROM AccountAudits WHERE User_Name = @userName) IS NULL) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
