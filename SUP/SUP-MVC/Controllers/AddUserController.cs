@@ -131,7 +131,9 @@ namespace SUP_MVC.Controllers
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
-                if (!DatabaseConnection.isAdmin(TempData["UserID"].ToString())) return RedirectToAction("Search","Search"); // Redirect to search page if user is not admin
+                var user = TempData["UserID"].ToString();
+                if (!DatabaseConnection.isAdmin(user)) return RedirectToAction("Search","Search"); // Redirect to search page if user is not admin
+                TempData["UserID"] = user; // User will logout if we don't reset this
                 return View();
             }
             else
