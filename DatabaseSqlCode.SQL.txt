@@ -1431,7 +1431,7 @@ GO
 
 EXEC	addAccount
 		@userName = N'admin',
-		@password = N'password',
+		@password = N'ce9fb363562b08fabc8eb170f6538e093ea90cd60142e913c6e3b514a5e31290',
 		@userType = N'A',
 		@office = NULL
 		
