@@ -23,9 +23,6 @@ namespace SUP_MVC.Controllers
 {
 	public class LoginController : Controller
     {
-		string publicKey = "MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHZ8jooMFeyy2Mhyybd6HGIel7525kI06eKd9rVCdo7hSU/lDPGDm5FO4+YTKFCi92E0fMhaZgLVlC0qr7NRNG/ieLbiw8hCx2LMLerW4wEGpDs3brJVraxx+W4kakyhm4YID2+cmw+xzo34+ZSu+7k12QCumHaJD+iqy1AMQBWTAgMBAAE=";
-		private static Byte[] privateKey = Convert.FromBase64String("MIICWgIBAAKBgHZ8jooMFeyy2Mhyybd6HGIel7525kI06eKd9rVCdo7hSU/lDPGDm5FO4+YTKFCi92E0fMhaZgLVlC0qr7NRNG/ieLbiw8hCx2LMLerW4wEGpDs3brJVraxx+W4kakyhm4YID2+cmw+xzo34+ZSu+7k12QCumHaJD+iqy1AMQBWTAgMBAAECgYAET9ocGf5+Q6/x84N1wuLfiz94dflBNY3BaoA87nNEFdzGJI7JB0IVEqrmh5HzBUs9ZVyZKfkGZ2FiF2iXfQAMeTpIzWsYw9ronS3yWUCQruSyqlyex1jizsP3k7Yd/RBAFJo/iJCNUsAkhfI9IrD4yy5x/dCYpoYei6ViCfWeOQJBAOB1/wSau+RKfkISClXwaK5NCEjXso9wK0KA02S9xk2OtPgEV44/C2cRLyWPinIoCe8g1Ajmoh/rmyQKLYCXpycCQQCHIpgguG57Ex1rPisU+a+yCKzca0wzwrGhz0vj4Sb+QwGzzhyVmHW3GcI1+cGT3bjrkHDi0F74dk0fSeqxekG1AkBcnTMxEitOodIArvLmzMBUkuJFNAKwHocq9H7ExWzqGWTgJOJ/hdHNoBCE/foQ6iZXLYNvfMIOS6eCslReB7TnAkBhcca1QYkZYq1CGfBDDdFt1eegghbO9EPW5H5a8o6FppfhqmzeSrQHtqFe/pxiHe4sn1lnlM4G6HewakK8e+ZJAkBGUJV1JU1md3JxfHQIRNOf9imB8zuoks9m1Oeih/Vn9up7k68oGSm+jGP7HeUJWcpFDlBoMmZljgIPL72Nuh7l");
-       
         // GET: Login
         public ActionResult Index()
         {
@@ -107,13 +104,7 @@ namespace SUP_MVC.Controllers
                 return View();
             }
         }
-
-		public static byte[] GetHash(string inputString)
-		{
-			HashAlgorithm algorithm = SHA256.Create();
-			return algorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(inputString));
-		}
-
+		
 		[HttpPost]
         public string AuthenticateUser([FromBody] string args)
         {
@@ -126,15 +117,13 @@ namespace SUP_MVC.Controllers
                 }
                 var userName = separatedArgs[0];
                 var password = separatedArgs[1];
-
-				ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(privateKey);
+				
+				ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey());
 				RSACryptoServiceProvider p = new RSACryptoServiceProvider();
-				p.ImportRSAPrivateKey(new ReadOnlySpan<byte>(privateKey), out int bytesRead);
+				p.ImportRSAPrivateKey(new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey()), out int bytesRead);
 				string decryptedPassword = CustomRSA.Decrypt(p, password );
-
+				
 				//TODO: HASH HERE
-				var hashedBytes = GetHash(password);
-				var hashedPassword = Encoding.UTF8.GetString(hashedBytes, 0, hashedBytes.Length).Replace("'","");
 				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, decryptedPassword);
                 if (LoginSuccessful)
                 {
@@ -161,7 +150,7 @@ namespace SUP_MVC.Controllers
 		[HttpPost]
 		public string GetPublicKey()
 		{
-			return publicKey;
+			return SUP_Library.DatabaseConnection.getPublicKey();
 		}
 
 		class CustomRSA

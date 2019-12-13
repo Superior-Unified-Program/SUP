@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -124,12 +126,52 @@ namespace SUP_MVC.Controllers
             }
             var username = separatedArgs[0];
             var password = separatedArgs[1];
-            var accountType = separatedArgs[2];
+			ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey());
+			RSACryptoServiceProvider p = new RSACryptoServiceProvider();
+			p.ImportRSAPrivateKey(new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey()), out int bytesRead);
+			string decryptedPassword = CustomRSA.Decrypt(p, password);
+			var accountType = separatedArgs[2];
             var office = separatedArgs[3];
-            var result = SUP_Library.DatabaseConnection.addAccount(username, password,accountType[0],office);
+            var result = SUP_Library.DatabaseConnection.addAccount(username, decryptedPassword, accountType[0],office);
             var json = JsonConvert.SerializeObject(result);
 
             return json;
         }
-    }
+
+		class CustomRSA
+		{
+			public const bool OAEP_PADDING = true;
+			/// <summary>
+			/// PKCS1 padding is required for most encryption using JavaScript packages
+			/// </summary>
+			public const bool PKCS1_PADDING = false;
+
+			public static string Encrypt(
+				RSACryptoServiceProvider csp,
+				string plaintext
+			)
+			{
+				return Convert.ToBase64String(
+					csp.Encrypt(
+						Encoding.UTF8.GetBytes(plaintext),
+						PKCS1_PADDING
+					)
+				);
+			}
+
+			public static string Decrypt(
+				RSACryptoServiceProvider csp,
+				string encrypted
+			)
+			{
+				return Encoding.UTF8.GetString(
+					csp.Decrypt(
+						Convert.FromBase64String(encrypted),
+						PKCS1_PADDING
+					)
+				);
+			}
+
+		}
+	}
 }
