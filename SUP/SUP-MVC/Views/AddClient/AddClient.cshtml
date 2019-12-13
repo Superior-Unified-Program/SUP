@@ -311,13 +311,13 @@
                             $('.assistantEmailInput').val(currentClient['Email']['Assistant_Email']);
                         }
                         if (currentClient['Phone'] != null) {
-                            $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone']);
+                            $('.businessPhoneInput').val(currentClient['Phone']['Business_Phone_Formatted']);
                         }
                         if (currentClient['Phone'] != null) {
-                            $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone']);
+                            $('.personalPhoneInput').val(currentClient['Phone']['Personal_Phone_Formatted']);
                         }
                         if (currentClient['Phone'] != null) {
-                            $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone']);
+                            $('.assistantPhoneInput').val(currentClient['Phone']['Assistant_Phone_Formatted']);
 						}
                         if (currentClient['Org'] != null) {
                             var orgTypeText = currentClient['Org']['Org_Type'];
