@@ -364,6 +364,20 @@
             text-shadow: 1px 1px 0 rgba(254,255,242,1);
         }
 
+        .scrollTable{
+             overflow-y:scroll; 
+            height:50%; 
+            display:block;
+            margin-top:50px;    
+            }
+        .scrollTh{
+                width:100%; 
+                  
+            }
+        .scrollTd{
+            width:100%;    
+            }
+
     </style>
 
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>
@@ -1154,18 +1168,16 @@
                 </form>
             </div>
             <div class="resultRow">
-                <table id="poptable" class="templatePopupTable">
-                    <tr>
+                <table id="poptable" class="templatePopupTable scrollTable" >
+                    <tr class="scrollTh">
                         <th>&nbsp;</th>
                         <th>Name</th>
                         <th>Date modified</th>
-                        <th>Uploaded by</th>
                     </tr>
-                    <tr class="templateRowTemplate">
+                    <tr class="templateRowTemplate scrollTd">
                         <td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
                         <td id="colSet" class="rowTemplateName"></td>
                         <td id="colSet" class="rowTemplateDate"></td>
-                        <td id="colSet" class="rowTemplateUser"></td>
                     </tr>
                 </table>
             </div>
