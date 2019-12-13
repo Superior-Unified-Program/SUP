@@ -62,11 +62,12 @@ namespace SUP_Library
         /// true if both username and password are correct.
         /// false if one or both of them is wrong.
         /// </returns>
-        public static bool verifiedLogIn(string theUsername, string thePassword)
+        public static string verifiedLogIn(string theUsername, string thePassword)
         {
-            //thePassword = Harsh.HashPassword(thePassword);
+            
             try
             {
+               
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     var sql = "validateLogin";
@@ -74,22 +75,21 @@ namespace SUP_Library
                     par.Add("@userName", theUsername);
                     par.Add("@givenPW", thePassword);
                     par.Add("Result", 0, direction: ParameterDirection.ReturnValue);
-                    connection.Query(sql, par, commandType: CommandType.StoredProcedure);
+                   
 
                     var data = connection.Query<UserReturn>(sql,
                                new { @userName = theUsername, @givenPW = thePassword }, commandType: CommandType.StoredProcedure).ToList();
                     var resultingUser = data.FirstOrDefault();
-                    var isValid = resultingUser.Valid_Login;
-                    if (!isValid)
-                    {
-                        //TODO: Logic for incrementing user attempts, possibly lock user
-                        resultingUser.Failed_Attempts++;
-                        if (resultingUser.Failed_Attempts >= 3)
-                        {
-                            resultingUser.Account_Locked = true;
-                        }
-                    }
-                    return isValid;
+                   
+                    if (resultingUser.Account_Locked)
+                        return "locked";
+                    else if (!resultingUser.Valid_Login)
+                        return "fail";
+                    else if (resultingUser.Valid_Login)
+                        return "success";
+                    else
+                        return "unknown";
+                    
                 }
             }
             catch (Exception exc)
