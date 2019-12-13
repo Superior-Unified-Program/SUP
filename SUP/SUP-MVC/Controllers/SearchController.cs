@@ -142,7 +142,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-                Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                if (organizations[0].Length == 0)
+                     Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
 
                 // filter by organization
@@ -162,8 +163,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-
-			var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
+                filteredClients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
             return json;
             }
             catch(Exception e)
@@ -268,8 +269,10 @@ namespace SUP_MVC.Controllers
                 DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
                 if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
                 {
-                    var currentTime = DateTime.Now.Minute;
-                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    var currentTime = DateTime.ParseExact(DateTime.Now.ToShortTimeString(), "t", null);
+                    var tooLate = loadedTime;
+                    tooLate = tooLate.AddMinutes(minutesTillLogout);
+                    if (currentTime.TimeOfDay > tooLate.TimeOfDay)
                     {
                         return RedirectToAction("Login", "Login");
                     }
