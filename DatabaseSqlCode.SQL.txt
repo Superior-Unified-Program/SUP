@@ -225,10 +225,14 @@ BEGIN
 	DECLARE @hashPass binary(64)
 	DECLARE @cnt INT = 0
 
-	-- reset failed login if time since last attempt is >= 15 minutes 
+	-- removes all entries from audit table that have a time greater than 15 minutes to keep the audit table managable
 	SET @dateTimeNow = GETDATE()
-	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE User_Name = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
-	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
+	DELETE FROM AccountAudits WHERE [User_Name] IN (SELECT DISTINCT([User_Name]) FROM AccountAudits WHERE DATEDIFF(minute, updated_at, @dateTimeNow) > 15)
+
+	-- reset failed login if time since last attempt is >= 15 minutes OR if username is no longer in the audit table.
+	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE [User_Name] = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
+	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE [User_Name] = @userName
+	ELSE IF ((SELECT DISTINCT(User_Name) FROM AccountAudits WHERE [User_Name] = @userName) IS NULL) UPDATE Account SET Failed_login = 0 WHERE [User_Name] = @userName
 
 
 	-- get salt and hashed password
@@ -240,31 +244,28 @@ BEGIN
 	-- hash once
 	SET @hashPass = HASHBYTES('SHA2_512', @PwdWithSalt)
 
-	-- hash 500101 more times
-	/*WHILE @cnt < '500101'
-	BEGIN
-		SET @hashPass = HASHBYTES('SHA2_512', @hashPass) 
-		SET @cnt = @cnt + 1;
-	END*/
-
 	-- check for validity of password
-	IF (@hashPass = @PwdHash) SET @isValid = 1
-	ELSE SET @isValid = 0
+	IF (@hashPass = @PwdHash) 
+	BEGIN
+		--update isValid and failed_login for successful attempt
+		SET @isValid = 1
+		IF ((SELECT Failed_login FROM Account WHERE [User_Name] = @userName) < 5) UPDATE Account SET Failed_Login = 0 WHERE User_Name = @userName
+		ELSE UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
+	END
+	ELSE 
+	BEGIN
+		--updateIsValid and failed_login for failed attempt
+		SET @isValid = 0
+		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
+		ELSE UPDATE Account SET Failed_Login = 1
+	END
 
 	-- check for lockout and revoke validity if too many failed logins
-	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) > 5)
+	IF ((SELECT Failed_login FROM Account WHERE [User_Name] = @userName) >= 5)
 	BEGIN
 		SET @isValid = 0
 		SET @isLocked = 1
 	END
-
-	-- update failed logins
-	IF @isValid = 0
-	BEGIN
-		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL OR (SELECT Failed_login FROM Account WHERE User_Name = @userName) = 0) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
-		ELSE UPDATE Account SET Failed_Login = 1
-	END
-	ELSE UPDATE ACCOUNT SET Failed_Login = 0 WHERE User_Name = @userName
 
 	-- create temp table to return to middleware
 	CREATE TABLE #results (Valid_Login bit, Account_Locked bit, Failed_Attempts int)
@@ -341,8 +342,7 @@ ALTER PROCEDURE addClient
 	@permitNum varchar(50) = '',
 	@active bit = 1, @holidayCard bit = 0,
 	@communityBreakfast bit = 0,  @notes varchar(250) = '',
-	/*@orgName varchar(30), @orgType varchar(20),
-	@title varchar(20) = '',*/ @Personal_phoneNumber varchar(11) = '',
+	@Personal_phoneNumber varchar(11) = '',
 	@Business_phoneNumber varchar(11) = '', @Personal_Email varchar(30) = '',
 	@Business_Email varchar(30) = '', @Assistant_Email varchar(30) = '',
 	@Assistant_phoneNumber varchar(11) = '', @line1 varchar(35) = '',
@@ -365,9 +365,6 @@ BEGIN
 	IF @middleInitial IS NULL SET @middleInitial = ''
 	IF @permitNum IS NULL SET @permitNum = ''
 	IF @notes IS NULL SET @notes = ''
-	/*IF @orgName IS NULL SET @orgName = ''
-	IF @orgType IS NULL SET @orgType = ''
-	IF @title IS NULL SET @title = ''*/
 	IF @line1 IS NULL SET @line1 = ''
 	IF @line2 IS NULL SET @line2 = ''
 	IF @state IS NULL SET @state = ''
@@ -382,8 +379,6 @@ BEGIN
 	SET @ID = SCOPE_IDENTITY()
 
 	-- set values into the tables. dont repeat adding to organization table in the case that the organization and type already exist in the database
-	/*IF (SELECT COUNT(*) FROM Organization WHERE Name = @orgName AND Type = @orgType) = 0 INSERT INTO Organization(Name, Type) VALUES(@orgName, @orgType)
-	INSERT INTO Associated_With(Client_ID, Org_Name, Org_Type, Title, [Primary]) VALUES (@ID, @orgName, @orgType, @title, 1)*/
 	INSERT INTO Address(Client_ID, Line1, Line2, City, State, Zip) VALUES(@ID, @line1, @line2, @city, @state, @zipCode)
 
 	INSERT INTO Phone(Client_ID, Type, Number) VALUES (@ID, 'business', @Business_phoneNumber)
@@ -444,7 +439,7 @@ BEGIN
 	-- interfering with SELECT statements.
 	SET NOCOUNT ON;
 
-    	-- Insert statements for procedure here
+    -- Insert statements for procedure here
 	DECLARE @Salt VARCHAR(25)
 	DECLARE @cnt INT = 0
 	DECLARE @PwdWithSalt VARCHAR(125)
@@ -472,13 +467,6 @@ BEGIN
 	-- initial hash
 	SET @hashedPass = HASHBYTES('SHA2_512', @PwdWithSalt)
 
-	-- hash 500101 more times
-	/*WHILE @cnt < '500101'
-	BEGIN
-		SET @hashedPass = HASHBYTES('SHA2_512', @hashedPass) 
-		SET @cnt = @cnt + 1;
-	END*/
-	
 	--insert values in Account table
 	INSERT INTO Account (User_Name, Salt, Password, User_Type, Office) VALUES (@userName, @Salt, @hashedPass, @userType, @office)
 
@@ -500,7 +488,13 @@ ALTER PROCEDURE deleteAccount
 AS
 BEGIN
 
-	DELETE from Account Where [User_Name] = @user_name
+	IF ((SELECT [User_Name] FROM Account WHERE [User_Name] = @user_name) IS NOT NULL)
+	BEGIN
+		DELETE FROM Account WHERE [User_Name] = @user_name
+		DELETE FROM AccountAudits WHERE [User_Name] = @user_name
+		RETURN 1
+	END
+	ELSE RETURN 0
 
 END
 
@@ -523,8 +517,7 @@ ALTER PROCEDURE updateClient
 	@communityBreakfast bit = 0,
 	----------------------------------------------------------------------------------  
 	@notes varchar(250) = null,
-	/*@orgName varchar(30) = null, @orgType varchar(20) = null,
-	@title varchar(20) = null,*/ @Personal_phoneNumber varchar(11) = null,
+	@Personal_phoneNumber varchar(11) = null,
 	@Business_phoneNumber varchar(11) = null, @Personal_Email varchar(30) = null,
 	@Business_Email varchar(30) = null, @Assistant_Email varchar(30) = null,
 	@Assistant_phoneNumber varchar(11) = null, @line1 varchar(35) = null,
@@ -558,17 +551,6 @@ BEGIN
 	------------------------------------------------------------------------------------------
 	IF @notes IS NOT NULL 
 		UPDATE Client SET Notes = @notes WHERE ID = @ID
-	
-	
-	-- \/ this is done in updateOrganization now  \/
-	/*IF (SELECT COUNT(*) FROM Organization WHERE [Name] = @orgName AND [Type] = @orgType) = 0 AND (@orgName IS NOT NULL OR @orgType IS NOT NULL )
-		INSERT INTO Organization([Name], [Type]) VALUES(@orgName, @orgType)
-	IF @orgName IS NOT NULL OR @orgType IS NOT NULL 
-		UPDATE Organization SET [Name] = @orgName, [Type] = @orgType 
-			WHERE [Name] = @orgName AND [Type] = @orgType
-	IF @title IS NOT NULL 
-		UPDATE Works_For SET Title = @title 
-			WHERE Client_ID = @ID AND Org_Name = @orgName AND Org_Type = @orgType*/
 
 
 	--------------------------------------------------------------------------------------------
@@ -727,16 +709,6 @@ BEGIN
 	INSERT INTO #temp SELECT Org_Name, Org_Type FROM Associated_With WHERE Client_ID = @ID
 	--delete values where client ID matches
 	DELETE FROM Associated_With WHERE Client_ID = @ID
-
-	-- check if they are in Associated_With
-	/*if (SELECT COUNT(*) from Associated_With Where Client_ID = @ID) = 1
-	BEGIN
-		-- store Org_Name for later use
-		SET @org_name = (SELECT Org_Name From Associated_With Where Client_ID = @ID)
-		-- store Org_Type for later use
-		SET @org_type = (SELECT Org_Type From Associated_With Where Client_ID = @ID)
-		DELETE from Associated_With Where Client_ID = @ID
-	END*/
 	
 
 	DELETE from [Address] Where Client_ID = @ID
@@ -748,10 +720,6 @@ BEGIN
 	DELETE from Phone Where Client_ID = @ID
 
 	DELETE from Client Where ID = @ID
-
-	-- if no other client work for that orginization delete it
-	/*if (SELECT COUNT(*) from Associated_With Where Org_Name = @org_name AND Org_Type = @org_type) = 0
-		DELETE from Organization Where [Name] = @org_name AND [Type] = @org_type*/
 
 	--this should remove all organizations where name and type match with values in the temp table
 	WHILE ((SELECT Count(*) FROM #temp) != 0)
@@ -808,6 +776,8 @@ END
 
 GO
 
+-- =============================================
+
 IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('deleteOrganization'))
    exec('CREATE PROCEDURE deleteOrganization AS BEGIN SET NOCOUNT ON END')
 GO
@@ -829,6 +799,27 @@ END
 
 GO
 
+
+-- =============================================
+-- Create date: 12/12/2019
+-- Description: checks and returns a boolean based on if the account is an admin or not
+-- =============================================
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('checkType'))
+   exec('CREATE PROCEDURE checkType AS BEGIN SET NOCOUNT ON END')
+GO
+
+ALTER PROCEDURE checkType
+
+	@user_name varchar(25)
+
+AS
+BEGIN
+	
+	IF ((SELECT [User_Name] FROM Account WHERE [User_Name] = @user_name AND User_Type = 'A') IS NOT NULL) RETURN 1
+	ELSE RETURN 0
+	
+END
+GO
 
 
 -- =============================================
@@ -1438,9 +1429,9 @@ END
 
 GO
 
-EXEC	@return_value = addAccount
+EXEC	addAccount
 		@userName = N'admin',
-		@password = N'password',
+		@password = N'ce9fb363562b08fabc8eb170f6538e093ea90cd60142e913c6e3b514a5e31290',
 		@userType = N'A',
 		@office = NULL
 		

@@ -29,7 +29,9 @@ If using a previously created version of SQL server:
 
 NOTE: This script creates a user that has limited access to the database tables and stored procedures. It doesn't have a secure password and would need to be changed in a real implementation of the database and this change would also require a change in the SQL connection string in the middleware.
 
-There is a stored procedure to add multiple dummy data called addDummyData. Go to the server in the object explorer and then drop down Databases > databaseName(your database's name) >  programability > Stored Procedures and you should see a list of stored procedures if you've completed the steps listed above. Find "addDummyData" and right click it and then click "Execute Stored Procedure...".
+NOTE: There is a stored procedure to add dummy data called addDummyData. Go to the server in the object explorer and then drop down Databases > databaseName(your database's name) >  programability > Stored Procedures and you should see a list of stored procedures if you've completed the steps listed above. Find "addDummyData" and right click it and then click "Execute Stored Procedure...".
+
+NOTE: The DatabaseSqlCode.SQL.txt script adds in a default login and a new login should be created and this initial one should be deleted. The login information for this default login is username = "admin" and password = "password". Failure to remove this is a potential security risk but is needed to initially get into the system since there is no way to add a login from the entry point of the system.
 
 In Visual Studio:
 
@@ -37,8 +39,10 @@ Change  the value of "SupConnectionString" in appsettings.json to match the IP a
 
 Set the start up project to SUP-MVC by right-clicking in the solution and selecting "Set as StartUp Project."
 
-To be able to test the Merge feature in this release:
+Ensure that the following folders exist on the web server:
 
-This template relies on the client's address and parking pass number, so make sure for optimal results to test out on clients with this information filled out.
-
-To perform merge, select clients to perform merge on, hit "Select Template", and choose "Guest_Parking_Letter_Template.docx." Hit "Continue" followed by "Generate Output." A zip file with the merged documents will be presented for download.
+  1. C:\Users\Public\Documents\Templates
+  2. C:\Users\Public\Documents\Temp
+  3. C:\Users\Public\Documents\ExportFileFolder
+  
+For security purposes the RSA keys located on line 17 and 18 of the SUP_Library.DatabaseConnection.cs file must be replaced with new RSA keys as base64 strings. These can be provided by the SUP development team if necessary.

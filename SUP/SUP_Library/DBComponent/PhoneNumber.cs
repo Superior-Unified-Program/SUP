@@ -78,18 +78,18 @@ namespace SUP_Library.DBComponent
         {
             if (number.Length == 11)
             {
-                number = number.Substring(0, 1) + " - (" + number.Substring(1, 3) + ") " + number.Substring(4, 3) + " - " + number.Substring(7, 4);
+                number = number.Substring(0, 1) + "-" + number.Substring(1, 3) + "-" + number.Substring(4, 3) + "-" + number.Substring(7, 4);
             }
 
             else if (number.Length == 10)
             {
-                number = "(" + number.Substring(0, 3) + ") " + number.Substring(3, 3) + " - " + number.Substring(6, 4);
+                number =  number.Substring(0, 3) + "-" + number.Substring(3, 3) + "-" + number.Substring(6, 4);
             }
 
 
             else if (number.Length == 7)
             {
-                number = number.Substring(0, 3) + " - " + number.Substring(3, 4);
+                number = number.Substring(0, 3) + "-" + number.Substring(3, 4);
             }
 
             return number;

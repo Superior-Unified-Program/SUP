@@ -8,14 +8,26 @@ using Dapper;
 using System.Data;
 using System.Data.SqlClient;
 using SUP_Library.DBComponent;
-
+using System.Security.Cryptography;
 
 namespace SUP_Library
 {
     public class DatabaseConnection
     {
-        #region Private Properties
-        private static DatabaseConnection Instance;
+		static string publicKey = "MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgHZ8jooMFeyy2Mhyybd6HGIel7525kI06eKd9rVCdo7hSU/lDPGDm5FO4+YTKFCi92E0fMhaZgLVlC0qr7NRNG/ieLbiw8hCx2LMLerW4wEGpDs3brJVraxx+W4kakyhm4YID2+cmw+xzo34+ZSu+7k12QCumHaJD+iqy1AMQBWTAgMBAAE=";
+		private static Byte[] privateKey = Convert.FromBase64String("MIICWgIBAAKBgHZ8jooMFeyy2Mhyybd6HGIel7525kI06eKd9rVCdo7hSU/lDPGDm5FO4+YTKFCi92E0fMhaZgLVlC0qr7NRNG/ieLbiw8hCx2LMLerW4wEGpDs3brJVraxx+W4kakyhm4YID2+cmw+xzo34+ZSu+7k12QCumHaJD+iqy1AMQBWTAgMBAAECgYAET9ocGf5+Q6/x84N1wuLfiz94dflBNY3BaoA87nNEFdzGJI7JB0IVEqrmh5HzBUs9ZVyZKfkGZ2FiF2iXfQAMeTpIzWsYw9ronS3yWUCQruSyqlyex1jizsP3k7Yd/RBAFJo/iJCNUsAkhfI9IrD4yy5x/dCYpoYei6ViCfWeOQJBAOB1/wSau+RKfkISClXwaK5NCEjXso9wK0KA02S9xk2OtPgEV44/C2cRLyWPinIoCe8g1Ajmoh/rmyQKLYCXpycCQQCHIpgguG57Ex1rPisU+a+yCKzca0wzwrGhz0vj4Sb+QwGzzhyVmHW3GcI1+cGT3bjrkHDi0F74dk0fSeqxekG1AkBcnTMxEitOodIArvLmzMBUkuJFNAKwHocq9H7ExWzqGWTgJOJ/hdHNoBCE/foQ6iZXLYNvfMIOS6eCslReB7TnAkBhcca1QYkZYq1CGfBDDdFt1eegghbO9EPW5H5a8o6FppfhqmzeSrQHtqFe/pxiHe4sn1lnlM4G6HewakK8e+ZJAkBGUJV1JU1md3JxfHQIRNOf9imB8zuoks9m1Oeih/Vn9up7k68oGSm+jGP7HeUJWcpFDlBoMmZljgIPL72Nuh7l");
+		public static Byte[] getPrivateKey()
+		{
+			return privateKey;
+		}
+		public static string getPublicKey()
+		{
+			return publicKey;
+		}
+
+
+		#region Private Properties
+		private static DatabaseConnection Instance;
 
         private static readonly string connectionStringName = "SUPDatabase";
 
@@ -50,11 +62,12 @@ namespace SUP_Library
         /// true if both username and password are correct.
         /// false if one or both of them is wrong.
         /// </returns>
-        public static bool verifiedLogIn(string theUsername, string thePassword)
+        public static string verifiedLogIn(string theUsername, string thePassword)
         {
-            //thePassword = Harsh.HashPassword(thePassword);
+            
             try
             {
+               
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     var sql = "validateLogin";
@@ -62,38 +75,27 @@ namespace SUP_Library
                     par.Add("@userName", theUsername);
                     par.Add("@givenPW", thePassword);
                     par.Add("Result", 0, direction: ParameterDirection.ReturnValue);
-                    connection.Query(sql, par, commandType: CommandType.StoredProcedure);
+                   
 
                     var data = connection.Query<UserReturn>(sql,
                                new { @userName = theUsername, @givenPW = thePassword }, commandType: CommandType.StoredProcedure).ToList();
                     var resultingUser = data.FirstOrDefault();
-                    var isValid = resultingUser.Valid_Login;
-                    if (!isValid)
-                    {
-                        //TODO: Logic for incrementing user attempts, possibly lock user
-                        resultingUser.Failed_Attempts++;
-                        if (resultingUser.Failed_Attempts >= 3)
-                        {
-                            resultingUser.Account_Locked = true;
-                        }
-                    }
-                    return isValid;
+                   
+                    if (resultingUser.Account_Locked)
+                        return "locked";
+                    else if (!resultingUser.Valid_Login)
+                        return "fail";
+                    else if (resultingUser.Valid_Login)
+                        return "success";
+                    else
+                        return "unknown";
+                    
                 }
             }
             catch (Exception exc)
             {
                 throw exc;
             }
-        }
-
-        public static bool verifiedLogInAdmin(string theUsername, string thePassword)
-        {
-            if(theUsername == "admin" || theUsername == "Admin")
-            {
-                if (thePassword == "password") return true;
-                return false;
-            }
-            return false;
         }
 
 		public static bool addAccount(string theUsername, string thePassword, char userType, string theOffice)
@@ -122,19 +124,28 @@ namespace SUP_Library
 				throw exc;
 			}
 		}
-        public static void deleteAccount(string userName) // this is very dangerous, proceed with caution!
+        public static bool deleteAccount(string userName) // this is very dangerous, proceed with caution!
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     string sql = "deleteAccount"; //name of stored procedure
-                                               // Parameters to send to addClient/updateClient stored proedure
+                                               
                     var par = new DynamicParameters();
 
                     par.Add("@user_name", userName); // name of the user to be deleted
-                    
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+
+                    int intResult = par.Get<int>("result");
+
+                    bool success = false;
+
+                    if (intResult == 1) success = true;
+
+                    return success;
                 }
             }
             catch (Exception exc)
@@ -142,6 +153,39 @@ namespace SUP_Library
                 throw exc;
             }
         }
+
+        public static bool isAdmin(string userName)
+        {
+            // takes a username and returns whether or not they are an administrator
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql; //name of stored procedure
+
+                    sql = "checkType";
+
+                    var par = new DynamicParameters();
+                    
+                    par.Add("@user_name", userName); 
+
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                    int intResult = par.Get<int>("result");
+                    bool result = false;
+                    if (intResult == 1) result = true;
+                    return result;
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+
 
         #endregion
 

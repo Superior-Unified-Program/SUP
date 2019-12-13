@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -103,33 +105,130 @@ namespace SUP_MVC.Controllers
 
         public ActionResult AddUser()
         {
+
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentTime = DateTime.ParseExact(DateTime.Now.ToShortTimeString(), "t", null);
+                    var tooLate = loadedTime;
+                    tooLate = tooLate.AddMinutes(minutesTillLogout);
+                    if (currentTime.TimeOfDay > tooLate.TimeOfDay)
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        ResetTimeout();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
+                var user = TempData["UserID"].ToString();
+                if (!DatabaseConnection.isAdmin(user)) return RedirectToAction("Search","Search"); // Redirect to search page if user is not admin
+                TempData["UserID"] = user; // User will logout if we don't reset this
                 return View();
             }
             else
             {
-                return RedirectToAction("Login");
+                return RedirectToAction("Login", "Login");
             }
         }
 
         [HttpPost]
         public string SubmitUserData([FromBody] string args)
         {
+            ResetTimeout();
             string[] separatedArgs = args.Split(',');
             if (separatedArgs.Length < 2)
             {
                 throw (new Exception("Illegal number of arguments"));
             }
+
+            bool isAdmin = SUP_Library.DatabaseConnection.isAdmin(separatedArgs[4]);
+            if (!isAdmin)
+            {
+                return JsonConvert.SerializeObject(false);
+            }
+
             var username = separatedArgs[0];
             var password = separatedArgs[1];
-            var accountType = separatedArgs[2];
+			ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey());
+			RSACryptoServiceProvider p = new RSACryptoServiceProvider();
+			p.ImportRSAPrivateKey(new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey()), out int bytesRead);
+			string decryptedPassword = CustomRSA.Decrypt(p, password);
+			var accountType = separatedArgs[2];
             var office = separatedArgs[3];
-            var result = SUP_Library.DatabaseConnection.addAccount(username, password,accountType[0],office);
+            var result = SUP_Library.DatabaseConnection.addAccount(username, decryptedPassword, accountType[0],office);
             var json = JsonConvert.SerializeObject(result);
 
             return json;
+        }
+
+		[HttpPost]
+		public string DeleteUser([FromBody] string args)
+		{
+			ResetTimeout();
+            string[] separatedArgs = args.Split(',');
+            string usernameToDelete = separatedArgs[0];
+            string currentUserUsername = separatedArgs[1];
+            bool isAdmin = SUP_Library.DatabaseConnection.isAdmin(currentUserUsername);
+            if (!isAdmin)
+            {
+                return JsonConvert.SerializeObject(false);
+            }
+            
+            var result = SUP_Library.DatabaseConnection.deleteAccount(usernameToDelete);
+			var json = JsonConvert.SerializeObject(result);
+			return json;
+		}
+
+		class CustomRSA
+		{
+			public const bool OAEP_PADDING = true;
+			/// <summary>
+			/// PKCS1 padding is required for most encryption using JavaScript packages
+			/// </summary>
+			public const bool PKCS1_PADDING = false;
+
+			public static string Encrypt(
+				RSACryptoServiceProvider csp,
+				string plaintext
+			)
+			{
+				return Convert.ToBase64String(
+					csp.Encrypt(
+						Encoding.UTF8.GetBytes(plaintext),
+						PKCS1_PADDING
+					)
+				);
+			}
+
+			public static string Decrypt(
+				RSACryptoServiceProvider csp,
+				string encrypted
+			)
+			{
+				return Encoding.UTF8.GetString(
+					csp.Decrypt(
+						Convert.FromBase64String(encrypted),
+						PKCS1_PADDING
+					)
+				);
+			}
+
+		}
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
         }
     }
 }

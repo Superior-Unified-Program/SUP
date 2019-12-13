@@ -24,13 +24,17 @@ namespace SUP_Library
     /// </summary>
     public class Merge
     {
+		/*
 		private static string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
         private static string savePath = "";
 		private static string zipPath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\ExportFileFolder");
-
+		*/
 		/*private static string templatePath = @"C:\Users\Public\Documents\Templates";
 		private static string savePath = "";
 		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";*/
+		private static string templatePath = @"C:\Users\Public\Documents\Templates";
+		private static string savePath = @"C:\Users\Public\Documents\Temp";
+		private static string zipPath = @"C:\Users\Public\Documents\ExportFileFolder";
 		private struct token
         {
             public string open;
@@ -134,6 +138,7 @@ namespace SUP_Library
                 case "assistant_name":
                     r = client?.Assistant_First_Name + " " + client?.Assistant_Last_Name;
                     break;
+                case "next_record":
                 case "next record":                 
                     r = "";
                     break;
@@ -201,6 +206,11 @@ namespace SUP_Library
         }
         public static int merge(List<Client> clientList, string template, out string exportFile) // returns the number of documents created
         {
+            if (clientList.Count == 0 || template == null || template.Trim() == "")
+            {
+                exportFile = "";
+                return 0;
+            }
             List<String> fileNames = new List<string>();
             bool searched = false;
             MatchCollection mc;

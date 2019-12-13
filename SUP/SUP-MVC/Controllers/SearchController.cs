@@ -99,6 +99,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string SearchClients([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(',');
@@ -108,7 +109,24 @@ namespace SUP_MVC.Controllers
                 }
 
 				var organizations = separatedArgs[2].Split(';');
-                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
+				if (Array.IndexOf(organizations, "Education - All") >= 0)
+				{
+					organizations = organizations.Where(val => val != "Education - All").ToArray();
+					string[] modifiedOrgs = new string[organizations.Length + 4];
+					int i = 0;
+					while(i < organizations.Length)
+					{
+						modifiedOrgs[i] = organizations[i];
+						i++;
+					}
+					modifiedOrgs[i++] = "Elementary School";
+					modifiedOrgs[i++] = "Middle School";
+					modifiedOrgs[i++] = "High School";
+					modifiedOrgs[i++] = "Higher Education";
+					organizations = modifiedOrgs;
+				}
+
+				var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
                 // if searching for active clients only, remove inactive clients.
                 if (separatedArgs[3] == "true")
                 {
@@ -124,7 +142,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-                Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                if (organizations[0].Length == 0)
+                     Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
 
                 // filter by organization
@@ -144,8 +163,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-
-			var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
+                filteredClients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
             return json;
             }
             catch(Exception e)
@@ -158,6 +177,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string ExportSearch([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(' ');
@@ -200,6 +220,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string TemplateMerge([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(' ');
@@ -227,7 +248,7 @@ namespace SUP_MVC.Controllers
                 //if (templateNames.Count >= 1) 
 				int documentsGenerated = Merge.merge(clientArray, fileName, out zipFile);
                 //else return "No person selected !!!!";
-
+                zipFile += "?" + documentsGenerated;
                 var json = JsonConvert.SerializeObject(zipFile);
                 return json;
             }
@@ -240,6 +261,32 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentDate = DateTime.ParseExact(DateTime.Now.ToShortDateString(), "d", null);
+                    var currentTime = DateTime.ParseExact(DateTime.Now.ToShortTimeString(), "t", null);
+                    var tooLate = loadedTime;
+                    tooLate = tooLate.AddMinutes(minutesTillLogout);
+
+                    var tooLateDate = DateTime.ParseExact(loadedDateTime.ToShortDateString(), "d", null);
+                    tooLateDate = tooLateDate.AddMinutes(minutesTillLogout);
+                    if (tooLateDate.Equals(currentDate) && currentTime.TimeOfDay > tooLate.TimeOfDay || (currentDate.CompareTo(tooLateDate) > 0))
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        ResetTimeout();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
@@ -254,6 +301,7 @@ namespace SUP_MVC.Controllers
         [HttpGet]
         public ActionResult DownloadExcel(string fileName)
         {
+            ResetTimeout();
             //Get the temp folder and file path in server
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             string fullPath = Path.Combine(savePath, fileName);
@@ -265,8 +313,9 @@ namespace SUP_MVC.Controllers
         [HttpGet]
         public ActionResult DownloadZipFile(string fileName)
         {
-			//Get the temp folder and file path in server
-			string saveAsName = fileName.Substring(fileName.LastIndexOf('\\')+1);
+            ResetTimeout();
+            //Get the temp folder and file path in server
+            string saveAsName = fileName.Substring(fileName.LastIndexOf('\\')+1);
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             string fullPath = Path.Combine(savePath, fileName);
             byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
@@ -310,11 +359,13 @@ namespace SUP_MVC.Controllers
 		[HttpPost]
 		public async Task<IActionResult> UploadFile(IFormFile file)
 		{
-			bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
+            ResetTimeout();
+
+            bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
 			if (isDocx)
 				{
-				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-                string fileName = Path.GetFileName(file.FileName);
+				string templatePath = @"C:\Users\Public\Documents\Templates";
+				string fileName = Path.GetFileName(file.FileName);
 				string filePath = templatePath + "\\" + fileName;
 				long size = file.Length;
 				//var filePath = file.Name;
@@ -335,5 +386,11 @@ namespace SUP_MVC.Controllers
 			}
 			return Ok(new { Error = "File was not a .docx file."});
 		}
+
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
 	}
 }

@@ -13,11 +13,6 @@ namespace SUP_Library
         public string Lastname { get; set; } 
         public string Firstname { get; set; } 
         public string OfficeType { get; set; }
-        public int SessionIsValid()
-        {
-
-            var LoginSuccessful = DatabaseConnection.verifiedLogIn(Username, Password);
-            return 1;
-        }
+       
     }
 }

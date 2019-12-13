@@ -78,8 +78,10 @@
     .ribbon {
     background-color: rgb(176,176,176);
     border-collapse: collapse;
-    height: 100%;
+    height: 100vh;
+    width:15%;
     border: 1.56px solid #000000;
+    position: fixed;
     }
     
     body {
@@ -224,6 +226,31 @@
   </style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script>
+        $(document).ready(function () {
+            $('.nameHere').text(localStorage.getItem('username'));
+        });
+        IsAdmin();
+        function IsAdmin() {
+			var dataPost = localStorage.getItem('username');
+			$.ajax({
+                url: '/Ribbon/UserIsAdmin',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    isAdmin = JSON.parse(result);
+                    
+                    if (!isAdmin) {
+                        $(".adminRequired").remove();
+                    }
+                },
+                async: true,
+                processData: false
+			});
+		}
 	</script>
 
 
@@ -237,7 +264,7 @@
 	<div id="ribbonDiv" style="height: 100%; position: absolute; top: 0; left: 0">
         <table class="ribbon">
             <tr>
-                <th class="welcome" scope="row">Welcome<br />_________</th>
+                <th class="welcome" scope="row">Welcome<br /><p class="nameHere"></p></th>
             </tr>
             <tr>
                 <th class="tab" scope="row"> @Html.ActionLink("Search", "Search", new { controller = "Search" })</th>
@@ -246,7 +273,7 @@
                 <th class="tab" scope="row"> @Html.ActionLink("Add Client", "AddClient", new { controller = "AddClient" })</th>
 
             </tr>
-            <tr>
+            <tr class="adminRequired">
                 <th class="tab" scope="row"> @Html.ActionLink("Add User", "AddUser", new { controller = "AddUser" })</th>
             </tr>
             <tr>
@@ -259,7 +286,7 @@
             </tr>
             <tr>
                 <form>
-                    <th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" }, new { onclick = "return confirm('Are sure want to Logout?');" })</th>
+                    <th class="tab" scope="row">@Html.ActionLink("Logout", "Login", new { controller = "Login" }, new { onclick = "return confirm('Press OK to confirm logout.');" })</th>
                 </form>
             </tr>
         </table>

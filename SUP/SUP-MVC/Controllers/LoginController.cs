@@ -9,15 +9,25 @@ using SUP_Library;
 using Microsoft.AspNetCore.Session;
 using System.Security.Cryptography;
 using System.Text;
+using System.IO;
+using System.Text.RegularExpressions;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Pkcs;
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.OpenSsl;
+
+
+using Org.BouncyCastle.Security;
 
 namespace SUP_MVC.Controllers
 {
-    public class LoginController : Controller
+	public class LoginController : Controller
     {
         // GET: Login
         public ActionResult Index()
         {
             return View();
+           
         }
 
         // GET: Login/Details/5
@@ -94,13 +104,7 @@ namespace SUP_MVC.Controllers
                 return View();
             }
         }
-
-		public static byte[] GetHash(string inputString)
-		{
-			HashAlgorithm algorithm = SHA256.Create();
-			return algorithm.ComputeHash(System.Text.Encoding.UTF8.GetBytes(inputString));
-		}
-
+		
 		[HttpPost]
         public string AuthenticateUser([FromBody] string args)
         {
@@ -113,15 +117,20 @@ namespace SUP_MVC.Controllers
                 }
                 var userName = separatedArgs[0];
                 var password = separatedArgs[1];
-
-                //TODO: HASH HERE
-                var hashedBytes = GetHash(password);
-				var hashedPassword = Encoding.UTF8.GetString(hashedBytes, 0, hashedBytes.Length).Replace("'","");
-				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, password);
-                if (LoginSuccessful)
+				
+				ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey());
+				RSACryptoServiceProvider p = new RSACryptoServiceProvider();
+				p.ImportRSAPrivateKey(new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey()), out int bytesRead);
+				string decryptedPassword = CustomRSA.Decrypt(p, password );
+				
+				//TODO: HASH HERE
+				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, decryptedPassword);
+                if (LoginSuccessful == "success")
                 {
                     //TODO: STORE SESSION HERE
                     TempData["UserID"] = userName;
+                    TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+                    TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
                 }
                 // if searching for active clients only, remove inactive clients.
                 var json = JsonConvert.SerializeObject(LoginSuccessful);
@@ -138,6 +147,48 @@ namespace SUP_MVC.Controllers
 		{
             TempData["UserID"] = null;
 			return View();
+		}
+
+		[HttpPost]
+		public string GetPublicKey()
+		{
+			return SUP_Library.DatabaseConnection.getPublicKey();
+		}
+
+		class CustomRSA
+		{
+			public const bool OAEP_PADDING = true;
+			/// <summary>
+			/// PKCS1 padding is required for most encryption using JavaScript packages
+			/// </summary>
+			public const bool PKCS1_PADDING = false;
+
+			public static string Encrypt(
+				RSACryptoServiceProvider csp,
+				string plaintext
+			)
+			{
+				return Convert.ToBase64String(
+					csp.Encrypt(
+						Encoding.UTF8.GetBytes(plaintext),
+						PKCS1_PADDING
+					)
+				);
+			}
+
+			public static string Decrypt(
+				RSACryptoServiceProvider csp,
+				string encrypted
+			)
+			{
+				return Encoding.UTF8.GetString(
+					csp.Decrypt(
+						Convert.FromBase64String(encrypted),
+						PKCS1_PADDING
+					)
+				);
+			}
+
 		}
 	}
 }
