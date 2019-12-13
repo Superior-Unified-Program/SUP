@@ -38,3 +38,11 @@ In Visual Studio:
 Change  the value of "SupConnectionString" in appsettings.json to match the IP address and authentication of the database that you just set up.
 
 Set the start up project to SUP-MVC by right-clicking in the solution and selecting "Set as StartUp Project."
+
+Ensure that the following folders exist on the web server:
+
+  1. C:\Users\Public\Documents\Templates
+  2. C:\Users\Public\Documents\Temp
+  3. C:\Users\Public\Documents\ExportFileFolder
+  
+For security purposes the RSA keys located on line 17 and 18 of the SUP_Library.DatabaseConnection.cs file must be replaced with new RSA keys as base64 strings. These can be provided by the SUP development team if necessary.
