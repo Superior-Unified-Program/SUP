@@ -202,7 +202,7 @@ namespace SUP_Library
         }
         public static int merge(List<Client> clientList, string template, out string exportFile) // returns the number of documents created
         {
-            if (clientList.Count == 0)
+            if (clientList.Count == 0 || template == null || template.Trim() == "")
             {
                 exportFile = "";
                 return 0;
