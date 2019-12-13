@@ -390,6 +390,16 @@
     <script>
 
         $(document).ready(function () {
+            $('.addTemplate').hide().prop("disabled",true);
+            $('.fileSelecterButton').change(function (e) {
+                if (e.target.files[0] == null || typeof (e.target.files[0]) == "undefined") {
+                    $('.addTemplate').hide().prop("disabled", true);
+                }
+                else {
+                    $('.addTemplate').show().prop("disabled",false);
+                }
+            })
+
             document.getElementById('searchTemplateField').addEventListener("keyup", function (event) {
 				if (event.keyCode === 13) {
 					event.preventDefault();
@@ -445,13 +455,9 @@
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
-                console.log(curParent);
-                console.log(curParent.find(':checkbox'))
-                console.log(curParent.find(':checkbox').prop('checked'));
                 if (curParent.find(':checkbox').prop('checked') == true)
                     dataPost += $(this).val() + " ";
             });
-            console.log(dataPost);
             $.ajax({
                 url: '/Search/ExportSearch',
                 type: 'POST',
@@ -463,8 +469,8 @@
                 success: function (result) {
                     returnedData = JSON.parse(result);
                     if (returnedData != "") {
-                //use window.location.href for redirect to download action for download the file
-                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadExcel" })/?fileName=" + returnedData;
+                        //use window.location.href for redirect to download action for download the file
+                        window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadExcel" })/?fileName=" + returnedData;
             }
                 },
                 async: true,
@@ -478,13 +484,9 @@
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
-                console.log(curParent);
-                console.log(curParent.find(':checkbox'))
-                console.log(curParent.find(':checkbox').prop('checked'));
                 if (curParent.find(':checkbox').prop('checked') == true)
                     dataPost += $(this).val() + " ";
             });
-            console.log(dataPost);
             $.ajax({
                 url: '/Search/TemplateMerge',
                 type: 'POST',
@@ -495,10 +497,14 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-					if (returnedData != "") {
-                //use window.location.href for redirect to download action for download the file
-                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadZipFile" })/?fileName=" + returnedData;
-            }
+                    var dataArray = returnedData.split('?');
+                    if (dataArray.length == 2) {
+                        if (dataArray[0] != "") {
+                            $('.returnedResults').text(dataArray[1] + " documents generated.");
+                            //use window.location.href for redirect to download action for download the file
+                            window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadZipFile" })/?fileName=" + dataArray[0];
+                        }
+                    }
                 },
                 async: true,
                 processData: false
@@ -510,13 +516,9 @@
             $('.rowViewButton').each(function () {
                 var curParent = $(this).parent().parent();
 
-                console.log(curParent);
-                console.log(curParent.find(':checkbox'))
-                console.log(curParent.find(':checkbox').prop('checked'));
                 if (curParent.find(':checkbox').prop('checked') == true)
                     dataPost += $(this).val() + " ";
             });
-            console.log(dataPost);
             $.ajax({
                 url: '/Search/TemplateMerge',
                 type: 'POST',
@@ -527,10 +529,13 @@
                 },
                 success: function (result) {
                     returnedData = JSON.parse(result);
-                    if (returnedData != "") {
-                //use window.location.href for redirect to download action for download the file
-                window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadTemplate" })/?fileName=" + returnedData;
-            }
+                    var dataArray = returnedData.split('?');
+                    if (dataArray.length == 2) {
+                        if (dataArray[0] != "") {
+                            //use window.location.href for redirect to download action for download the file
+                            window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "DownloadTemplate" })/?fileName=" + dataArray[0];
+                        }
+                    }
                 },
                 async: true,
                 processData: false
@@ -555,8 +560,6 @@
 						var splitter = returnedData[i].lastIndexOf(" ");
 						var name = returnedData[i].substring(0, splitter);
 						var date = returnedData[i].substring(splitter + 1);
-						console.log(name);
-						console.log(date);
 						var Row = $('.templateRowTemplate').clone();
 						Row.removeClass('templateRowTemplate').addClass('templateTableRow').show();
 						Row.find('.rowTemplateName').text(name);
@@ -660,13 +663,11 @@
 									Row.find('.rowOrganization').append(`<option value="">${orgName}</option>`)
 									Row.find('.rowOrganization').change(function () {
 										var index = $(this).prop('selectedIndex');
-										console.log(index);
 										$(this).parent().parent().find('.rowJobTitle').children().eq(index).prop('selected', true);
 									});
 									Row.find('.rowJobTitle').append(`<option value="">${orgTitle}</option>`)
 									Row.find('.rowJobTitle').change(function () {
 										var index = $(this).prop('selectedIndex');
-										console.log(index);
 										$(this).parent().parent().find('.rowOrganization').children().eq(index).prop('selected', true);
 									});
 								}
@@ -725,7 +726,6 @@
             var searchText = $('.templateSearch').val().toLowerCase();
             $(".templateTableRow").each(function (index) {
                 var currentRowName = $(this).find('.rowTemplateName').text().toLowerCase();
-                console.log(index + ": " + currentRowName);
                 if (currentRowName.indexOf(searchText) >= 0) {
                     $(this).show();
                 }
@@ -932,7 +932,6 @@
                     this.searchValue = this.input.value;
 
                     var arrV = [""];
-                    console.log(arrV);
                     $('.firstNamesList').find('.firstName').each(
                         function () {
                             var theText = $(this).text().toLowerCase();
@@ -1232,7 +1231,7 @@
                         <th>Result</th>
                     </tr>
                     <tr>
-                        <td id="colSet"></td>
+                        <td id="colSet" class="returnedResults"></td>
                     </tr>
                 </table>
             </div>
