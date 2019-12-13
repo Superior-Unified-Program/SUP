@@ -364,6 +364,20 @@
             text-shadow: 1px 1px 0 rgba(254,255,242,1);
         }
 
+        .scrollTable{
+             overflow-y:scroll; 
+            height:50%; 
+            display:block;
+            margin-top:50px;    
+            }
+        .scrollTh{
+                width:100%; 
+                  
+            }
+        .scrollTd{
+            width:100%;    
+            }
+
     </style>
 
     <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Raleway'>
@@ -689,6 +703,20 @@
                 processData: false
             });
 		}
+
+        function searchTemplates() {
+            var searchText = $('.templateSearch').val().toLowerCase();
+            $(".templateTableRow").each(function (index) {
+                var currentRowName = $(this).find('.rowTemplateName').text().toLowerCase();
+                console.log(index + ": " + currentRowName);
+                if (currentRowName.indexOf(searchText) >= 0) {
+                    $(this).show();
+                }
+                else {
+                    $(this).hide();
+                }
+            });
+        }
 
 
         function editClient(clientId)
@@ -1148,24 +1176,22 @@
             <div class="searchRow">
                 <form action="middlewareHere">
                     <div>
-                        <input type="text" style="width: 80%">
-                        <input type="submit" value="search" style="width: 15%">
+                        <input type="text" class="templateSearch" style="width: 80%">
+                        <input type="button" value="search" onclick="searchTemplates()" style="width: 15%">
                     </div>
                 </form>
             </div>
             <div class="resultRow">
-                <table id="poptable" class="templatePopupTable">
-                    <tr>
+                <table id="poptable" class="templatePopupTable scrollTable" >
+                    <tr class="scrollTh">
                         <th>&nbsp;</th>
                         <th>Name</th>
                         <th>Date modified</th>
-                        <th>Uploaded by</th>
                     </tr>
-                    <tr class="templateRowTemplate">
+                    <tr class="templateRowTemplate scrollTd">
                         <td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
                         <td id="colSet" class="rowTemplateName"></td>
                         <td id="colSet" class="rowTemplateDate"></td>
-                        <td id="colSet" class="rowTemplateUser"></td>
                     </tr>
                 </table>
             </div>
@@ -1204,11 +1230,7 @@
 
             </div>
             <div class="buttonRow">
-                <a href="middlewareHere" download>
-                    <button class="yellowizedButton browse">Download Output</button>
-                </a>
-                <button class="yellowizedButton addTemplate" onclick="closeConfirm()">Go Back</button>
-
+                <button class="yellowizedButton goBack" style="float:left; margin-left:30px;" onclick="closeConfirm()">Go Back</button>
                 <button class="yellowizedButton closeButton" onclick="closeConfirm(), closeSetup()">Return to Search</button>
             </div>
         </div>

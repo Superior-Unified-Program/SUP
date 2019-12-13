@@ -225,13 +225,14 @@ BEGIN
 	DECLARE @hashPass binary(64)
 	DECLARE @cnt INT = 0
 
-	-- reset failed login if time since last attempt is >= 15 minutes 
+	-- removes all entries from audit table that have a time greater than 15 minutes to keep the audit table managable
 	SET @dateTimeNow = GETDATE()
+	DELETE FROM AccountAudits WHERE [User_Name] IN (SELECT DISTINCT([User_Name]) FROM AccountAudits WHERE DATEDIFF(minute, updated_at, @dateTimeNow) > 15)
+
+	-- reset failed login if time since last attempt is >= 15 minutes OR if username is no longer in the audit table.
 	SET @dateTimeFailed = (SELECT updated_at FROM AccountAudits WHERE User_Name = @userName AND ChangeID = (SELECT MAX(ChangeID) FROM AccountAudits WHERE User_Name = @userName) )
 	IF (DATEDIFF(minute, @dateTimeFailed, @dateTimeNow) > 15) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
-	
-	-- removes all entries from audit table that have a time greater than 15 minutes to keep the audit table managable
-	DELETE FROM AccountAudits WHERE [User_Name] IN (SELECT DISTINCT([User_Name]) FROM AccountAudits WHERE DATEDIFF(minute, updated_at, @dateTimeNow) > 15)
+	ELSE IF ((SELECT DISTINCT(User_Name) FROM AccountAudits WHERE User_Name = @userName) IS NULL) UPDATE Account SET Failed_login = 0 WHERE User_Name = @userName
 
 	-- get salt and hashed password
 	SELECT @Salt = Salt, @PwdHash = [Password] FROM Account WHERE User_Name = @userName
@@ -254,7 +255,7 @@ BEGIN
 	ELSE SET @isValid = 0
 
 	-- check for lockout and revoke validity if too many failed logins
-	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) > 5)
+	IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) >= 5)
 	BEGIN
 		SET @isValid = 0
 		SET @isLocked = 1
@@ -263,7 +264,7 @@ BEGIN
 	-- update failed logins
 	IF @isValid = 0
 	BEGIN
-		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL OR (SELECT Failed_login FROM Account WHERE User_Name = @userName) = 0) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
+		IF ((SELECT Failed_login FROM Account WHERE User_Name = @userName) IS NOT NULL) UPDATE Account SET Failed_Login = Failed_Login + 1 WHERE User_Name = @userName
 		ELSE UPDATE Account SET Failed_Login = 1
 	END
 	ELSE UPDATE ACCOUNT SET Failed_Login = 0 WHERE User_Name = @userName

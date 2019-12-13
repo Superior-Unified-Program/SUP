@@ -224,6 +224,9 @@
   </style>
 	<script src="~/lib/jquery/dist/jquery.min.js"></script>
 	<script>
+        $(document).ready(function () {
+            $('.nameHere').text(localStorage.getItem('username'));
+        });
 	</script>
 
 
@@ -237,7 +240,7 @@
 	<div id="ribbonDiv" style="height: 100%; position: absolute; top: 0; left: 0">
         <table class="ribbon">
             <tr>
-                <th class="welcome" scope="row">Welcome<br />_________</th>
+                <th class="welcome" scope="row">Welcome<br /><p class="nameHere"></p></th>
             </tr>
             <tr>
                 <th class="tab" scope="row"> @Html.ActionLink("Search", "Search", new { controller = "Search" })</th>
