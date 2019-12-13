@@ -134,19 +134,28 @@ namespace SUP_Library
 				throw exc;
 			}
 		}
-        public static void deleteAccount(string userName) // this is very dangerous, proceed with caution!
+        public static bool deleteAccount(string userName) // this is very dangerous, proceed with caution!
         {
             try
             {
                 using (IDbConnection connection = new SqlConnection(getConnectionString()))
                 {
                     string sql = "deleteAccount"; //name of stored procedure
-                                               // Parameters to send to addClient/updateClient stored proedure
+                                               
                     var par = new DynamicParameters();
 
                     par.Add("@user_name", userName); // name of the user to be deleted
-                    
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+
                     connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+
+                    int intResult = par.Get<int>("result");
+
+                    bool success = false;
+
+                    if (intResult == 1) success = true;
+
+                    return success;
                 }
             }
             catch (Exception exc)
