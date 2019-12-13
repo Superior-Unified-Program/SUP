@@ -248,7 +248,7 @@ namespace SUP_MVC.Controllers
                 //if (templateNames.Count >= 1) 
 				int documentsGenerated = Merge.merge(clientArray, fileName, out zipFile);
                 //else return "No person selected !!!!";
-
+                zipFile += "?" + documentsGenerated;
                 var json = JsonConvert.SerializeObject(zipFile);
                 return json;
             }
