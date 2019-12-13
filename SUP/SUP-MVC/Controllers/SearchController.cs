@@ -108,7 +108,24 @@ namespace SUP_MVC.Controllers
                 }
 
 				var organizations = separatedArgs[2].Split(';');
-                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
+				if (Array.IndexOf(organizations, "Education - All") >= 0)
+				{
+					organizations = organizations.Where(val => val != "Education - All").ToArray();
+					string[] modifiedOrgs = new string[organizations.Length + 4];
+					int i = 0;
+					while(i < organizations.Length)
+					{
+						modifiedOrgs[i] = organizations[i];
+						i++;
+					}
+					modifiedOrgs[i++] = "Elementary School";
+					modifiedOrgs[i++] = "Middle School";
+					modifiedOrgs[i++] = "High School";
+					modifiedOrgs[i++] = "Higher Education";
+					organizations = modifiedOrgs;
+				}
+
+				var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
                 // if searching for active clients only, remove inactive clients.
                 if (separatedArgs[3] == "true")
                 {
@@ -240,6 +257,31 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentTime = DateTime.Now.Minute;
+                    if ((minutesTillLogout + loadedTime.Minute) > 59)
+                    {
+                        currentTime += 60;
+                    }
+                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+                        TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];

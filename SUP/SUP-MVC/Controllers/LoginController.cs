@@ -129,6 +129,8 @@ namespace SUP_MVC.Controllers
                 {
                     //TODO: STORE SESSION HERE
                     TempData["UserID"] = userName;
+                    TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+                    TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
                 }
                 // if searching for active clients only, remove inactive clients.
                 var json = JsonConvert.SerializeObject(LoginSuccessful);

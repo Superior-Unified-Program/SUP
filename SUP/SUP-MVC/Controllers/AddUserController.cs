@@ -105,6 +105,31 @@ namespace SUP_MVC.Controllers
 
         public ActionResult AddUser()
         {
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentTime = DateTime.Now.Minute;
+                    if ((minutesTillLogout + loadedTime.Minute) > 59)
+                    {
+                        currentTime += 60;
+                    }
+                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+                        TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
