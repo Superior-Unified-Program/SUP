@@ -187,8 +187,8 @@ namespace SUP_Library
                 return null;
             }
             return fileName;
-
         }
+
         public static string compress(string templateName)
         {
             string zipShortName = templateName.Substring(0, templateName.Length - 5);

@@ -323,7 +323,25 @@ namespace SUP_MVC.Controllers
             return File(fileByteArray, "application/zip", saveAsName);
         }
 
-		[HttpPost]
+        [HttpPost]
+        public bool DeleteTemplate([FromBody] string args)
+        {
+            ResetTimeout();
+            //Get the temp folder and file path in server
+            try
+            {
+                string savePath = @"C:\Users\Public\Documents\Templates";
+                string fullPath = Path.Combine(savePath, args);
+                System.IO.File.Delete(fullPath);    // detele the excel file
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        [HttpPost]
 		public string GetTemplateNames([FromBody] string args)
 		{
 			try

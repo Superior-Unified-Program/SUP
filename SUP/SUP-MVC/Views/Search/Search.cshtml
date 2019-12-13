@@ -1049,7 +1049,23 @@
             }
 		}
 
-
+        function deleteTemplate() {
+            var dataPost = $("input[class='selecter']:checked").val();
+            $.ajax({
+                url: '/Search/DeleteTemplate',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+					returnedData = JSON.parse(result);
+                },
+                async: true,
+                processData: false
+            });
+        }
 
             /**/</script>
 </head>
@@ -1230,6 +1246,7 @@
                     <input type="file" class="browse fileSelecterButton" name="file" style="width: 500px;">
                     <button type="submit" value="Upload Small File" class="yellowizedButton addTemplate" id="UploadSmallFile">Upload File</button>
                 </form>
+                <input type="button" class="deleteTemplate" style="width: 500px;" onclick="deleteTemplate()" value="Delete Template"/>
                 <input class="yellowizedButton closeButton" onclick="closeSetup()" value="Close">
             </div>
         </div>
