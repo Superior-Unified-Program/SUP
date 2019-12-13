@@ -650,8 +650,18 @@
 								for(var j = 0; j < organizationList.length; j++) {
 									var orgName = organizationList[j]['Org_Name'];
 									var orgTitle = organizationList[j]['Title'];
-									var option = Row.find('.rowOrganization').append(`<option value="">${orgName}</option>`)
+									Row.find('.rowOrganization').append(`<option value="">${orgName}</option>`)
+									Row.find('.rowOrganization').change(function () {
+										var index = $(this).prop('selectedIndex');
+										console.log(index);
+										$(this).parent().parent().find('.rowJobTitle').children().eq(index).prop('selected', true);
+									});
 									Row.find('.rowJobTitle').append(`<option value="">${orgTitle}</option>`)
+									Row.find('.rowJobTitle').change(function () {
+										var index = $(this).prop('selectedIndex');
+										console.log(index);
+										$(this).parent().parent().find('.rowOrganization').children().eq(index).prop('selected', true);
+									});
 								}
 
                                 var clientId = currentRow['ID']

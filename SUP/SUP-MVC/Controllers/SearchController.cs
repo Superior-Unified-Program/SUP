@@ -268,8 +268,10 @@ namespace SUP_MVC.Controllers
                 DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
                 if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
                 {
-                    var currentTime = DateTime.Now.Minute;
-                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    var currentTime = DateTime.ParseExact(DateTime.Now.ToShortTimeString(), "t", null);
+                    var tooLate = loadedTime;
+                    tooLate = tooLate.AddMinutes(minutesTillLogout);
+                    if (currentTime.TimeOfDay > tooLate.TimeOfDay)
                     {
                         return RedirectToAction("Login", "Login");
                     }
