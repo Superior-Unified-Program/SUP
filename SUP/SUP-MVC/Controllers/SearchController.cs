@@ -269,10 +269,6 @@ namespace SUP_MVC.Controllers
                 if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
                 {
                     var currentTime = DateTime.Now.Minute;
-                    if ((minutesTillLogout + loadedTime.Minute) > 59)
-                    {
-                        currentTime += 60;
-                    }
                     if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
                     {
                         return RedirectToAction("Login", "Login");
