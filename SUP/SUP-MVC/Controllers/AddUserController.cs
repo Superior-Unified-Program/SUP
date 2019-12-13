@@ -124,8 +124,7 @@ namespace SUP_MVC.Controllers
                     }
                     else
                     {
-                        TempData["LoginDate"] = DateTime.Now.ToShortDateString();
-                        TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+                        ResetTimeout();
                     }
                 }
             }
@@ -144,6 +143,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string SubmitUserData([FromBody] string args)
         {
+            ResetTimeout();
             string[] separatedArgs = args.Split(',');
             if (separatedArgs.Length < 2)
             {
@@ -198,5 +198,10 @@ namespace SUP_MVC.Controllers
 			}
 
 		}
-	}
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
+    }
 }

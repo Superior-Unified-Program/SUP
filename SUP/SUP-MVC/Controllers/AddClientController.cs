@@ -134,6 +134,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public int UpdateClient([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
 
@@ -304,8 +305,7 @@ namespace SUP_MVC.Controllers
                     }
                     else
                     {
-                        TempData["LoginDate"] = DateTime.Now.ToShortDateString();
-                        TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+                        ResetTimeout();
                     }
                 }
             }
@@ -319,5 +319,10 @@ namespace SUP_MVC.Controllers
                 return RedirectToAction("Login","Login");
             }
         }
-	}
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
+    }
 }

@@ -111,8 +111,7 @@ namespace SUP_MVC.Controllers
                     }
                     else
                     {
-                        TempData["LoginDate"] = DateTime.Now.ToShortDateString();
-                        TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+                        ResetTimeout();
                     }
                 }
             }
@@ -127,5 +126,10 @@ namespace SUP_MVC.Controllers
                 return RedirectToAction("Login");
             }
         }
-	}
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
+    }
 }
