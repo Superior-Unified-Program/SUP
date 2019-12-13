@@ -4,11 +4,13 @@
     ViewData["Title"] = "AddUser";
 }
 
-<head>
-    <meta charset="utf-8" />
-    <title>Add User</title>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-</head>
+	<head>
+		<meta charset="utf-8" />
+		<title>Add User</title>
+		<script src="~/lib/jquery/dist/jquery.min.js"></script>
+		<script src="~/js/jsencrypt.js"></script>
+		<script src="~/js/sjcl.js"></script>
+	</head>
 <style>
     .box {
         display: flex;
@@ -77,13 +79,20 @@
         }
     }
 
-    function addUser() {
+	function addUser() {
+		var publicKey = $('.publicKey').html();
+		var encrypt = new JSEncrypt();
+		encrypt.setPublicKey(publicKey);
         var username = $('.Username').val();
-        var password = $('.Password').val();
+		var password = $('.Password').val();
+		var saltedPassword = "SaLtEd" + password;
+	    var hp = sjcl.hash.sha256.hash(saltedPassword);
+		var hashedPass = sjcl.codec.hex.fromBits(hp);
+		var encryptedPassword = encrypt.encrypt(hashedPass);
         var accountType = $( ".Usertype option:selected" ).text();
         var office = $( ".Office option:selected" ).text();
 
-        var dataPost = username + "," + password + "," + accountType + "," + office;
+        var dataPost = username + "," + encryptedPassword + "," + accountType + "," + office;
         $.ajax({
             url: '/AddUser/SubmitUserData',
             type: 'POST',
@@ -106,38 +115,59 @@
         });
     }
 
+	function getPublicKey() {
+		var dataPost = "";
+		$.ajax({
+            url: '/Login/GetPublicKey',
+            type: 'POST',
+            data: JSON.stringify(dataPost),
+            contentType: 'application/json; charset=utf-8',
+            error: function (xhr) {
+                alert('Error: ' + xhr.statusText);
+            },
+			success: function (result) {
+                $(".publicKey").html(result);
+            },
+            async: true,
+            processData: false
+		});
+	}
+	$(document).ready(function () {
+		getPublicKey();
+	})
 </script>
 
 
 <body>
-    <div style="position: absolute; left: 25%; top: 10%; width: 85%;">
-        <form name="pw" onsubmit="return Check(this)">
+	<div class="publicKey" style="height: 0px;" hidden></div>
+	<div style="position: absolute; left: 25%; top: 10%; width: 85%;">
+		<form name="pw" onsubmit="return Check(this)">
 
-            <div class="box">
-                <div class="cell">User name*<br /><input class="Username" type="text" placeholder="" required></div>
-                <div class="cell">Password*<br /><input class="Password" type="Password" name="pw1" placeholder="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" value="" required></div>
-                <div class="cell">Confirm Password*<br /><input class="ConfirmPassword" type="Password" name="pw2" placeholder="confirm password" required> </div>
-                <div class="cell">
-                    User type*<br /><select class="Usertype" name="state" tabindex="11">
-                        <option value=""></option>
-                        <option value="admin">Administrator</option>
-                        <option value="standard">Standard</option>
-                    </select>
-                </div>
-                <div class="cell">
-                    Office*<br /><select class="Office" name="office" tabindex="11">
-                        <option value=""></option>
-                        <option value="CCEL">CCEL</option>
-                        <option value="CASL">CASL</option>
-                        <option value="Chancellor's">Chancellor's office</option>
-             
-                    </select>
-                </div>
-                <div class="cell"><input type="button" class="submitNewUser yellowizedButton" value="Save" onclick="addUser()" /></div>
-            </div>
+			<div class="box">
+				<div class="cell">User name*<br /><input class="Username" type="text" placeholder="" required></div>
+				<div class="cell">Password*<br /><input class="Password" type="Password" name="pw1" placeholder="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" title="Must contain at least one number and one uppercase and lowercase letter, and at least 6 or more characters" value="" required></div>
+				<div class="cell">Confirm Password*<br /><input class="ConfirmPassword" type="Password" name="pw2" placeholder="confirm password" required> </div>
+				<div class="cell">
+					User type*<br /><select class="Usertype" name="state" tabindex="11">
+						<option value=""></option>
+						<option value="admin">Administrator</option>
+						<option value="standard">Standard</option>
+					</select>
+				</div>
+				<div class="cell">
+					Office*<br /><select class="Office" name="office" tabindex="11">
+						<option value=""></option>
+						<option value="CCEL">CCEL</option>
+						<option value="CASL">CASL</option>
+						<option value="Chancellor's">Chancellor's office</option>
 
-        </form>
+					</select>
+				</div>
+				<div class="cell"><input type="button" class="submitNewUser yellowizedButton" value="Save" onclick="addUser()" /></div>
+			</div>
 
-    </div>
+		</form>
+
+	</div>
 </body>
 

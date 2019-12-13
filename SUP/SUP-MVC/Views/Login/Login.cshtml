@@ -11,7 +11,6 @@ Layout = null;
     <title>Login</title>
     <meta http-equive="Content-Type" charset="utf-8">
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js"></script>
     <script src="~/js/jsencrypt.js"></script>
     <script src="~/js/sjcl.js"></script>
 
@@ -21,10 +20,11 @@ Layout = null;
 			var encrypt = new JSEncrypt();
 			encrypt.setPublicKey(publicKey);
             var username = $('.bt_username').val();
-            var password = $('.bt_password').val();
-            var hp = sjcl.hash.sha256.hash(password);
-            var hashedPass = sjcl.codec.hex.fromBits(hp);
-			var encryptedPassword = encrypt.encrypt(password);
+			var password = $('.bt_password').val();
+			var saltedPassword = "SaLtEd" + password;
+            var hp = sjcl.hash.sha256.hash(saltedPassword);
+			var hashedPass = sjcl.codec.hex.fromBits(hp);
+			var encryptedPassword = encrypt.encrypt(hashedPass);
             var dataPost = username + "," + encryptedPassword;
             localStorage.setItem('username', username);
             $.ajax({
@@ -106,7 +106,6 @@ Layout = null;
 <body>
 	<div class="body yellow">
 		<div class="publicKey" style="height: 0px;" hidden></div>
-		<div class="privateKey" style="height: 0px;" hidden></div>
 		<form>
 			<img src="../../logo.jpg" />
 			<br />
