@@ -39,11 +39,17 @@ Layout = null;
                     console.log(result);
                     returnedData = JSON.parse(result);
                     console.log(returnedData);
-                    if (returnedData == true) {
+                    if (returnedData == "success") {
                         window.location.href = "@Url.RouteUrl(new { Controller = "Search", Action = "Search" })";
                     }
-                    else {
-                        alert("Login attempt failed.");
+                    else if (returnedData == "locked") {
+                        alert("Too many login attempts. You have been locked out of your account for 15 minutes.");
+                    }
+                    else if (returnedData == "fail") {
+                        alert("Invalid username or password!");
+                    }
+                    else if (returnedData == "unknown") {
+                        alert("An unknown error occured trying to login!");
                     }
                 },
                 async: true,

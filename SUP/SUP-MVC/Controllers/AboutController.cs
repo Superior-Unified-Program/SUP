@@ -92,6 +92,26 @@ namespace SUP_MVC.Controllers
 
 		public ActionResult About()
 		{
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentTime = DateTime.Now.Minute;
+                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        ResetTimeout();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
@@ -102,5 +122,10 @@ namespace SUP_MVC.Controllers
                 return RedirectToAction("Login");
             }
         }
-	}
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
+    }
 }

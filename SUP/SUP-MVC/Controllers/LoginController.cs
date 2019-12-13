@@ -125,10 +125,12 @@ namespace SUP_MVC.Controllers
 				
 				//TODO: HASH HERE
 				var LoginSuccessful = DatabaseConnection.verifiedLogIn(userName, decryptedPassword);
-                if (LoginSuccessful)
+                if (LoginSuccessful == "success")
                 {
                     //TODO: STORE SESSION HERE
                     TempData["UserID"] = userName;
+                    TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+                    TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
                 }
                 // if searching for active clients only, remove inactive clients.
                 var json = JsonConvert.SerializeObject(LoginSuccessful);

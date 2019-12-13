@@ -99,6 +99,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string SearchClients([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(',');
@@ -175,6 +176,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string ExportSearch([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(' ');
@@ -217,6 +219,7 @@ namespace SUP_MVC.Controllers
         [HttpPost]
         public string TemplateMerge([FromBody] string args)
         {
+            ResetTimeout();
             try
             {
                 string[] separatedArgs = args.Split(' ');
@@ -257,6 +260,26 @@ namespace SUP_MVC.Controllers
 
         public ActionResult Search()
 		{
+            if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+            {
+                int minutesTillLogout = 10;
+
+                DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+                DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+                if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+                {
+                    var currentTime = DateTime.Now.Minute;
+                    if (Math.Abs(loadedTime.Minute - currentTime) > minutesTillLogout)
+                    {
+                        return RedirectToAction("Login", "Login");
+                    }
+                    else
+                    {
+                        ResetTimeout();
+                    }
+                }
+            }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
@@ -271,6 +294,7 @@ namespace SUP_MVC.Controllers
         [HttpGet]
         public ActionResult DownloadExcel(string fileName)
         {
+            ResetTimeout();
             //Get the temp folder and file path in server
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             string fullPath = Path.Combine(savePath, fileName);
@@ -282,8 +306,9 @@ namespace SUP_MVC.Controllers
         [HttpGet]
         public ActionResult DownloadZipFile(string fileName)
         {
-			//Get the temp folder and file path in server
-			string saveAsName = fileName.Substring(fileName.LastIndexOf('\\')+1);
+            ResetTimeout();
+            //Get the temp folder and file path in server
+            string saveAsName = fileName.Substring(fileName.LastIndexOf('\\')+1);
             string savePath = @"C:\Users\Public\Documents\SUPExport";
             string fullPath = Path.Combine(savePath, fileName);
             byte[] fileByteArray = System.IO.File.ReadAllBytes(fullPath);
@@ -327,7 +352,9 @@ namespace SUP_MVC.Controllers
 		[HttpPost]
 		public async Task<IActionResult> UploadFile(IFormFile file)
 		{
-			bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
+            ResetTimeout();
+
+            bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
 			if (isDocx)
 				{
 				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
@@ -352,5 +379,11 @@ namespace SUP_MVC.Controllers
 			}
 			return Ok(new { Error = "File was not a .docx file."});
 		}
+
+        private void ResetTimeout()
+        {
+            TempData["LoginDate"] = DateTime.Now.ToShortDateString();
+            TempData["LoginTime"] = DateTime.Now.ToShortTimeString();
+        }
 	}
 }
