@@ -5,18 +5,9 @@
     <RootNamespace>SUP_MVC</RootNamespace>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Content Remove="wwwroot\logo.jpg" />
-  </ItemGroup>
-
 
   <ItemGroup>
     <Folder Include="Views\Menu\" />
-  </ItemGroup>
-
-
-  <ItemGroup>
-    <None Include="wwwroot\logo.jpg" />
   </ItemGroup>
 
 
