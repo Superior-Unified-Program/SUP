@@ -364,8 +364,8 @@ namespace SUP_MVC.Controllers
             bool isDocx = Microsoft.VisualBasic.CompilerServices.LikeOperator.LikeString(file.FileName, "*.docx", Microsoft.VisualBasic.CompareMethod.Binary);
 			if (isDocx)
 				{
-				string templatePath = (Directory.GetCurrentDirectory()).Replace("SUP-MVC", "SUP_Library\\Templates");
-                string fileName = Path.GetFileName(file.FileName);
+				string templatePath = @"C:\Users\Public\Documents\Templates";
+				string fileName = Path.GetFileName(file.FileName);
 				string filePath = templatePath + "\\" + fileName;
 				long size = file.Length;
 				//var filePath = file.Name;
