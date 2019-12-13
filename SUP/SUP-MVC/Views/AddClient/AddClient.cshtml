@@ -592,26 +592,6 @@
                 document.getElementById("matchFoundPopup").style.display = "flex";
             }
 
-			function addOrg() {
-				var table = document.getElementById("OrgTable");
-				var rowlen = table.rows.length + 1;
-				var row = table.insertRow(rowlen);
-				row.id = "rowOrg_" + rowlen;
-				var arr = ['textboxfiledname'];
-				for (i = 0; i < 2; i++) {
-					var x = row.insertCell(i)
-					if (i == 1) {
-						x.innerHTML = "<input type='button' onclick='removeCell(" + row.id + ")' value=Delete>"
-					}
-					else {
-						x.innerHTML = "<label>" + arr[i] + ":</label><input type='text' name='" + arr[i] + "'>"
-					}
-				}
-			}
-			function removeOrg(rowid) {
-				var table = document.getElementById(rowid).remove();
-			}
-
 			function addOrganization() {
 				var Row = $('.templateRow').clone();
 				Row.removeClass('templateRow').addClass('removableRow');
@@ -637,62 +617,61 @@
 		<p class="returnedMatchTemplate"></p>
 	</div>
 	<div style="position: absolute; left: 15%; top: 10%; width: 85%;">
-		<div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
-			<div class="tableHeader">Client Information</div>
-			<div class="row">
-				<div class="cell">Prefix<br /><input class="prefixInput" type="text" placeholder="" style="width: 45px" tabindex="1"></div>
-				<div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
-				<div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
-				<div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
-			</div>
-			<hr class="breakLine" />
+        <div style="margin-left: 10%; width: 80%; height: 100%; top: 0; left: 0; border-collapse: collapse;">
+            <div class="tableHeader">Client Information</div>
+            <div class="row">
+                <div class="cell">Prefix<br /><input class="prefixInput" type="text" placeholder="" style="width: 45px" tabindex="1"></div>
+                <div class="cell">First Name*<br /><input type="text" class="firstNameInput" placeholder="First Name" required tabindex="2"></div>
+                <div class="cell">Last Name*<br /><input type="text" class="lastNameInput" placeholder="Last Name" required tabindex="3"></div>
+                <div class="cell">Middle Initial<br /><input type="text" class="middleInitialInput" placeholder="MI" style="width: 35px" tabindex="4"></div>
+            </div>
+            <hr class="breakLine" />
 
             <!-- #region Multi-Organization Container-->
+            <!--
+    <input type="button" class="yellowizedButton" value="Delete Organization" id="deleteOrgButton()" onclick="removeOrg" style="padding-top: 5px; padding-left: 25px;">
 
+    -->
+            <div class="row" style="height: 22px; padding-bottom: 5px;">
+                <div class="cell">Organization Type</div>
+                <div class="cell">Company name</div>
+                <div class="cell">Job title</div>
+            </div>
 
-				<!--
-	<input type="button" class="yellowizedButton" value="Delete Organization" id="deleteOrgButton()" onclick="removeOrg" style="padding-top: 5px; padding-left: 25px;">
+            <div>
+                <div class="templateRow row">
+                    <div class="shortCell">
+                        <select id="organizationInput" name="Organization" class="primaryOrganizationInput" size="1" tabindex="5">
+                            <option value=""></option>
+                            <option value="business">Business</option>
+                            <option value="electedOfficial">Elected Official</option>
+                            <option value="educationAll">Education - All</option>
+                            <option value="elementary">Elementary School</option>
+                            <option value="middle">Middle School</option>
+                            <option value="highSchool">High School</option>
+                            <option value="higherEd">Higher Education</option>
+                            <option value="nonProfit">Non-profit</option>
+                            <option value="UWSystem">UW-System</option>
+                            <option value="boardOfRegent">Board of Regent</option>
+                            <option value="advancement">Advancement & Alumni</option>
+                            <option value="government">Government</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
+                    <div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
+                    <div class="shortCell"><span class="primaryLabel">Primary Organization</span><input type="button" class="yellowizedButton removeOrgButton" value="Remove Orgainization" id="addOrg" onclick="removeOrganization()" style="padding-top: 2px; padding-left: 25px; margin-top:0px; visibility: hidden;"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="cell"></div>
+                <div class="cell"></div>
+                <div class="cell"><input type="button" class="yellowizedButton addOrgButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
+            </div>
 
-	-->
-					<div class="row" style="height: 22px; padding-bottom: 5px;">
-						<div style="margin-left:15px;"class="shortCell">Organization Type</div>
-						<div class="shortCell">Company name</div>
-						<div class="shortCell">Job title</div>
-					</div>
-					<div class="orgTable">
-						<div class="templateRow row">
-							<div style="margin-left: 15px;"class="shortCell">
-								<select id="organizationInput" name="Organization" class="primaryOrganizationInput" size="1" tabindex="5">
-									<option value=""></option>
-									<option value="business">Business</option>
-									<option value="electedOfficial">Elected Official</option>
-									<option value="elementary">Elementary School</option>
-									<option value="middle">Middle School</option>
-									<option value="highSchool">High School</option>
-									<option value="higherEd">Higher Education</option>
-									<option value="nonProfit">Non-profit</option>
-									<option value="UWSystem">UW-System</option>
-									<option value="boardOfRegent">Board of Regent</option>
-									<option value="advancement">Advancement & Alumni</option>
-									<option value="government">Government</option>
-									<option value="other">Other</option>
-								</select>
-							</div>
-							<div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
-							<div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
-							<div class="shortCell"><span class="primaryLabel">Primary Organization</span><input type="button" class="yellowizedButton removeOrgButton" value="Remove Organization" id="addOrg" onclick="removeOrganization()" style="padding-top: 2px; padding-left: 25px; margin-top:0px; visibility: hidden;"></div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="cell"></div>
-						<div class="cell"></div>
-						<div class="cell"></div>
-						<div class="cell"><input type="button" class="yellowizedButton addOrgButton" value="Add Organization" id="addOrg" onclick="addOrganization()" style="margin-top: 5px; padding-top: 5px; padding-left: 25px; float:left;"></div>
-					</div>
+            <hr class="breakLine" />
 
-			<hr class="breakLine" />
-
-			<!-- #endregion -->
+            <!-- #endregion -->
 
 			<div class="tableHeader">Contact Information</div>
 			<div class="row">
