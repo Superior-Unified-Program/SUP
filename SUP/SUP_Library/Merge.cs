@@ -328,7 +328,7 @@ namespace SUP_Library
                     templateNames.Add(fileName);
                 }
             }
-           
+
             return templateNames;
         }
         public static string getTemplatePath()
