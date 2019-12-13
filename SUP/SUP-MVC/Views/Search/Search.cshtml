@@ -704,6 +704,20 @@
             });
 		}
 
+        function searchTemplates() {
+            var searchText = $('.templateSearch').val().toLowerCase();
+            $(".templateTableRow").each(function (index) {
+                var currentRowName = $(this).find('.rowTemplateName').text().toLowerCase();
+                console.log(index + ": " + currentRowName);
+                if (currentRowName.indexOf(searchText) >= 0) {
+                    $(this).show();
+                }
+                else {
+                    $(this).hide();
+                }
+            });
+        }
+
 
         function editClient(clientId)
         {
@@ -1162,8 +1176,8 @@
             <div class="searchRow">
                 <form action="middlewareHere">
                     <div>
-                        <input type="text" style="width: 80%">
-                        <input type="submit" value="search" style="width: 15%">
+                        <input type="text" class="templateSearch" style="width: 80%">
+                        <input type="button" value="search" onclick="searchTemplates()" style="width: 15%">
                     </div>
                 </form>
             </div>
