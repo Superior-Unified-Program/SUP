@@ -169,6 +169,16 @@ namespace SUP_MVC.Controllers
             return json;
         }
 
+		[HttpPost]
+		public string DeleteUser([FromBody] string args)
+		{
+			ResetTimeout();
+			string username = args;
+			var result = SUP_Library.DatabaseConnection.deleteAccount(username);
+			var json = JsonConvert.SerializeObject(result);
+			return json;
+		}
+
 		class CustomRSA
 		{
 			public const bool OAEP_PADDING = true;
