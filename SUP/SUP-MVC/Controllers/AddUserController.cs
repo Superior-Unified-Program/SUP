@@ -173,8 +173,16 @@ namespace SUP_MVC.Controllers
 		public string DeleteUser([FromBody] string args)
 		{
 			ResetTimeout();
-			string username = args;
-			var result = SUP_Library.DatabaseConnection.deleteAccount(username);
+            string[] separatedArgs = args.Split(',');
+            string usernameToDelete = separatedArgs[0];
+            string currentUserUsername = separatedArgs[1];
+            bool isAdmin = SUP_Library.DatabaseConnection.isAdmin(currentUserUsername);
+            if (!isAdmin)
+            {
+                return JsonConvert.SerializeObject(false);
+            }
+            
+            var result = SUP_Library.DatabaseConnection.deleteAccount(usernameToDelete);
 			var json = JsonConvert.SerializeObject(result);
 			return json;
 		}
