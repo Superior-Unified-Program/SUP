@@ -142,7 +142,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-                Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                if (organizations[0].Length == 0)
+                     Clients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
 
 
                 // filter by organization
@@ -162,8 +163,8 @@ namespace SUP_MVC.Controllers
                         }
                     }
                 }
-
-			var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
+                filteredClients.Sort((a, b) => string.Compare(a.First_Name, b.First_Name));
+                var json = (organizations[0].Length > 0) ? JsonConvert.SerializeObject(filteredClients) : JsonConvert.SerializeObject(Clients);
             return json;
             }
             catch(Exception e)
