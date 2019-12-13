@@ -128,8 +128,22 @@ namespace SUP_MVC.Controllers
 
 			return json;
 		}
-        
-        
+
+        [HttpPost]
+        public string DeleteClient([FromBody] string args)
+        {
+            var ID = args;
+
+            var client = SUP_Library.DatabaseConnection.GetClientByIdFull(ID);
+            if (client!=null)
+            {
+                SUP_Library.DatabaseConnection.deleteClient(client);
+            }
+            var json = JsonConvert.SerializeObject(true);
+
+            return json;
+        }
+
         // POST: AddClient/UpdateClient
         [HttpPost]
         public int UpdateClient([FromBody] string args)

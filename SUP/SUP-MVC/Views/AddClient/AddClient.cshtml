@@ -267,6 +267,9 @@
                     loadClientData(clientId);
                     return true;
                 }
+                else {
+                    $(".deleteButton").remove();
+                }
                 $(".saveButton").unbind('click').click(function () {
                     //saveClientData();
                     checkForNearMatch();
@@ -477,6 +480,33 @@
                     success: function (result) {
                         alert(successString);
                         editClient(result);
+                    },
+                    async: true,
+                    processData: false
+                });
+            }
+
+            function deleteClient() {
+                var args = location.href.split('?');
+                var params = "";
+                if (args.length > 1) {
+                    params = args[1].split('=');
+                }
+                var clientId = "";
+                if (params.length > 1) {
+                    clientId = params[1];
+                }
+                var dataPost = clientId;
+                $.ajax({
+                    url: '/AddClient/DeleteClient',
+                    type: 'POST',
+                    data: JSON.stringify(dataPost),
+                    contentType: 'application/json; charset=utf-8',
+                    error: function (xhr) {
+                        alert('Error: ' + xhr.statusText);
+                    },
+                    success: function (result) {
+                        alert('Associated client deleted');
                     },
                     async: true,
                     processData: false
@@ -750,12 +780,14 @@
 				<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="18"></div>
 				<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
 			</div>
-			<div class="row">
-				<div class="noteCell">
-					Note<br /><textarea style="width: 100%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
-				</div>
-				<div class="saveEditCell"><input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="21"></div>
-			</div>
+            <div class="row">
+                <div class="noteCell">
+                    Note<br /><textarea style="width: 100%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
+                </div>
+                <div class="saveEditCell">
+                    <input type="button" class="deleteButton yellowizedButton" value="Delete" id="button" onclick="if (confirm('Are you sure you want to delete this client?')) { deleteClient() }" tabindex="21">
+                <input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="22"></div>
+            </div>
 			
 	    </div>
 	</div>
