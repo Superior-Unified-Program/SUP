@@ -383,7 +383,8 @@ namespace SUP_MVC.Controllers
 			if (isDocx)
 				{
 				string templatePath = @"C:\Users\Public\Documents\Templates";
-				string fileName = Path.GetFileName(file.FileName);
+                if (!Directory.Exists(templatePath)) Directory.CreateDirectory(templatePath);
+                string fileName = Path.GetFileName(file.FileName);
 				string filePath = templatePath + "\\" + fileName;
 				long size = file.Length;
 				//var filePath = file.Name;
