@@ -1050,22 +1050,24 @@
 		}
 
         function deleteTemplate() {
-            var dataPost = $("input[class='selecter']:checked").val();
-            $.ajax({
-                url: '/Search/DeleteTemplate',
-                type: 'POST',
-                data: JSON.stringify(dataPost),
-                contentType: 'application/json; charset=utf-8',
-                error: function (xhr) {
-                    alert('Error: ' + xhr.statusText);
-                },
-                success: function (result) {
-					returnedData = JSON.parse(result);
-					location.reload();
-                },
-                async: true,
-                processData: false
-            });
+			var dataPost = $("input[class='selecter']:checked").val();
+			if (confirm('Are you sure you would like to delete ' + dataPost + '?')) {
+				$.ajax({
+					url: '/Search/DeleteTemplate',
+					type: 'POST',
+					data: JSON.stringify(dataPost),
+					contentType: 'application/json; charset=utf-8',
+					error: function (xhr) {
+						alert('Error: ' + xhr.statusText);
+					},
+					success: function (result) {
+						returnedData = JSON.parse(result);
+						location.reload();
+					},
+					async: true,
+					processData: false
+				});
+			}
         }
 
             /**/</script>
