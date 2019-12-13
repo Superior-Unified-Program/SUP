@@ -155,6 +155,39 @@ namespace SUP_Library
             }
         }
 
+        public static bool isAdmin(string userName)
+        {
+            // takes a username and returns whether or not they are an administrator
+            try
+            {
+                using (IDbConnection connection = new SqlConnection(getConnectionString()))
+                {
+                    string sql; //name of stored procedure
+
+                    sql = "checkType";
+
+                    var par = new DynamicParameters();
+                    
+                    par.Add("@user_name", userName); 
+
+                    par.Add("result", 0, direction: ParameterDirection.ReturnValue);
+
+                    connection.Execute(sql, par, commandType: CommandType.StoredProcedure);
+                    int intResult = par.Get<int>("result");
+                    bool result = false;
+                    if (intResult == 1) result = true;
+                    return result;
+
+                }
+            }
+            catch (Exception exc)
+            {
+                System.Diagnostics.Debug.WriteLine(exc.Message);
+                throw exc;
+            }
+        }
+
+
         #endregion
 
 

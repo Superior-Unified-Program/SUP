@@ -134,6 +134,7 @@ namespace SUP_Library
                 case "assistant_name":
                     r = client?.Assistant_First_Name + " " + client?.Assistant_Last_Name;
                     break;
+                case "next_record":
                 case "next record":                 
                     r = "";
                     break;
