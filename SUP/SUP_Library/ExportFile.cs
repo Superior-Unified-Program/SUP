@@ -59,7 +59,8 @@ namespace SUP_Library
 				row.AppendChild(AddCellWithText("City"));
 				row.AppendChild(AddCellWithText("State"));
 				row.AppendChild(AddCellWithText("Zip"));
-				row.AppendChild(AddCellWithText("Category"));
+                row.AppendChild(AddCellWithText("Category"));
+				row.AppendChild(AddCellWithText("Organization"));
 				row.AppendChild(AddCellWithText("Title"));
 				row.AppendChild(AddCellWithText("Business Email"));
 				row.AppendChild(AddCellWithText("Personal Email"));
@@ -85,16 +86,17 @@ namespace SUP_Library
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.City));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.State));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Address.Zip));
-					newRow.AppendChild(AddCellWithText(clientList[i-2].Org.Org_Name));
+                    newRow.AppendChild(AddCellWithText(clientList[i - 2].Primary_Organization.Org_Type));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Primary_Organization.Org_Name));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Org.Title));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Email.Business_Email));
 					newRow.AppendChild(AddCellWithText(clientList[i-2].Email.Personal_Email));
-                    newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Business_Phone));
-					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Personal_Phone));
+                    newRow.AppendChild(AddCellWithText(clientList[i-2].Phone.Business_Phone_Formatted));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Personal_Phone_Formatted));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Assistant_First_Name));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Assisntant_Last_Name));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Email.Assistant_Email));
-					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Assistant_Phone));
+					newRow.AppendChild(AddCellWithText(clientList[i - 2].Phone.Assistant_Phone_Formatted));
 					newRow.AppendChild(AddCellWithText(clientList[i - 2].Permit_Num));
 					sheetData.AppendChild(newRow);
                 }
