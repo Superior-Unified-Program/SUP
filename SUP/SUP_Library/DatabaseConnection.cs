@@ -98,16 +98,6 @@ namespace SUP_Library
             }
         }
 
-        public static bool verifiedLogInAdmin(string theUsername, string thePassword)
-        {
-            if(theUsername == "admin" || theUsername == "Admin")
-            {
-                if (thePassword == "password") return true;
-                return false;
-            }
-            return false;
-        }
-
 		public static bool addAccount(string theUsername, string thePassword, char userType, string theOffice)
 		{
 			try

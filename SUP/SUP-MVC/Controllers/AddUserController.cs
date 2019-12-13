@@ -105,6 +105,7 @@ namespace SUP_MVC.Controllers
 
         public ActionResult AddUser()
         {
+
             if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
             {
                 int minutesTillLogout = 10;
@@ -147,6 +148,13 @@ namespace SUP_MVC.Controllers
             {
                 throw (new Exception("Illegal number of arguments"));
             }
+
+            bool isAdmin = SUP_Library.DatabaseConnection.isAdmin(separatedArgs[4]);
+            if (!isAdmin)
+            {
+                return JsonConvert.SerializeObject(false);
+            }
+
             var username = separatedArgs[0];
             var password = separatedArgs[1];
 			ReadOnlySpan<byte> pkBytes = new ReadOnlySpan<byte>(SUP_Library.DatabaseConnection.getPrivateKey());

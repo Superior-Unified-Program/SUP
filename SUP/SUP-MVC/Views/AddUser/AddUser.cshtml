@@ -144,7 +144,7 @@
 		var hashedPass = sjcl.codec.hex.fromBits(hp);
 		var encryptedPassword = encrypt.encrypt(hashedPass);
 
-        var dataPost = username + "," + encryptedPassword + "," + accountType + "," + office;
+        var dataPost = username + "," + encryptedPassword + "," + accountType + "," + office + "," + localStorage.getItem('username');
         $.ajax({
             url: '/AddUser/SubmitUserData',
             type: 'POST',
