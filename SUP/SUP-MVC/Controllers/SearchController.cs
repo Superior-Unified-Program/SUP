@@ -108,7 +108,24 @@ namespace SUP_MVC.Controllers
                 }
 
 				var organizations = separatedArgs[2].Split(';');
-                var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
+				if (Array.IndexOf(organizations, "Education - All") >= 0)
+				{
+					organizations = organizations.Where(val => val != "Education - All").ToArray();
+					string[] modifiedOrgs = new string[organizations.Length + 4];
+					int i = 0;
+					while(i < organizations.Length)
+					{
+						modifiedOrgs[i] = organizations[i];
+						i++;
+					}
+					modifiedOrgs[i++] = "Elementary School";
+					modifiedOrgs[i++] = "Middle School";
+					modifiedOrgs[i++] = "High School";
+					modifiedOrgs[i++] = "Higher Education";
+					organizations = modifiedOrgs;
+				}
+
+				var Clients = DatabaseConnection.QueryClientFull(separatedArgs[1], separatedArgs[0], organizations[0]);
                 // if searching for active clients only, remove inactive clients.
                 if (separatedArgs[3] == "true")
                 {
