@@ -722,9 +722,25 @@
             });
 		}
 
+        function unselectAll() {
+            $('.checkedId').each(function (index) {
+                $(this).remove();
+            });
+        }
+
+        function selectAll() {
+            $('.checkedId').each(function (index) {
+                var Row = $('.checkedIdTemplate').clone();
+                Row.removeClass('checkedIdTemplate').addClass('checkedId');
+                Row.text(clientId);
+                $('.checkedIdsDiv').append(Row);
+            });
+        }
+
         function searchTemplates() {
             var searchText = $('.templateSearch').val().toLowerCase();
             $(".templateTableRow").each(function (index) {
+                var clientId = $(this).parent().parent().find('.rowViewButton').val();
                 var currentRowName = $(this).find('.rowTemplateName').text().toLowerCase();
                 if (currentRowName.indexOf(searchText) >= 0) {
                     $(this).show();
@@ -1113,8 +1129,8 @@
             </div>
         </div>
         <div class="flex-select">
-            <a href="javascript:allCheck('choice',true)" class="yellowizedSelect">Select all</a>
-            <a href="javascript:allCheck('choice',false)" class="yellowizedSelect">No select</a>
+            <a href="javascript:allCheck('choice',true)" onclick="selectAll()" class="yellowizedSelect">Select all</a>
+            <a href="javascript:allCheck('choice',false)" onclick="unselectAll()" class="yellowizedSelect">No select</a>
         </div>
         <div class="flex-view">
             <p></p>

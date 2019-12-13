@@ -169,11 +169,12 @@
 
 	function deleteUser() {
         var username = $('.Username').val();
+        var currentUsername = localStorage.getItem('username');
 		if (username == "") {
 			popUsernameMissing();
 			return "";
 		}
-		var dataPost = username;
+		var dataPost = username + ',' + currentUsername;
 		if (confirm("Are you sure you want to delete " + username + "?")) {
 			$.ajax({
 				url: '/AddUser/DeleteUser',
