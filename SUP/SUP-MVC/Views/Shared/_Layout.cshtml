@@ -229,6 +229,28 @@
         $(document).ready(function () {
             $('.nameHere').text(localStorage.getItem('username'));
         });
+        IsAdmin();
+        function IsAdmin() {
+			var dataPost = localStorage.getItem('username');
+			$.ajax({
+                url: '/Ribbon/UserIsAdmin',
+                type: 'POST',
+                data: JSON.stringify(dataPost),
+                contentType: 'application/json; charset=utf-8',
+                error: function (xhr) {
+                    alert('Error: ' + xhr.statusText);
+                },
+                success: function (result) {
+                    isAdmin = JSON.parse(result);
+                    
+                    if (!isAdmin) {
+                        $(".adminRequired").remove();
+                    }
+                },
+                async: true,
+                processData: false
+			});
+		}
 	</script>
 
 
@@ -251,7 +273,7 @@
                 <th class="tab" scope="row"> @Html.ActionLink("Add Client", "AddClient", new { controller = "AddClient" })</th>
 
             </tr>
-            <tr>
+            <tr class="adminRequired">
                 <th class="tab" scope="row"> @Html.ActionLink("Add User", "AddUser", new { controller = "AddUser" })</th>
             </tr>
             <tr>
