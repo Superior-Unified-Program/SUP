@@ -389,7 +389,14 @@
 
     <script>
 
-		$(document).ready(function () {
+        $(document).ready(function () {
+            document.getElementById('searchTemplateField').addEventListener("keyup", function (event) {
+				if (event.keyCode === 13) {
+					event.preventDefault();
+					document.getElementById("searchTemplateButton").click();
+				}
+			});
+
 			setTimeout(function () {
 				$('a').click(function () {
 					Search();
@@ -1182,21 +1189,21 @@
         -->
             <div class="searchRow">
                 <div>
-                    <input type="text" class="templateSearch" style="width: 80%">
-                    <input type="button" value="search" onclick="searchTemplates()" style="width: 15%">
+                    <input type="text" id="searchTemplateField" class="templateSearch" style="width: 80%">
+                    <input type="button" id="searchTemplateButton" value="search" onclick="searchTemplates()" style="width: 15%">
                 </div>
             </div>
-            <div class="resultRow">
-                <table id="poptable" class="templatePopupTable scrollTable" >
+            <div class="resultRow" style="width:80%;">
+                <table style="min-width:100%;" id="poptable" class="templatePopupTable scrollTable" >
                     <tr class="scrollTh">
                         <th>&nbsp;</th>
                         <th>Name</th>
                         <th>Date modified</th>
                     </tr>
                     <tr class="templateRowTemplate scrollTd">
-                        <td id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
-                        <td id="colSet" class="rowTemplateName"></td>
-                        <td id="colSet" class="rowTemplateDate"></td>
+                        <td style="min-width:20%" id="radioSet" class="radio"><input class="selecter" type="radio" name="fileName" value=""></td>
+                        <td style="min-width:40%" id="colSet" class="rowTemplateName"></td>
+                        <td style="min-width:40%" id="colSet" class="rowTemplateDate"></td>
                     </tr>
                 </table>
             </div>
