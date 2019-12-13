@@ -259,7 +259,6 @@ namespace SUP_MVC.Controllers
 		{
             if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
             {
-                int hoursTillLogout = 0;
                 int minutesTillLogout = 10;
 
                 DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
@@ -282,6 +281,7 @@ namespace SUP_MVC.Controllers
                     }
                 }
             }
+
             if (TempData["UserID"] != null)
             {
                 TempData["UserID"] = TempData["UserID"];
