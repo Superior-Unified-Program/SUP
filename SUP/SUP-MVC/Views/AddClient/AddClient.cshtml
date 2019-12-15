@@ -420,7 +420,13 @@
                 }
                 var prefix = $('.prefixInput').val();
                 var firstName = $('.firstNameInput').val();
-                var lastName = $('.lastNameInput').val();
+				var lastName = $('.lastNameInput').val();
+
+				if (firstName == "" || lastName == "") {
+					alert("First and Last name must be filled out.");
+					return "";
+				}
+
 				var middleInitial = $('.middleInitialInput').val();
 
                 var primaryCompany = $('.companyInput').val();
