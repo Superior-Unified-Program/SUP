@@ -18,8 +18,42 @@ namespace SUP_MVC.Controllers
         // GET: Search
         public ActionResult Index()
         {
-            return View();
-        }
+			if (TempData["LoginDate"] != null && TempData["LoginTime"] != null)
+			{
+				int minutesTillLogout = 10;
+
+				DateTime loadedDateTime = DateTime.ParseExact(TempData["LoginDate"].ToString(), "d", null);
+				DateTime loadedTime = DateTime.ParseExact(TempData["LoginTime"].ToString(), "t", null);
+				if (loadedDateTime.ToShortDateString().Equals(DateTime.Now.ToShortDateString()))
+				{
+					var currentDate = DateTime.ParseExact(DateTime.Now.ToShortDateString(), "d", null);
+					var currentTime = DateTime.ParseExact(DateTime.Now.ToShortTimeString(), "t", null);
+					var tooLate = loadedTime;
+					tooLate = tooLate.AddMinutes(minutesTillLogout);
+
+					var tooLateDate = DateTime.ParseExact(loadedDateTime.ToShortDateString(), "d", null);
+					tooLateDate = tooLateDate.AddMinutes(minutesTillLogout);
+					if (tooLateDate.Equals(currentDate) && currentTime.TimeOfDay > tooLate.TimeOfDay || (currentDate.CompareTo(tooLateDate) > 0))
+					{
+						return RedirectToAction("Login", "Login");
+					}
+					else
+					{
+						ResetTimeout();
+					}
+				}
+			}
+
+			if (TempData["UserID"] != null)
+			{
+				TempData["UserID"] = TempData["UserID"];
+				return View();
+			}
+			else
+			{
+				return RedirectToAction("Login", "Login");
+			}
+		}
 
         // GET: Search/Details/5
         public ActionResult Details(int id)
