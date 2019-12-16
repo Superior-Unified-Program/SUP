@@ -288,6 +288,7 @@ namespace SUP_MVC.Controllers
 					Client.Active = (Active == "true");
 					Client.Holiday_Card = (HolidayCard == "true");
 					Client.Community_Breakfast = (Breakfast == "true");
+					Client.Permit_Num = Permit;
 					Client.Prefix = Prefix;
 					return DatabaseConnection.addClient(Client);
                 }
