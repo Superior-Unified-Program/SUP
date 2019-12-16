@@ -664,8 +664,8 @@
                             <option value="other">Other</option>
                         </select>
                     </div>
-                    <div class="shortCell"><input type="text" class="companyInput" tabindex="6"></div>
-                    <div class="shortCell"><input type="text" class="titleInput" tabindex="7"></div>
+                    <div class="shortCell"><input type="text" class="companyInput" tabindex="5"></div>
+                    <div class="shortCell"><input type="text" class="titleInput" tabindex="5"></div>
                     <div class="shortCell"><span class="primaryLabel">Primary Organization</span><input type="button" class="yellowizedButton removeOrgButton" value="Remove Organization" id="addOrg" onclick="removeOrganization()" style="padding-top: 2px; padding-left: 25px; margin-top:0px; visibility: hidden;"></div>
                 </div>
             </div>
@@ -682,10 +682,10 @@
 
 			<div class="tableHeader">Contact Information</div>
 			<div class="row">
-				<div class="cell">Address Line1<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" tabindex="8"></div>
-				<div class="cell">City<br /><input class="cityInput" type="text" placeholder="City" tabindex="10"></div>
+				<div class="cell">Address Line1<br /><input class="addressLineOneInput" type="text" placeholder="Address Line 1" tabindex="6"></div>
+				<div class="cell">City<br /><input class="cityInput" type="text" placeholder="City" tabindex="8"></div>
 				<div class="cell">
-					State<br /><select class="stateInput" name="state" tabindex="11">
+					State<br /><select class="stateInput" name="state" tabindex="9">
 						<option value=""></option>
 						<option value="AL">Alabama</option>
 						<option value="AK">Alaska</option>
@@ -740,39 +740,39 @@
 						<option value="WY">Wyoming</option>
 					</select>
 				</div>
-				<div class="cell">Zipcode <br /><input class="zipInput" type="text" placeholder="Zip Code" rquired pattern="[0-9 -]{5,10}" tabindex="12"></div>
+				<div class="cell">Zipcode <br /><input class="zipInput" type="text" placeholder="Zip Code" rquired pattern="[0-9 -]{5,10}" tabindex="10"></div>
 			</div>
 			<div class="row">
-				<div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="9"></div>
+				<div class="cell">Address Line2<br /><input class="addressLineTwoInput" type="text" placeholder="Address Line 2" tabindex="7"></div>
 			</div>
 			<hr class="breakLine" />
 			<div class="row">
-				<div class="cell">Personal Email address<br /><input class="personalEmailInput" type="text" id="pemail" placeholder="Email" tabindex="14"></div>
-				<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="15"></div>
-				<div class="cell">Business Email address<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" tabindex="16"></div>
-				<div class="cell">Business Phone Number<br /><input class="businessPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="17"></div>
+				<div class="cell">Personal Email address<br /><input class="personalEmailInput" type="text" id="pemail" placeholder="Email" tabindex="11"></div>
+				<div class="cell">Personal Phone Number<br /><input class="personalPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="12"></div>
+				<div class="cell">Business Email address<br /><input class="businessEmailInput" type="text" id="email" placeholder="Email" tabindex="13"></div>
+				<div class="cell">Business Phone Number<br /><input class="businessPhoneInput" type="text" placeholder="" pattern="[0-9 -]{12}" tabindex="14"></div>
 			</div>
 			<div class="tableHeader">Assistant's Information</div>
 			<div class="row">
-				<div class="cell">Assistant's First Name<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" tabindex="2"></div>
-				<div class="cell">Assistant's Last Name<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" tabindex="3"></div>
-				<div class="cell">Assistant's Email<br /><input type="text" class="assistantEmailInput" placeholder="" tabindex="2"></div>
-				<div class="cell">Assistant's Phone Number<br /><input type="text" class="assistantPhoneInput" placeholder="" tabindex="3"></div>
+				<div class="cell">Assistant's First Name<br /><input type="text" class="assistantFirstNameInput" placeholder="First Name" tabindex="15"></div>
+				<div class="cell">Assistant's Last Name<br /><input type="text" class="assistantLastNameInput" placeholder="Last Name" tabindex="16"></div>
+				<div class="cell">Assistant's Email<br /><input type="text" class="assistantEmailInput" placeholder="" tabindex="17"></div>
+				<div class="cell">Assistant's Phone Number<br /><input type="text" class="assistantPhoneInput" placeholder="" tabindex="18"></div>
 			</div>
 			<div class="tableHeader">Miscellaneous</div>
 			<div class="row">
-				<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="18" checked="checked"></div>
-				<div class="cell">Holiday Card Recipient<br /><input class="cardRecipientInput" type="checkbox" tabindex="18"></div>
-				<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="18"></div>
-				<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="19"></div>
+				<div class="cell">Active<br /><input class="activeInput" type="checkbox" tabindex="19" checked="checked"></div>
+				<div class="cell">Holiday Card Recipient<br /><input class="cardRecipientInput" type="checkbox" tabindex="20"></div>
+				<div class="cell">Community Breakfast Attendee<br /><input class="breakfastAttendee" type="checkbox" tabindex="21"></div>
+				<div class="cell">Permit<br /><input type="text" class="permitInput" id="permit" placeholder="" tabindex="22"></div>
 			</div>
             <div class="row">
                 <div class="noteCell">
-                    Note<br /><textarea style="width: 100%" name="Note" class="noteInput" rows="2" cols="125" tabindex="20"></textarea>
+                    Note<br /><textarea style="width: 100%" name="Note" class="noteInput" rows="2" cols="125" tabindex="23"></textarea>
                 </div>
                 <div class="saveEditCell">
-                    <input type="button" class="deleteButton yellowizedButton" value="Delete" id="button" onclick="if (confirm('Are you sure you want to delete this client?')) { deleteClient() }" tabindex="21">
-                <input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="22"></div>
+                    <input type="button" class="deleteButton yellowizedButton" value="Delete" id="button" onclick="if (confirm('Are you sure you want to delete this client?')) { deleteClient() }">
+                <input type="button" class="saveButton yellowizedButton" value="Save" id="button" tabindex="24"></div>
             </div>
 			
 	    </div>
