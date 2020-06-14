@@ -405,16 +405,20 @@
                 location.href = '/AddClient/AddClient?clientId=' + clientId;
             }
 
-            function saveClientData(id) {
+            function saveClientData(id)
+            {
                 var clientId = "";
                 if (id) { clientId = id }
-                else {
+                else
+                {
                     var args = location.href.split('?');
                     var params = "";
-                    if (args.length > 1) {
+                    if (args.length > 1)
+                    {
                         params = args[1].split('=');
                     }
-                    if (params.length > 1) {
+                    if (params.length > 1)
+                    {
                         clientId = params[1];
                     }
                 }
@@ -469,12 +473,44 @@
 
                 var successString = (clientId == "") ? 'Client successfully added.' : 'Client successfully updated.';
 
-                var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
+                var client = new Array(clientId, firstName, lastName, middleInitial,
+                    primaryOrganization, primaryCompany, primaryTitle,
+                    Line1, Line2, City, State, Zip,
+                    PersonalEmail, Note, PersonalPhone, Active, Permit,
+                    BreakfastAttendee, HolidayCardRecipient, BusinessEmail, BusinessPhone,
+                    AssistantEmail, AssistantPhone, AssistantFirstName, AssistantLastName,
+                    prefix, additionalOrganizations);
+
+                var foundCommas = false;
+                for (var i = 0; i < client.length; i++)
+                {
+                    var clienti = new String(client[i]);
+                    if (clienti.includes(','))
+                    {
+                        foundCommas = true;
+                        clienti = clienti.replace(/,/g, '');
+                        client[i] = clienti;
+                    }       
+                }
+                
+                if (foundCommas)
+                {
+                    alert("Commas were detected in some inputs, and will be removed.");
+                }
+                var dataPost = '';
+                for (var i = 0; i < client.length; i++)
+                {
+                    if (i > 0) dataPost += ',';
+                    dataPost += client[i];
+                }
+
+                /*var dataPost = clientId + ',' + firstName + ',' + lastName + ',' + middleInitial + ',' +
                     primaryOrganization + ',' + primaryCompany + ',' + primaryTitle +
                     ',' + Line1 + ',' + Line2 + ',' + City + ',' + State + ',' + Zip +
                     ',' + PersonalEmail + ',' + Note + ',' + PersonalPhone + ',' + Active + ',' + Permit + ',' +
 					BreakfastAttendee + ',' + HolidayCardRecipient + ',' + BusinessEmail + ',' + BusinessPhone + ',' +
 					AssistantEmail + ',' + AssistantPhone + ',' + AssistantFirstName + ',' + AssistantLastName + ',' + prefix + "," + additionalOrganizations;
+                    */
                 $.ajax({
                     url: '/AddClient/UpdateClient',
                     type: 'POST',

@@ -39,6 +39,8 @@ Change  the value of "SupConnectionString" in appsettings.json to match the IP a
 
 Set the start up project to SUP-MVC by right-clicking in the solution and selecting "Set as StartUp Project."
 
+In the Solution Explorer in Visual Studio, under the SUP-MVC project, add to Dependencies the System.Data.SqlClient.dll file; you should use the nuget package manager to do this.
+
 Ensure that the following folders exist on the web server:
 
   1. C:\Users\Public\Documents\Templates
